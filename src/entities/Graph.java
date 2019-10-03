@@ -1,5 +1,7 @@
 package entities;
 
+import javafx.scene.shape.Circle;
+
 import java.util.ArrayList;
 
 public class Graph {
@@ -14,8 +16,8 @@ public class Graph {
         return instance;
     }
 
-    public void addNode(){
-        instance.nodes.add(new Node());
+    public void addNode(Circle node){
+        instance.nodes.add(new Node(node));
         //...
     }
 

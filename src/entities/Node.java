@@ -1,17 +1,23 @@
 package entities;
 
+import javafx.scene.shape.Circle;
+
 import java.util.ArrayList;
 
-class Node {
+public class Node {
 
+    public static final double RADIUS = 30;
     private static int current_Num = 0;
+
+    private Circle circle;
     private int num;
     private double amplitude;
     private ArrayList<Node> neighbours;
 
-    public Node(){
+    Node(Circle c){
         neighbours = new ArrayList<>(5);
         num = current_Num++;
+        circle = c;
     }
 
 
@@ -19,7 +25,7 @@ class Node {
         return num;
     }
 
-    public ArrayList<Node> getNeighbours(){
+    ArrayList<Node> getNeighbours(){
         return neighbours;
     }
 
@@ -27,7 +33,7 @@ class Node {
         neighbours.add(neighbour);
     }
 
-    public void removeNeighbour(Node n){
+    void removeNeighbour(Node n){
         neighbours.remove(n);
     }
 
