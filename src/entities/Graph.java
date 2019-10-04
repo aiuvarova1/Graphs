@@ -1,5 +1,6 @@
 package entities;
 
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
@@ -16,8 +17,9 @@ public class Graph {
         return instance;
     }
 
-    public void addNode(Circle node){
-        instance.nodes.add(new Node(node));
+    public void addNode(StackPane node){
+        if(nodes.size() < 50)
+            instance.nodes.add(new Node(node,instance.nodes.size() + 1));
         //...
     }
 
@@ -27,5 +29,24 @@ public class Graph {
         }
         instance.nodes.remove(node);
         //...
+    }
+
+    public int getSize(){
+        return nodes.size();
+    }
+
+    public boolean isOkToPlaceNode(Node node){
+        for(Node n : nodes){
+            if(!n.equals(node)){
+                if(checkIntersection(node,n))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIntersection(Node n1, Node n2){
+        return Math.sqrt((n1.getX() - n2.getX())*(n1.getX() - n2.getX()) +
+                (n1.getY() - n2.getY())*(n1.getY() - n2.getY())) <= 2* Node.RADIUS;
     }
 }
