@@ -42,7 +42,7 @@
                   </Accordion>
                </children>
             </VBox>
-            <AnchorPane fx:id="drawingArea" onMouseClicked="#createNode" prefHeight="95.0" prefWidth="700.0" style="-fx-background-color: #FFFFFF;" HBox.hgrow="ALWAYS">
+            <AnchorPane fx:id="drawingArea" onMouseClicked="#createNode" prefHeight="95.0" prefWidth="700.0" style="-fx-background-color: FFFFFF;" HBox.hgrow="ALWAYS">
                <children>
                   <Canvas fx:id="canvas" height="601.0" width="717.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0">
                      <effect>

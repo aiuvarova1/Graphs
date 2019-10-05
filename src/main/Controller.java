@@ -30,7 +30,6 @@ public class Controller {
     public Controller(){
         graph = Graph.getInstance();
         drawer = Drawer.getInstance();
-
     }
 
 
@@ -44,21 +43,23 @@ public class Controller {
         drawingArea.widthProperty().addListener(e -> System.out.println("resize"));
     }
 
+    /**
+     * Creates the node on click
+     * @param event click-info
+     */
     @FXML
     void createNode(MouseEvent event){
         System.out.println("Canvas clicked");
-        StackPane node = drawer.drawNode(drawingArea, event);
+        if(Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
-        graph.addNode(node);
-
-
+            StackPane node = drawer.drawNode(event);
+            graph.addNode(node);
+        }
     }
 
     @FXML
     void resize(MouseEvent event){
         System.out.println("Resize");
     }
-
-
 
 }

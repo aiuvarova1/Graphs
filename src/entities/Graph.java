@@ -6,6 +6,7 @@ import javafx.scene.shape.Circle;
 import java.util.ArrayList;
 
 public class Graph {
+    public static final int MAX_SIZE = 50;
     private ArrayList<Node> nodes = new ArrayList<Node>(20);
     private static Graph instance;
 
@@ -17,9 +18,14 @@ public class Graph {
         return instance;
     }
 
+    public int getSize(){
+        return nodes.size();
+    }
+
+
     public void addNode(StackPane node){
-        if(nodes.size() < 50)
-            instance.nodes.add(new Node(node,instance.nodes.size() + 1));
+
+        instance.nodes.add(new Node(node,instance.nodes.size() + 1));
         //...
     }
 
@@ -31,9 +37,6 @@ public class Graph {
         //...
     }
 
-    public int getSize(){
-        return nodes.size();
-    }
 
     public boolean isOkToPlaceNode(Node node){
         for(Node n : nodes){

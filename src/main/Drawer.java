@@ -32,6 +32,17 @@ public class Drawer {
         this.pane = pane;
     }
 
+    public Bounds getBounds(){
+        //return instance.pane.localToParent(instance.pane.getBoundsInLocal());
+        return instance.pane.getBoundsInLocal();
+    }
+
+    /**
+     * Checks whether the click position crosses the bounds and changes it if needed
+     * @param xPos x-coordinate of a click
+     * @param yPos y-coordinate of a click
+     * @return renewed (if needed) coordinates
+     */
     public double[] checkBounds(double xPos, double yPos){
 
         Bounds bounds = (instance.pane.getBoundsInLocal());
@@ -48,17 +59,28 @@ public class Drawer {
         return new double[] {xPos,yPos};
     }
 
-     StackPane drawNode(AnchorPane pane, MouseEvent ev){
+    /**
+     * Draws the node by calling needed methods and adds it to the scene
+     * @param ev parameters of a click
+     * @return Screen representation of the node
+     */
+     StackPane drawNode(MouseEvent ev){
         //double[] cors = new double[2];
 
         double[] cors = checkBounds(ev.getX(), ev.getY());
 
         StackPane node = createLayout(cors[0],cors[1]);
-        pane.getChildren().add(node);
+        instance.pane.getChildren().add(node);
 
         return node;
     }
 
+    /**
+     * Creates node's screen representation
+     * @param xPos x coordinate of center
+     * @param yPos y coordinate of center
+     * @return node's representation on the screen (Circle + text united in stack pane)
+     */
     private StackPane createLayout(double xPos, double yPos ){
 
         Circle node = new Circle(xPos, yPos, Node.RADIUS, Color.WHITE);
