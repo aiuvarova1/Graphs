@@ -52,4 +52,8 @@ public class Graph {
         return Math.sqrt((n1.getX() - n2.getX())*(n1.getX() - n2.getX()) +
                 (n1.getY() - n2.getY())*(n1.getY() - n2.getY())) <= 2* Node.RADIUS;
     }
+
+    public void clearGraph(){
+        nodes.clear();
+    }
 }

@@ -37,6 +37,8 @@ public class Drawer {
         return instance.pane.getBoundsInLocal();
     }
 
+
+
     /**
      * Checks whether the click position crosses the bounds and changes it if needed
      * @param xPos x-coordinate of a click
