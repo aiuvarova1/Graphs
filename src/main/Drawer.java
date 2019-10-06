@@ -14,6 +14,8 @@ import javafx.scene.text.Text;
 
 public class Drawer {
 
+    public static final int BOUNDS_GAP = 25;
+
     public static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
             "-fx-font-size: 26px;";
 
@@ -26,6 +28,10 @@ public class Drawer {
             instance = new Drawer();
         }
         return instance;
+    }
+
+    public void removeNode(Object node){
+        pane.getChildren().remove(node);
     }
 
     public void setPane(AnchorPane pane){
@@ -52,12 +58,13 @@ public class Drawer {
         if(xPos - Node.RADIUS < bounds.getMinX())
             xPos = bounds.getMinX() + Node.RADIUS;
         else if(xPos + Node.RADIUS > bounds.getMaxX())
-            xPos = bounds.getMaxX() - Node.RADIUS;
+            xPos = bounds.getMaxX() - Node.RADIUS - BOUNDS_GAP;
 
         if(yPos - Node.RADIUS < bounds.getMinY())
-            yPos = bounds.getMinY() + Node.RADIUS + 5;
+            yPos = bounds.getMinY() + Node.RADIUS + BOUNDS_GAP;
         else if (yPos + Node.RADIUS > bounds.getMaxY())
-            yPos = bounds.getMaxY() - Node.RADIUS;
+            yPos = bounds.getMaxY() - Node.RADIUS - BOUNDS_GAP;
+
         return new double[] {xPos,yPos};
     }
 

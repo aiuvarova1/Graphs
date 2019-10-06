@@ -29,11 +29,20 @@ public class Graph {
         //...
     }
 
-    public void removeNode(Node node){
-        for(Node n : node.getNeighbours()){
-            n.removeNeighbour(node);
+    /**
+     * Removes node from the list and renews info
+     * @param num number of the node in list
+     */
+    public void removeNode(int num){
+
+
+        for(Node n : nodes.get(num).getNeighbours()){
+            n.removeNeighbour(nodes.get(num));
         }
-        instance.nodes.remove(node);
+        nodes.remove(num);
+        for (int i = num ; i < nodes.size(); i++)
+            nodes.get(i).renewNum(i + 1);
+
         //...
     }
 
@@ -53,7 +62,28 @@ public class Graph {
                 (n1.getY() - n2.getY())*(n1.getY() - n2.getY())) <= 2* Node.RADIUS;
     }
 
+    /**
+     * Removes all nodes from the list
+     */
     public void clearGraph(){
         nodes.clear();
+    }
+
+    /**
+     * Rescales all nodes in graph
+     * @param axis by which axis relocate the nodes
+     * @param oldVal old value of width/height
+     * @param newVal new value of width/height
+     */
+    public void rescale(char axis, double oldVal, double newVal){
+        double scale = newVal / oldVal;
+
+        for(Node node : instance.nodes){
+            if(axis == 'x'){
+                node.rescaleX(scale);
+            }
+            if(axis == 'y')
+                node.rescaleY(scale);
+        }
     }
 }

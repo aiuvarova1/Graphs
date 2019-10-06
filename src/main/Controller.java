@@ -18,15 +18,20 @@ import javafx.scene.shape.Circle;
 
 public class Controller {
 
-//    private static final String ACCORDION_STYLE = ".titled-pane .arrow {\n" +
-//            "    -fx-opacity: 1;\n" +
-//            "}";
-
     private Graph graph;
     private Drawer drawer;
 
     @FXML
     private Label label;
+
+    @FXML
+    private ImageView leftClick;
+
+    @FXML
+    private ImageView rightClick;
+
+    @FXML
+    private TitledPane helpTitledPane;
 
     @FXML
     private AnchorPane menu;
@@ -65,7 +70,11 @@ public class Controller {
         trashIcon.setImage(new Image("/assets/trash.png"));
     }
 
-
+    @FXML
+    private void setIcons(){
+        leftClick.setImage(new Image("/assets/leftClick.png"));
+        rightClick.setImage(new Image("/assets/rightClick.png"));
+    }
 
     @FXML
     void initialize(){
@@ -79,12 +88,22 @@ public class Controller {
         clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
         clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
 
-        drawingArea.widthProperty().addListener(e -> System.out.println("resize"));
-        drawTitledPane.setAnimated(true);
-       // accordion.setStyle(ACCORDION_STYLE);
-        //trashIcon.onMouseEnteredProperty()
+        drawingArea.widthProperty().addListener((axis, oldVal,newVal) -> {
+            System.out.println("resize");
+            drawingArea.setPrefWidth(newVal.doubleValue());
+            graph.rescale('x',oldVal.doubleValue(),newVal.doubleValue());
+        });
 
+        drawingArea.heightProperty().addListener((axis, oldVal,newVal) -> {
+            System.out.println("resize");
+           // drawingArea.setPrefHeight(newVal.doubleValue());
+            graph.rescale('y',oldVal.doubleValue(),newVal.doubleValue());
+        });
+
+        drawTitledPane.setAnimated(true);
+        helpTitledPane.setAnimated(true);
         accordion.setExpandedPane(drawTitledPane);
+        setIcons();
     }
 
     /**
@@ -106,13 +125,18 @@ public class Controller {
         System.out.println("Resize");
     }
 
+    /**
+     * Removes all nodes from the pane
+     */
     @FXML
     void clearWorkingArea(){
-
         System.out.println("clear");
         drawingArea.getChildren().removeIf(x -> x.getClass() == StackPane.class);
         graph.clearGraph();
     }
+
+
+
 
 
 

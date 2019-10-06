@@ -17,6 +17,7 @@ public class Manager extends Application{
     public static void main(String[] args) {
 
         Application.launch(args);
+
     }
 
     @Override
@@ -26,7 +27,7 @@ public class Manager extends Application{
         stage.setTitle("Graph-tool");
         stage.setScene(new Scene(root));
 
-        stage.setMinWidth(700);
+        stage.setMinWidth(900);
         stage.setMinHeight(500);
 
         stage.show();

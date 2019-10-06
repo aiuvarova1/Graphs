@@ -1,8 +1,11 @@
 package main;
 
+import entities.Graph;
+import entities.Node;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
@@ -38,6 +41,23 @@ public class Handlers {
                 if(event.getSource().getClass() == StackPane.class) {
                     event.consume();
                     System.out.println("here i am");
+                    if(event.getButton() == MouseButton.SECONDARY){
+                        System.out.println("delete");
+
+                        StackPane circle = (StackPane)event.getSource();
+
+                        String label = circle.getId();
+                        try {
+                            System.out.println(label);
+                            Graph.getInstance().removeNode(Integer.parseInt(label) - 1);
+                        }catch(RuntimeException ex){
+                            System.out.println(ex.getMessage());
+                            System.out.println("invslid label");
+                            return;
+                        }
+
+                        Drawer.getInstance().removeNode(circle);
+                    }
                 }
         }
     };
