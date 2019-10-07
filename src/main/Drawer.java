@@ -3,13 +3,16 @@ package main;
 import entities.Graph;
 import entities.Node;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+
 
 
 public class Drawer {
@@ -36,6 +39,21 @@ public class Drawer {
 
     public void setPane(AnchorPane pane){
         this.pane = pane;
+    }
+
+    public void setMoveHandler(EventHandler h){
+        pane.setOnMouseMoved(h);
+    }
+    public void removeMoveHandler(){
+        pane.setOnMouseMoved(null);
+    }
+
+    public void addLine(Line line){
+        pane.getChildren().add(line);
+    }
+
+    public void removeLine(Line line){
+        pane.getChildren().remove(line);
     }
 
     public Bounds getBounds(){

@@ -54,30 +54,31 @@ public class Controller {
     @FXML
     private AnchorPane drawingArea;
 
-    public Controller(){
+    public Controller() {
         graph = Graph.getInstance();
         drawer = Drawer.getInstance();
     }
 
     @FXML
-    public void changeIcon(){
+    public void changeIcon() {
 
         trashIcon.setImage(new Image("/assets/opened.png"));
-       // trashIcon.
+        // trashIcon.
     }
+
     @FXML
-    public void setOldIcon(){
+    public void setOldIcon() {
         trashIcon.setImage(new Image("/assets/trash.png"));
     }
 
     @FXML
-    private void setIcons(){
+    private void setIcons() {
         leftClick.setImage(new Image("/assets/leftClick.png"));
         rightClick.setImage(new Image("/assets/rightClick.png"));
     }
 
     @FXML
-    void initialize(){
+    void initialize() {
         drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.dragFilter);
         drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
 
@@ -88,16 +89,16 @@ public class Controller {
         clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
         clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
 
-        drawingArea.widthProperty().addListener((axis, oldVal,newVal) -> {
+        drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
             System.out.println("resize");
             drawingArea.setPrefWidth(newVal.doubleValue());
-            graph.rescale('x',oldVal.doubleValue(),newVal.doubleValue());
+            graph.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
         });
 
-        drawingArea.heightProperty().addListener((axis, oldVal,newVal) -> {
+        drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
             System.out.println("resize");
-           // drawingArea.setPrefHeight(newVal.doubleValue());
-            graph.rescale('y',oldVal.doubleValue(),newVal.doubleValue());
+            // drawingArea.setPrefHeight(newVal.doubleValue());
+            graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawTitledPane.setAnimated(true);
@@ -108,12 +109,13 @@ public class Controller {
 
     /**
      * Creates the node on click
+     *
      * @param event click-info
      */
     @FXML
-    void createNode(MouseEvent event){
+    void createNode(MouseEvent event) {
         System.out.println("Canvas clicked");
-        if(Graph.getInstance().getSize() < Graph.MAX_SIZE) {
+        if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
             StackPane node = drawer.drawNode(event);
             graph.addNode(node);
@@ -121,7 +123,7 @@ public class Controller {
     }
 
     @FXML
-    void resize(MouseEvent event){
+    void resize(MouseEvent event) {
         System.out.println("Resize");
     }
 
@@ -129,16 +131,11 @@ public class Controller {
      * Removes all nodes from the pane
      */
     @FXML
-    void clearWorkingArea(){
+    void clearWorkingArea() {
         System.out.println("clear");
         drawingArea.getChildren().removeIf(x -> x.getClass() == StackPane.class);
         graph.clearGraph();
     }
-
-
-
-
-
 
 
 }

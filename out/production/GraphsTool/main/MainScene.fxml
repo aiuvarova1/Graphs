@@ -27,7 +27,7 @@
                         </Label>
                      </children>
                   </AnchorPane>
-                  <Accordion fx:id="accordion" minHeight="400.0" minWidth="220.0" prefHeight="565.0" prefWidth="296.0">
+                  <Accordion fx:id="accordion" minHeight="350.0" minWidth="220.0" prefHeight="565.0" prefWidth="296.0">
                      <panes>
                         <TitledPane fx:id="drawTitledPane" animated="false" maxWidth="283.0" minWidth="220.0" prefHeight="469.0" prefWidth="296.0" style="-fx-border-color: #f5f5f5;" text="Draw" textFill="#686060">
                           <content>

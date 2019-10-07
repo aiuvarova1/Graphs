@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 
-public class Manager extends Application{
+public class Manager extends Application {
 
     public static void main(String[] args) {
 
@@ -28,7 +28,7 @@ public class Manager extends Application{
         stage.setScene(new Scene(root));
 
         stage.setMinWidth(900);
-        stage.setMinHeight(500);
+        stage.setMinHeight(550);
 
         stage.show();
     }
