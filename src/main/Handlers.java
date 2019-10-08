@@ -1,16 +1,14 @@
 package main;
 
-import entities.Graph;
-import entities.Node;
+import entities.*;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 
 public class Handlers {
 
@@ -24,8 +22,8 @@ public class Handlers {
 
     public static boolean edgeStarted = false;
 
-    private static Circle pretendent;
-    private static Line edgePretendent;
+    private static Node pretender;
+    private static Edge edgePretender;
 
     private static final int CURSOR_GAP = 5;
 
@@ -36,17 +34,13 @@ public class Handlers {
         @Override
         public void handle(final MouseEvent event) {
 
-            if (edgeStarted) {
-                event.consume();
-                return;
-            }
-            if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+            if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
+                    event.getButton() == MouseButton.PRIMARY) {
                 dragging = true;
             } else if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
                 if (dragging) event.consume();
                 dragging = false;
             }
-
         }
     };
 
@@ -57,49 +51,75 @@ public class Handlers {
     public static final EventHandler<MouseEvent> clickFilter = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            if (event.getSource().getClass() == StackPane.class) {
-                event.consume();
-                System.out.println("here i am");
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    System.out.println("delete");
+            System.out.println(event.getSource().getClass());
+            System.out.println(event.getTarget());
 
-                    StackPane circle = (StackPane) event.getSource();
+            if (event.getSource().getClass() == Node.class) {
+                event.consume();
+                if (event.getButton() == MouseButton.SECONDARY) {
+
+                    Node circle = (Node) event.getSource();
 
                     String label = circle.getId();
-                    try {
-                        System.out.println(label);
-                        Graph.getInstance().removeNode(Integer.parseInt(label) - 1);
-                    } catch (RuntimeException ex) {
-                        System.out.println(ex.getMessage());
-                        System.out.println("invalid label");
-                        return;
-                    }
+                    //  try {
+                    System.out.println(label);
+                    System.out.println(circle.getNumOfEdges() + " neighbours");
+                    Graph.getInstance().removeNode(Integer.parseInt(label) - 1);
+//                    } catch (RuntimeException ex) {
+//                        System.out.println(ex.getMessage());
+//                        System.out.println("invalid label");
+//                        return;
+//                    }
 
-                    Drawer.getInstance().removeNode(circle);
+                    Drawer.getInstance().removeElement(circle);
                 } else if (event.getButton() == MouseButton.PRIMARY) {
+                    System.out.println(edgeStarted);
                     if (!edgeStarted) {
                         edgeStarted = true;
-                        StackPane pane = (StackPane) event.getSource();
-                        pretendent = (Circle) pane.getChildren().get(0);
 
-                        edgePretendent = new Line(0, 0, 0, 0);
-                        edgePretendent.setVisible(false);
+                        pretender = (Node) event.getSource();
+
+                        edgePretender = new Edge(0, 0, 0, 0);
+                        edgePretender.setVisible(false);
                         Drawer.getInstance().setMoveHandler(edgeMoveHandler);
-                        Drawer.getInstance().addLine(edgePretendent);
-                        System.out.println("here");
+                        Drawer.getInstance().addLine(edgePretender);
                     } else {
-                        System.out.println("node");
+                        System.out.println("Node");
+
+                        event.consume();
+                        edgeStarted = false;
+                        Node node = (Node) event.getSource();
+
+                        edgePretender.connectNodes(node.getCircle(), pretender.getCircle());
+                        Graph.getInstance().connectNodes(node, pretender, edgePretender);
+
+                        Drawer.getInstance().removeMoveHandler();
                     }
                 }
-            } else if (edgeStarted) {
+            } else if (edgeStarted && event.getTarget().getClass() == AnchorPane.class) {
+
+                System.out.println(event.getTarget().getClass() + " target");
                 event.consume();
                 edgeStarted = false;
-                edgePretendent.setVisible(false);
+
+                edgePretender.setVisible(false);
+                Drawer.getInstance().removeElement(edgePretender);
+
                 Drawer.getInstance().removeMoveHandler();
-                Drawer.getInstance().removeLine(edgePretendent);
+            } else if (event.getSource().getClass() == Edge.class) {
+                event.consume();
+                if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
+                    Edge e = (Edge) event.getSource();
+                    Node[] nodes = e.getNodes();
+                    nodes[0].removeNeighbour(nodes[1]);
+                    nodes[1].removeNeighbour(nodes[0]);
+                }
             }
         }
+
+
     };
+
 
     /**
      * Controls potential edge's movements
@@ -113,54 +133,29 @@ public class Handlers {
 
             Bounds b = Drawer.getInstance().getBounds();
 
-            double dist = getDistance(xPos, yPos, pretendent.getCenterX(), pretendent.getCenterY());
+            double dist = Edge.getDistance(xPos, yPos, pretender.getCircle().getCenterX(),
+                    pretender.getCircle().getCenterY());
 
             if (dist > Node.RADIUS + CURSOR_GAP && isInBounds(event.getX(), event.getY(), b)) {
-                double[] cords = getStartCoordinates(xPos, yPos, pretendent.getCenterX(),
-                        pretendent.getCenterY(), dist);
+                double[] cords = Edge.getStartCoordinates(xPos, yPos, pretender.getCircle().getCenterX(),
+                        pretender.getCircle().getCenterY(), dist);
 
                 int signX = cords[0] <= event.getX() ? -1 : 1;
                 int signY = cords[1] <= event.getY() ? -1 : 1;
-                edgePretendent.setStartX(cords[0]);
-                edgePretendent.setEndX(event.getX() + CURSOR_GAP * signX);
+                edgePretender.setStartX(cords[0]);
+                edgePretender.setEndX(event.getX() + CURSOR_GAP * signX);
 
-                edgePretendent.setStartY(cords[1]);
-                edgePretendent.setEndY(event.getY() + CURSOR_GAP * signY);
+                edgePretender.setStartY(cords[1]);
+                edgePretender.setEndY(event.getY() + CURSOR_GAP * signY);
 
-                edgePretendent.setVisible(true);
+                edgePretender.setVisible(true);
             } else
-                edgePretendent.setVisible(false);
+                edgePretender.setVisible(false);
         }
 
         private boolean isInBounds(double x, double y, Bounds b) {
             return x > b.getMinX() && x < b.getMaxX() &&
                     y > b.getMinY() && y < b.getMaxY();
-        }
-
-
-        private double getDistance(double xPos, double yPos, double centerX,
-                                   double centerY) {
-            return Math.sqrt((xPos - centerX) * (xPos - centerX) +
-                    (yPos - centerY) * (yPos - centerY));
-        }
-
-        /**
-         * Counts start coordinates on circle
-         * @param xPos mouse x pos
-         * @param yPos mouse y pos
-         * @param centerX circle centre x pos
-         * @param centerY circle centre y pos
-         * @param distance distance between mouse and circle centre
-         * @return start coordinates of the line
-         */
-        private double[] getStartCoordinates(double xPos, double yPos, double centerX,
-                                             double centerY, double distance) {
-
-            double xSide = xPos - centerX;
-            double ySide = yPos - centerY;
-
-            return new double[]{centerX + xSide * Node.RADIUS / distance,
-                    centerY + ySide * Node.RADIUS / distance};
         }
     };
 
@@ -189,6 +184,4 @@ public class Handlers {
             ((Button) event.getSource()).getScene().setCursor(Cursor.DEFAULT);
         }
     };
-
-
 }

@@ -14,7 +14,10 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
 
-
+/**
+ * Draws Nodes and stores some needed references connected
+ * with drawing
+ */
 public class Drawer {
 
     public static final int BOUNDS_GAP = 25;
@@ -26,6 +29,10 @@ public class Drawer {
     private AnchorPane pane;
 
 
+    /**
+     * Singleton
+     * @return static instance
+     */
     public static Drawer getInstance(){
         if(instance == null) {
             instance = new Drawer();
@@ -33,7 +40,11 @@ public class Drawer {
         return instance;
     }
 
-    public void removeNode(Object node){
+    /**
+     * Removes element from the drawing pane
+     * @param node node to remove
+     */
+    public void removeElement(Object node){
         pane.getChildren().remove(node);
     }
 
@@ -41,26 +52,37 @@ public class Drawer {
         this.pane = pane;
     }
 
+    /**
+     * Sets handler for the drawing pane
+     * @param h handler to set
+     */
     public void setMoveHandler(EventHandler h){
         pane.setOnMouseMoved(h);
     }
+
+    /**
+     * Removes onMouseMove handler
+     */
     public void removeMoveHandler(){
         pane.setOnMouseMoved(null);
     }
 
+    /**
+     * Adds edge to the pane
+     * @param line edge reference
+     */
     public void addLine(Line line){
         pane.getChildren().add(line);
     }
 
-    public void removeLine(Line line){
-        pane.getChildren().remove(line);
-    }
-
+    /**
+     *
+     * @return bounds of the drawing area
+     */
     public Bounds getBounds(){
         //return instance.pane.localToParent(instance.pane.getBoundsInLocal());
         return instance.pane.getBoundsInLocal();
     }
-
 
 
     /**
@@ -91,12 +113,12 @@ public class Drawer {
      * @param ev parameters of a click
      * @return Screen representation of the node
      */
-     StackPane drawNode(MouseEvent ev){
+     Node drawNode(MouseEvent ev){
         //double[] cors = new double[2];
 
         double[] cors = checkBounds(ev.getX(), ev.getY());
 
-        StackPane node = createLayout(cors[0],cors[1]);
+        Node node = createLayout(cors[0],cors[1]);
         instance.pane.getChildren().add(node);
 
         return node;
@@ -108,14 +130,14 @@ public class Drawer {
      * @param yPos y coordinate of center
      * @return node's representation on the screen (Circle + text united in stack pane)
      */
-    private StackPane createLayout(double xPos, double yPos ){
+    private Node createLayout(double xPos, double yPos ){
 
         Circle node = new Circle(xPos, yPos, Node.RADIUS, Color.WHITE);
 
         node.addEventFilter(MouseEvent.MOUSE_DRAGGED, Handlers.dragFilter);
         node.setStroke(Color.BLACK);
 
-        StackPane layout = new StackPane();
+        Node layout = new Node(Graph.getInstance().getSize() + 1);
 
         Text numText = new Text("" + (Graph.getInstance().getSize() + 1));
 
@@ -127,6 +149,5 @@ public class Drawer {
 
         return layout;
     }
-
 
 }

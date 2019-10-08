@@ -3,6 +3,7 @@ package entities;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -15,47 +16,58 @@ import main.Handlers;
 import java.util.ArrayList;
 
 /**
- * Represents a vertice of the graph
+ * Represents one node of the graph
  */
-public class Node {
+public class Node extends StackPane {
 
     public static final double RADIUS = 27;
 
-    /**
-     * Container with circle and text (representation of the vertice on the screen)
-     */
-    private StackPane circle;
-
     private int num;
     private double amplitude;
-    // private ArrayList<Node> neighbours;
+
     private ArrayList<Edge> edges;
     private double[] initialPosition;
 
     public double getX() {
-        return circle.getLayoutX();
+        return getLayoutX();
     }
 
     public double getY() {
-        return circle.getLayoutY();
+        return getLayoutY();
     }
+
+    public Circle getCircle() {
+        return (Circle) getChildren().get(0);
+    }
+
+    public int getNumOfEdges() {
+        return edges.size();
+    }
+
 
     public int getNum() {
         return num;
     }
 
-//     ArrayList<Node> getNeighbours() {
-//        return neighbours;
-//    }
+    /**
+     * Gets list of neighbours through passing the list of edges
+     * @return list of neighbour nodes
+     */
+    ArrayList<Node> getNeighbours() {
+        ArrayList<Node> nodes = new ArrayList<>(edges.size());
+        for (Edge e : edges) {
+            nodes.add(e.getNeighbour(this));
+        }
+        return nodes;
+    }
 
 
-    Node(StackPane c, int num) {
+    public Node(int num) {
         edges = new ArrayList<>(5);
         this.num = num;
-        circle = c;
-        initialPosition = new double[]{circle.getLayoutX(), circle.getLayoutY()};
+        initialPosition = new double[]{getLayoutX(), getLayoutY()};
 
-        circle.setId("" + num);
+        setId("" + num);
         setHandlers();
     }
 
@@ -66,7 +78,7 @@ public class Node {
      */
     public void renewNum(int num) {
         this.num = num;
-        circle.setId("" + num);
+        setId("" + num);
         setText();
     }
 
@@ -79,14 +91,22 @@ public class Node {
 
         Bounds b = Drawer.getInstance().getBounds();
 
+        double oldX = getLayoutX();
 
-        if (circle.getLayoutX() * scale > b.getMaxX())
-            circle.setLayoutX(b.getMaxX() - 2 * RADIUS - 2 * Drawer.BOUNDS_GAP);
+
+        if (getLayoutX() * scale > b.getMaxX())
+            setLayoutX(b.getMaxX() - 2 * RADIUS - 2 * Drawer.BOUNDS_GAP);
         else
-            circle.setLayoutX(circle.getLayoutX() * scale);
+            setLayoutX(getLayoutX() * scale);
 
-        circle.relocate(circle.getLayoutX(), circle.getLayoutY());
+        relocate(getLayoutX(), getLayoutY());
+        relocateCircleCenter(getLayoutX(), getLayoutY());
+
+        if (!(oldX == getLayoutX())) {
+            recalculateEdges();
+        }
     }
+
 
     /**
      * Rescales the node by y-axis
@@ -96,92 +116,28 @@ public class Node {
     public void rescaleY(double scale) {
         Bounds b = Drawer.getInstance().getBounds();
 
+        double oldY = getLayoutY();
         //System.out.println("scale" + circle.getLayoutY() + " " + b.getMaxY());
-        if (circle.getLayoutY() * scale > b.getMaxY())
-            circle.setLayoutY(b.getMaxY() - 2 * RADIUS - 2 * Drawer.BOUNDS_GAP);
+        if (getLayoutY() * scale > b.getMaxY())
+            setLayoutY(b.getMaxY() - 2 * RADIUS - 2 * Drawer.BOUNDS_GAP);
         else
-            circle.setLayoutY(circle.getLayoutY() * scale);
+            setLayoutY(getLayoutY() * scale);
 
-        circle.relocate(circle.getLayoutX(), circle.getLayoutY());
+        relocate(getLayoutX(), getLayoutY());
+        relocateCircleCenter(getLayoutX(), getLayoutY());
+
+        if (!(oldY == getLayoutY())) {
+            recalculateEdges();
+        }
     }
 
     /**
-     * Sets filters and handlers for mouse events
-     * (dragging, clicking, etc)
+     * Calls redrawing for all edges
      */
-    private void setHandlers() {
-        circle.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
-        circle.addEventFilter(MouseEvent.MOUSE_DRAGGED, Handlers.dragFilter);
-
-        circle.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-
-                if (Handlers.edgeStarted) return;
-                initialPosition[0] = circle.getLayoutX();
-                initialPosition[1] = circle.getLayoutY();
-                circle.getScene().setCursor(Cursor.MOVE);
-                circle.toFront();
-
-            }
-        });
-
-        circle.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                // if(Handlers.edgeStarted) return;
-                circle.getScene().setCursor(Cursor.HAND);
-
-                //System.out.println(circle.getLayoutX() + " " + circle.getTranslateX());
-                circle.setLayoutX(circle.getLayoutX() + circle.getTranslateX());
-                circle.setTranslateX(0);
-
-                circle.setLayoutY(circle.getLayoutY() + circle.getTranslateY());
-                circle.setTranslateY(0);
-
-                Circle c = (Circle) circle.getChildren().get(0);
-                c.setCenterX(circle.getLayoutX() + Node.RADIUS);
-                c.setCenterY(circle.getLayoutY() + Node.RADIUS);
-
-            }
-        });
-        circle.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-
-                if (Handlers.edgeStarted) return;
-                boolean[] crossedBounds = checkBoundsCrossed(event);
-                if (!crossedBounds[0])
-                    circle.setTranslateX(circle.getTranslateX() + event.getX() - RADIUS);
-                if (!crossedBounds[1])
-                    circle.setTranslateY(circle.getTranslateY() + event.getY() - RADIUS);
-
-            }
-        });
-        circle.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    circle.getScene().setCursor(Cursor.HAND);
-                }
-                Circle shape = (Circle) circle.getChildren().get(0);
-                shape.setFill(Color.AZURE);
-
-            }
-
-
-        });
-        circle.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    circle.getScene().setCursor(Cursor.DEFAULT);
-                }
-                Circle shape = (Circle) circle.getChildren().get(0);
-                shape.setFill(Color.WHITE);
-            }
-        });
-
+    private void recalculateEdges() {
+        for (Edge e : edges) {
+            e.connectNodes(getCircle(), e.getNeighbour(this).getCircle());
+        }
     }
 
 
@@ -198,28 +154,28 @@ public class Node {
 
         boolean crossedBoundsX = false;
         boolean crossedBoundsY = false;
-        if (circle.getTranslateX() + event.getX() - RADIUS + circle.getLayoutX() < 0) {
+        if (getTranslateX() + event.getX() - RADIUS + getLayoutX() < 0) {
 //            System.out.println("bounds " + b.getMinX() + " " + circle.getTranslateX() + " " + circle.getLayoutX());
-            circle.setLayoutX(0);
-            circle.setTranslateX(0);
+            setLayoutX(0);
+            setTranslateX(0);
             crossedBoundsX = true;
 
             //was 2.5
-        } else if (circle.getTranslateX() + event.getX() + 2 * RADIUS + circle.getLayoutX() > b.getMaxX()) {
-            circle.setLayoutX(b.getMaxX() - 2 * RADIUS - Drawer.BOUNDS_GAP);
-            circle.setTranslateX(0);
+        } else if (getTranslateX() + event.getX() + 2 * RADIUS + getLayoutX() > b.getMaxX()) {
+            setLayoutX(b.getMaxX() - 2 * RADIUS - Drawer.BOUNDS_GAP);
+            setTranslateX(0);
             //System.out.println("crossed " + b.getMaxX() + " " + circle.getLayoutX() + " " + circle.getTranslateX());
             crossedBoundsX = true;
         }
 
-        if (circle.getTranslateY() + event.getY() - RADIUS + circle.getLayoutY() < b.getMinY()) {
-            circle.setLayoutY(10);
-            circle.setTranslateY(0);
+        if (getTranslateY() + event.getY() - RADIUS + getLayoutY() < b.getMinY()) {
+            setLayoutY(10);
+            setTranslateY(0);
             crossedBoundsY = true;
-        } else if (circle.getTranslateY() + event.getY() + 2 * RADIUS + circle.getLayoutY() > b.getMaxY()) {
+        } else if (getTranslateY() + event.getY() + 2 * RADIUS + getLayoutY() > b.getMaxY()) {
 
-            circle.setLayoutY(b.getMaxY() - 2 * RADIUS - Drawer.BOUNDS_GAP);
-            circle.setTranslateY(0);
+            setLayoutY(b.getMaxY() - 2 * RADIUS - Drawer.BOUNDS_GAP);
+            setTranslateY(0);
             // System.out.println("crossed " + b.getMaxY() + " " + circle.getLayoutY() + " " + circle.getTranslateY());
             crossedBoundsY = true;
         }
@@ -231,27 +187,55 @@ public class Node {
      * Sets new text according to the changed node number
      */
     private void setText() {
-        Text numText = (Text) circle.getChildren().get(1);
-        numText.setText("" + num);
+        //Text numText = (Text) circle.getChildren().get(1);
+        getText().setText("" + num);
 
     }
 
-    public String getShapeId() {
-        return circle.getId();
+    public Text getText() {
+        return (Text) getChildren().get(1);
     }
-
-
-//    public void addNeighbour(Node neighbour) {
-//        neighbours.add(neighbour);
-//    }
 
     /**
-     * Removes the node from the neighbours by its num
+     * Adds an edge to the list
+     *
+     * @param neighbour node on the other end of the edge
+     * @param edge      edge to add
+     * @return whether the adding was successful
+     */
+    public Boolean addEdge(Node neighbour, Edge edge) {
+        //NO MULTIPLE EDGES
+        for (Edge e : edges) {
+            Node[] nodes = e.getNodes();
+
+            if (e.getNeighbour(this) == neighbour) {
+                return false;
+            }
+        }
+
+        edges.add(edge);
+        return true;
+    }
+
+    /**
+     * Removes the node from the neighbours and destructs edges
+     *
      * @param n number of the node to remove
      */
-//    void removeNeighbour(Node n) {
-//        neighbours.removeIf(x -> x == n);
-//    }
+    public void removeNeighbour(Node n) {
+
+        System.out.println("remove");
+        //can be multiple now
+        System.out.println(edges.size());
+        Edge toRemove = null;
+        for (Edge e : edges) {
+            if (e.getNeighbour(this) == n) {
+                Drawer.getInstance().removeElement(e);
+                toRemove = e;
+            }
+        }
+        edges.remove(toRemove);
+    }
 
     /**
      * Returns the number of the node
@@ -263,4 +247,92 @@ public class Node {
         return "" + num;
     }
 
+    /**
+     * Sets circle centre to the given point
+     *
+     * @param x center's x
+     * @param y center's y
+     */
+    private void relocateCircleCenter(double x, double y) {
+        getCircle().setCenterX(x + Node.RADIUS);
+        getCircle().setCenterY(y + Node.RADIUS);
+    }
+
+
+    /**
+     * Sets filters and handlers for mouse events
+     * (dragging, clicking, etc)
+     */
+    private void setHandlers() {
+        addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
+        addEventFilter(MouseEvent.MOUSE_DRAGGED, Handlers.dragFilter);
+
+        setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (Handlers.edgeStarted) return;
+                initialPosition[0] = getLayoutX();
+                initialPosition[1] = getLayoutY();
+                getScene().setCursor(Cursor.MOVE);
+                toFront();
+
+            }
+        });
+
+        setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() != MouseButton.PRIMARY) return;
+
+                getScene().setCursor(Cursor.HAND);
+
+                setLayoutX(getLayoutX() + getTranslateX());
+                setTranslateX(0);
+
+                setLayoutY(getLayoutY() + getTranslateY());
+                setTranslateY(0);
+
+                relocateCircleCenter(getLayoutX(), getLayoutY());
+            }
+        });
+        setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (Handlers.edgeStarted || event.getButton() != MouseButton.PRIMARY) return;
+
+                boolean[] crossedBounds = checkBoundsCrossed(event);
+                if (!crossedBounds[0])
+                    setTranslateX(getTranslateX() + event.getX() - RADIUS);
+                if (!crossedBounds[1])
+                    setTranslateY(getTranslateY() + event.getY() - RADIUS);
+
+                recalculateEdges();
+
+                relocateCircleCenter(getLayoutX() + getTranslateX(),
+                        getLayoutY() + getTranslateY());
+            }
+        });
+        setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (!mouseEvent.isPrimaryButtonDown()) {
+                    getScene().setCursor(Cursor.HAND);
+                }
+                getCircle().setFill(Color.AZURE);
+            }
+
+        });
+        setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (!mouseEvent.isPrimaryButtonDown()) {
+                    getScene().setCursor(Cursor.DEFAULT);
+                }
+                getCircle().setFill(Color.WHITE);
+            }
+        });
+
+    }
 }

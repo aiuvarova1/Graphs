@@ -1,9 +1,9 @@
 package main;
 
+import entities.Edge;
 import entities.Graph;
+import entities.Node;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -11,10 +11,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
+
 
 public class Controller {
 
@@ -61,9 +61,8 @@ public class Controller {
 
     @FXML
     public void changeIcon() {
-
         trashIcon.setImage(new Image("/assets/opened.png"));
-        // trashIcon.
+
     }
 
     @FXML
@@ -115,16 +114,12 @@ public class Controller {
     @FXML
     void createNode(MouseEvent event) {
         System.out.println("Canvas clicked");
+        if(event.getButton() != MouseButton.PRIMARY) return;
         if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
-            StackPane node = drawer.drawNode(event);
+            Node node = drawer.drawNode(event);
             graph.addNode(node);
         }
-    }
-
-    @FXML
-    void resize(MouseEvent event) {
-        System.out.println("Resize");
     }
 
     /**
@@ -133,7 +128,7 @@ public class Controller {
     @FXML
     void clearWorkingArea() {
         System.out.println("clear");
-        drawingArea.getChildren().removeIf(x -> x.getClass() == StackPane.class);
+        drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class);
         graph.clearGraph();
     }
 
