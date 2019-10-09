@@ -44,7 +44,7 @@ public class Drawer {
      * Removes element from the drawing pane
      * @param node node to remove
      */
-    public void removeElement(Object node){
+    public void removeElement(javafx.scene.Node node){
         pane.getChildren().remove(node);
     }
 
@@ -68,11 +68,11 @@ public class Drawer {
     }
 
     /**
-     * Adds edge to the pane
-     * @param line edge reference
+     * Adds element to the pane
+     * @param el element to add
      */
-    public void addLine(Line line){
-        pane.getChildren().add(line);
+    public void addElem(javafx.scene.Node el){
+        pane.getChildren().add(el);
     }
 
     /**
@@ -114,14 +114,8 @@ public class Drawer {
      * @return Screen representation of the node
      */
      Node drawNode(MouseEvent ev){
-        //double[] cors = new double[2];
-
         double[] cors = checkBounds(ev.getX(), ev.getY());
-
-        Node node = createLayout(cors[0],cors[1]);
-        instance.pane.getChildren().add(node);
-
-        return node;
+        return createLayout(cors[0],cors[1]);
     }
 
     /**

@@ -52,7 +52,19 @@ public class Controller {
     private Button clearButton;
 
     @FXML
+    private Button undoButton;
+
+    @FXML
+    private ImageView undoIcon;
+
+    @FXML
     private AnchorPane drawingArea;
+
+    @FXML
+    private ImageView nodeClick;
+
+    @FXML
+    private ImageView drag;
 
     public Controller() {
         graph = Graph.getInstance();
@@ -74,6 +86,9 @@ public class Controller {
     private void setIcons() {
         leftClick.setImage(new Image("/assets/leftClick.png"));
         rightClick.setImage(new Image("/assets/rightClick.png"));
+        nodeClick.setImage(new Image("/assets/nodeClick.png"));
+        drag.setImage(new Image("/assets/drag.png"));
+        undoIcon.setImage(new Image("/assets/undo.png"));
     }
 
     @FXML
@@ -87,6 +102,9 @@ public class Controller {
 
         clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
         clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+
+        undoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
+        undoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
 
         drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
             System.out.println("resize");
@@ -118,7 +136,8 @@ public class Controller {
         if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
             Node node = drawer.drawNode(event);
-            graph.addNode(node);
+            Invoker.getInstance().createElement(node);
+            //node.create();
         }
     }
 
@@ -130,6 +149,11 @@ public class Controller {
         System.out.println("clear");
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class);
         graph.clearGraph();
+    }
+
+    @FXML
+    void undoAction(){
+        Invoker.getInstance().undoLast();
     }
 
 

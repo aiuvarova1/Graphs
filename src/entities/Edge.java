@@ -5,17 +5,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import main.Drawer;
 import main.Handlers;
 
 
 /**
  * Represents an edge between 2 nodes
  */
-public class Edge extends Line{
+public class Edge extends Line implements  Undoable{
 
     private Node n1;
     private Node n2;
-    private Line line;
 
     public Edge(double v1, double v2, double v3, double v4){
 
@@ -35,6 +35,7 @@ public class Edge extends Line{
         this.n2 = n2;
         setHandlers();
     }
+
 
     /**
      * Nodes getter
@@ -130,6 +131,39 @@ public class Edge extends Line{
 
         return new double[]{centerX + xSide * Node.RADIUS / distance,
                 centerY + ySide * Node.RADIUS / distance};
+    }
+
+    @Override
+    public boolean create(){
+
+        if(this.n1.addEdge(this.n2,this))
+            this.n2.addEdge(this.n1,this);
+        else {
+            Drawer.getInstance().removeElement(this);
+            return false;
+        }
+
+        try {
+            Drawer.getInstance().addElem(this);
+        }catch (IllegalArgumentException ex){
+            System.out.println("Already drawn");
+        }
+        return true;
+    }
+
+    @Override
+    public void remove(){
+        System.out.println("Remove " + n1 + " " + n2);
+        n1.removeNeighbour(n2);
+        n2.removeNeighbour(n1);
+        Drawer.getInstance().removeElement(this);
+    }
+
+    @Override
+    public Edge clone() throws CloneNotSupportedException{
+        Edge clone = (Edge)super.clone();
+        clone.setNodes(this.n1,this.n2);
+        return clone;
     }
 
 }

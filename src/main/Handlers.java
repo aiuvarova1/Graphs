@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Circle;
 
 public class Handlers {
 
@@ -51,27 +50,17 @@ public class Handlers {
     public static final EventHandler<MouseEvent> clickFilter = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            System.out.println(event.getSource().getClass());
-            System.out.println(event.getTarget());
+//            System.out.println(event.getSource().getClass());
+//            System.out.println(event.getTarget());
 
             if (event.getSource().getClass() == Node.class) {
                 event.consume();
                 if (event.getButton() == MouseButton.SECONDARY) {
 
                     Node circle = (Node) event.getSource();
+                    //circle.remove();
+                    Invoker.getInstance().deleteElement(circle);
 
-                    String label = circle.getId();
-                    //  try {
-                    System.out.println(label);
-                    System.out.println(circle.getNumOfEdges() + " neighbours");
-                    Graph.getInstance().removeNode(Integer.parseInt(label) - 1);
-//                    } catch (RuntimeException ex) {
-//                        System.out.println(ex.getMessage());
-//                        System.out.println("invalid label");
-//                        return;
-//                    }
-
-                    Drawer.getInstance().removeElement(circle);
                 } else if (event.getButton() == MouseButton.PRIMARY) {
                     System.out.println(edgeStarted);
                     if (!edgeStarted) {
@@ -82,23 +71,23 @@ public class Handlers {
                         edgePretender = new Edge(0, 0, 0, 0);
                         edgePretender.setVisible(false);
                         Drawer.getInstance().setMoveHandler(edgeMoveHandler);
-                        Drawer.getInstance().addLine(edgePretender);
+                        Drawer.getInstance().addElem(edgePretender);
                     } else {
-                        System.out.println("Node");
-
                         event.consume();
                         edgeStarted = false;
                         Node node = (Node) event.getSource();
 
                         edgePretender.connectNodes(node.getCircle(), pretender.getCircle());
-                        Graph.getInstance().connectNodes(node, pretender, edgePretender);
-
+                        //Graph.getInstance().connectNodes(node, pretender, edgePretender);
+                        edgePretender.setNodes(node,pretender);
+                        Invoker.getInstance().createElement(edgePretender);
+                        //edgePretender.create();
                         Drawer.getInstance().removeMoveHandler();
                     }
                 }
             } else if (edgeStarted && event.getTarget().getClass() == AnchorPane.class) {
 
-                System.out.println(event.getTarget().getClass() + " target");
+               // System.out.println(event.getTarget().getClass() + " target");
                 event.consume();
                 edgeStarted = false;
 
@@ -110,9 +99,8 @@ public class Handlers {
                 event.consume();
                 if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
                     Edge e = (Edge) event.getSource();
-                    Node[] nodes = e.getNodes();
-                    nodes[0].removeNeighbour(nodes[1]);
-                    nodes[1].removeNeighbour(nodes[0]);
+                    Invoker.getInstance().deleteElement(e);
+                    //e.remove();
                 }
             }
         }

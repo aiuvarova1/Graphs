@@ -11,6 +11,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import main.Drawer;
 import main.Handlers;
+import main.Invoker;
 
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 /**
  * Represents one node of the graph
  */
-public class Node extends StackPane {
+public class Node extends StackPane implements Undoable {
 
     public static final double RADIUS = 27;
 
@@ -53,12 +54,15 @@ public class Node extends StackPane {
      * Gets list of neighbours through passing the list of edges
      * @return list of neighbour nodes
      */
-    ArrayList<Node> getNeighbours() {
-        ArrayList<Node> nodes = new ArrayList<>(edges.size());
-        for (Edge e : edges) {
-            nodes.add(e.getNeighbour(this));
-        }
-        return nodes;
+//    ArrayList<Node> getNeighbours() {
+//        ArrayList<Node> nodes = new ArrayList<>(edges.size());
+//        for (Edge e : edges) {
+//            nodes.add(e.getNeighbour(this));
+//        }
+//        return nodes;
+//    }
+    public ArrayList<Edge> getEdges(){
+        return edges;
     }
 
 
@@ -206,9 +210,8 @@ public class Node extends StackPane {
     public Boolean addEdge(Node neighbour, Edge edge) {
         //NO MULTIPLE EDGES
         for (Edge e : edges) {
-            Node[] nodes = e.getNodes();
-
-            if (e.getNeighbour(this) == neighbour) {
+            System.out.println(e.getNeighbour(this ) + " edge neigh " + this);
+            if (e.getNeighbour(this).equals( neighbour)) {
                 return false;
             }
         }
@@ -224,13 +227,9 @@ public class Node extends StackPane {
      */
     public void removeNeighbour(Node n) {
 
-        System.out.println("remove");
-        //can be multiple now
-        System.out.println(edges.size());
         Edge toRemove = null;
         for (Edge e : edges) {
             if (e.getNeighbour(this) == n) {
-                Drawer.getInstance().removeElement(e);
                 toRemove = e;
             }
         }
@@ -286,14 +285,11 @@ public class Node extends StackPane {
                 if (mouseEvent.getButton() != MouseButton.PRIMARY) return;
 
                 getScene().setCursor(Cursor.HAND);
+                Node n = (Node)mouseEvent.getSource();
+               // Invoker.getInstance().moveElement(n, initialPosition,new double[]{getLayoutX() + getTranslateX(),
+                       // getLayoutY() + getTranslateY()});
+                fixPosition(getLayoutX() + getTranslateX(), getLayoutY() + getTranslateY());
 
-                setLayoutX(getLayoutX() + getTranslateX());
-                setTranslateX(0);
-
-                setLayoutY(getLayoutY() + getTranslateY());
-                setTranslateY(0);
-
-                relocateCircleCenter(getLayoutX(), getLayoutY());
             }
         });
         setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -334,5 +330,34 @@ public class Node extends StackPane {
             }
         });
 
+    }
+
+    public void fixPosition(double xPos, double yPos){
+        setLayoutX(xPos);
+        setTranslateX(0);
+
+        setLayoutY(yPos);
+        setTranslateY(0);
+
+        relocateCircleCenter(getLayoutX(), getLayoutY());
+    }
+
+    @Override
+    public void remove(){
+        Graph.getInstance().removeNode(this);
+    }
+
+    @Override
+    public boolean create(){
+        Graph.getInstance().addNode(this);
+
+        try {
+            Drawer.getInstance().addElem(this);
+        }catch (IllegalArgumentException ex){
+            System.out.println("Already drawn node");
+        }
+        Graph.getInstance().refreshLabels(this);
+
+        return true;
     }
 }
