@@ -15,16 +15,20 @@ import main.Invoker;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Represents one node of the graph
  */
-public class Node extends StackPane implements Undoable {
+public class Node extends StackPane implements Undoable, Visitable {
 
-    public static final double RADIUS = 27;
+    public static final double RADIUS = 22;
 
     private int num;
     private double amplitude;
+    private boolean visited;
 
     private ArrayList<Edge> edges;
     private double[] initialPosition;
@@ -54,13 +58,13 @@ public class Node extends StackPane implements Undoable {
      * Gets list of neighbours through passing the list of edges
      * @return list of neighbour nodes
      */
-//    ArrayList<Node> getNeighbours() {
-//        ArrayList<Node> nodes = new ArrayList<>(edges.size());
-//        for (Edge e : edges) {
-//            nodes.add(e.getNeighbour(this));
-//        }
-//        return nodes;
-//    }
+    Set<Node> getNeighbours() {
+        Set<Node> nodes = new HashSet<>(edges.size());
+        for (Edge e : edges) {
+            nodes.add(e.getNeighbour(this));
+        }
+        return nodes;
+    }
     public ArrayList<Edge> getEdges(){
         return edges;
     }
@@ -135,66 +139,6 @@ public class Node extends StackPane implements Undoable {
         }
     }
 
-    /**
-     * Calls redrawing for all edges
-     */
-    private void recalculateEdges() {
-        for (Edge e : edges) {
-            e.connectNodes(getCircle(), e.getNeighbour(this).getCircle());
-        }
-    }
-
-
-    /**
-     * Checks whether the node will cross the bounds of the drawing area after moving
-     * on cursor position
-     *
-     * @param event contains info about cursor
-     * @return returns {xBound is crossed, yBound is crossed}
-     */
-    private boolean[] checkBoundsCrossed(MouseEvent event) {
-
-        Bounds b = Drawer.getInstance().getBounds();
-
-        boolean crossedBoundsX = false;
-        boolean crossedBoundsY = false;
-        if (getTranslateX() + event.getX() - RADIUS + getLayoutX() < 0) {
-//            System.out.println("bounds " + b.getMinX() + " " + circle.getTranslateX() + " " + circle.getLayoutX());
-            setLayoutX(0);
-            setTranslateX(0);
-            crossedBoundsX = true;
-
-            //was 2.5
-        } else if (getTranslateX() + event.getX() + 2 * RADIUS + getLayoutX() > b.getMaxX()) {
-            setLayoutX(b.getMaxX() - 2 * RADIUS - Drawer.BOUNDS_GAP);
-            setTranslateX(0);
-            //System.out.println("crossed " + b.getMaxX() + " " + circle.getLayoutX() + " " + circle.getTranslateX());
-            crossedBoundsX = true;
-        }
-
-        if (getTranslateY() + event.getY() - RADIUS + getLayoutY() < b.getMinY()) {
-            setLayoutY(10);
-            setTranslateY(0);
-            crossedBoundsY = true;
-        } else if (getTranslateY() + event.getY() + 2 * RADIUS + getLayoutY() > b.getMaxY()) {
-
-            setLayoutY(b.getMaxY() - 2 * RADIUS - Drawer.BOUNDS_GAP);
-            setTranslateY(0);
-            // System.out.println("crossed " + b.getMaxY() + " " + circle.getLayoutY() + " " + circle.getTranslateY());
-            crossedBoundsY = true;
-        }
-
-        return new boolean[]{crossedBoundsX, crossedBoundsY};
-    }
-
-    /**
-     * Sets new text according to the changed node number
-     */
-    private void setText() {
-        //Text numText = (Text) circle.getChildren().get(1);
-        getText().setText("" + num);
-
-    }
 
     public Text getText() {
         return (Text) getChildren().get(1);
@@ -259,6 +203,142 @@ public class Node extends StackPane implements Undoable {
 
 
     /**
+     * Fixes node's position after dragging
+     * @param xPos x final coordinate
+     * @param yPos y final coordinate
+     */
+    public void fixPosition(double xPos, double yPos){
+        setLayoutX(xPos);
+        setTranslateX(0);
+
+        setLayoutY(yPos);
+        setTranslateY(0);
+
+        relocateCircleCenter(getLayoutX(), getLayoutY());
+    }
+
+    @Override
+    public void remove(){
+        Graph.getInstance().removeNode(this);
+    }
+
+
+    @Override
+    public boolean create(){
+        Graph.getInstance().addNode(this);
+
+        try {
+            Drawer.getInstance().addElem(this);
+        }catch (IllegalArgumentException ex){
+            System.out.println("Already drawn node");
+        }
+        Graph.getInstance().refreshLabels(this);
+
+        return true;
+    }
+
+    public boolean isVisited(){
+        return visited;
+    }
+
+    public void visit(){
+        visited = true;
+    }
+
+    public void unvisit(){
+        visited = false;
+
+        for(Edge e: edges)
+            e.unvisit();
+    }
+
+
+    public void showLengths(){
+        handleEdges(Edge::showLength);
+    }
+
+    public void hideLengths(){
+        handleEdges(Edge::hideLength);
+    }
+
+    /**
+     * Visits all edges and handles them
+     * @param handler method to handle with each edge
+     */
+    private void handleEdges(Consumer<Edge> handler){
+        for(Edge e: edges){
+            if(!e.isVisited())
+            {
+                e.visit();
+                handler.accept(e);
+            }
+        }
+    }
+
+    /**
+     * Calls redrawing for all edges
+     */
+    private void recalculateEdges() {
+        for (Edge e : edges) {
+            e.connectNodes(getCircle(), e.getNeighbour(this).getCircle());
+        }
+    }
+
+
+    /**
+     * Checks whether the node will cross the bounds of the drawing area after moving
+     * on cursor position
+     *
+     * @param event contains info about cursor
+     * @return returns {xBound is crossed, yBound is crossed}
+     */
+    private boolean[] checkBoundsCrossed(MouseEvent event) {
+
+        Bounds b = Drawer.getInstance().getBounds();
+
+        boolean crossedBoundsX = false;
+        boolean crossedBoundsY = false;
+        if (getTranslateX() + event.getX() - RADIUS + getLayoutX() < 0) {
+//            System.out.println("bounds " + b.getMinX() + " " + circle.getTranslateX() + " " + circle.getLayoutX());
+            setLayoutX(0);
+            setTranslateX(0);
+            crossedBoundsX = true;
+
+            //was 2.5
+        } else if (getTranslateX() + event.getX() + 2 * RADIUS + getLayoutX() > b.getMaxX()) {
+            setLayoutX(b.getMaxX() - 2 * RADIUS - Drawer.BOUNDS_GAP);
+            setTranslateX(0);
+            //System.out.println("crossed " + b.getMaxX() + " " + circle.getLayoutX() + " " + circle.getTranslateX());
+            crossedBoundsX = true;
+        }
+
+        if (getTranslateY() + event.getY() - RADIUS + getLayoutY() < b.getMinY()) {
+            setLayoutY(10);
+            setTranslateY(0);
+            crossedBoundsY = true;
+        } else if (getTranslateY() + event.getY() + 2 * RADIUS + getLayoutY() > b.getMaxY()) {
+
+            setLayoutY(b.getMaxY() - 2 * RADIUS - Drawer.BOUNDS_GAP);
+            setTranslateY(0);
+            // System.out.println("crossed " + b.getMaxY() + " " + circle.getLayoutY() + " " + circle.getTranslateY());
+            crossedBoundsY = true;
+        }
+
+        return new boolean[]{crossedBoundsX, crossedBoundsY};
+    }
+
+    /**
+     * Sets new text according to the changed node number
+     */
+    private void setText() {
+        //Text numText = (Text) circle.getChildren().get(1);
+        getText().setText("" + num);
+
+    }
+
+
+
+    /**
      * Sets filters and handlers for mouse events
      * (dragging, clicking, etc)
      */
@@ -286,8 +366,8 @@ public class Node extends StackPane implements Undoable {
 
                 getScene().setCursor(Cursor.HAND);
                 Node n = (Node)mouseEvent.getSource();
-               // Invoker.getInstance().moveElement(n, initialPosition,new double[]{getLayoutX() + getTranslateX(),
-                       // getLayoutY() + getTranslateY()});
+                // Invoker.getInstance().moveElement(n, initialPosition,new double[]{getLayoutX() + getTranslateX(),
+                // getLayoutY() + getTranslateY()});
                 fixPosition(getLayoutX() + getTranslateX(), getLayoutY() + getTranslateY());
 
             }
@@ -330,34 +410,5 @@ public class Node extends StackPane implements Undoable {
             }
         });
 
-    }
-
-    public void fixPosition(double xPos, double yPos){
-        setLayoutX(xPos);
-        setTranslateX(0);
-
-        setLayoutY(yPos);
-        setTranslateY(0);
-
-        relocateCircleCenter(getLayoutX(), getLayoutY());
-    }
-
-    @Override
-    public void remove(){
-        Graph.getInstance().removeNode(this);
-    }
-
-    @Override
-    public boolean create(){
-        Graph.getInstance().addNode(this);
-
-        try {
-            Drawer.getInstance().addElem(this);
-        }catch (IllegalArgumentException ex){
-            System.out.println("Already drawn node");
-        }
-        Graph.getInstance().refreshLabels(this);
-
-        return true;
     }
 }

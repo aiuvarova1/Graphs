@@ -11,10 +11,10 @@ import javafx.scene.layout.AnchorPane;
 
 public class Handlers {
 
-    private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 22px;"
+    private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 19px;"
             + "-fx-font-family: \"Constantia\";";
 
-    private static String UNSELECTED_BUTTON = "-fx-background-color: #f5f5f5;" + "-fx-font-size: 21px;"
+    private static String UNSELECTED_BUTTON = "-fx-background-color: #f5f5f5;" + "-fx-font-size: 18px;"
             + "-fx-font-family: \"Constantia\";";
 
     private static boolean dragging = false;
@@ -97,11 +97,14 @@ public class Handlers {
                 Drawer.getInstance().removeMoveHandler();
             } else if (event.getSource().getClass() == Edge.class) {
                 event.consume();
-                if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
-                    Edge e = (Edge) event.getSource();
-                    Invoker.getInstance().deleteElement(e);
-                    //e.remove();
-                }
+//                if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
+//                    Edge e = (Edge) event.getSource();
+//
+//                    //Invoker.getInstance().deleteElement(e);
+//
+//
+//                    //e.remove();
+//                }
             }
         }
 
@@ -172,4 +175,6 @@ public class Handlers {
             ((Button) event.getSource()).getScene().setCursor(Cursor.DEFAULT);
         }
     };
+
+
 }

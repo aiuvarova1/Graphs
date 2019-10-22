@@ -1,25 +1,44 @@
 package entities;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import main.Drawer;
 import main.Handlers;
+import main.MenuManager;
+import org.jfree.fx.FXGraphics2D;
+import org.scilab.forge.jlatexmath.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 
 /**
  * Represents an edge between 2 nodes
  */
-public class Edge extends Line implements  Undoable{
+public class Edge extends Line implements Undoable, Visitable {
 
     private Node n1;
     private Node n2;
 
-    public Edge(double v1, double v2, double v3, double v4){
+    private boolean visited = false;
 
-        super(v1,v2,v3,v4);
+    private TexLabel length ;
+
+    private static final double LABEL_GAP = 5;
+
+    public Edge(double v1, double v2, double v3, double v4) {
+
+        super(v1, v2, v3, v4);
         this.setStrokeWidth(1.7);
 
         setStroke(Color.DIMGRAY);
@@ -27,56 +46,45 @@ public class Edge extends Line implements  Undoable{
 
     /**
      * Sets nodes on the ends of the edge
+     *
      * @param n1 start node
      * @param n2 end node
      */
-    public void setNodes(Node n1, Node n2){
+    public void setNodes(Node n1, Node n2) {
         this.n1 = n1;
         this.n2 = n2;
         setHandlers();
+
+        length = new TexLabel();
+        relocateLabel();
+
     }
 
 
     /**
      * Nodes getter
+     *
      * @return nodes on the ends of the edge
      */
-    public Node[] getNodes(){
-        return new Node[] {n1, n2};
+    public Node[] getNodes() {
+        return new Node[]{n1, n2};
     }
 
     /**
      * Returns the node on the other side of the edge
+     *
      * @param n node to get neighbour for
      * @return neighbour
      */
-    public Node getNeighbour(Node n){
+    public Node getNeighbour(Node n) {
         return n == n1 ? n2 : n1;
     }
 
-    /**
-     * Sets mouse events handlers
-     */
-    private void setHandlers(){
-
-        setOnMouseEntered(x -> {
-            this.setStroke(Color.DARKGRAY);
-            setStrokeWidth(2.5);
-            getScene().setCursor(Cursor.HAND);
-        });
-        setOnMouseExited(x ->
-        {
-            this.setStrokeWidth(1.7);
-            this.setStroke(Color.DIMGRAY);
-            getScene().setCursor(Cursor.DEFAULT);
-        });
-
-        addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
-    }
 
     /**
      * Calculates needed start and end of the edge
      * Than connects two nodes
+     *
      * @param node1 first node to connect
      * @param node2 second node to connect
      */
@@ -96,19 +104,19 @@ public class Edge extends Line implements  Undoable{
 
         this.setEndX(startCordsPretender[0]);
         this.setEndY(startCordsPretender[1]);
+        relocateLabel();
     }
 
     /**
-     *
-     * @param xPos first point's x
-     * @param yPos first point's y
+     * @param xPos    first point's x
+     * @param yPos    first point's y
      * @param centerX second point's x
      * @param centerY second point's y
      * @return distance between 2 points
      */
 
     public static double getDistance(double xPos, double yPos, double centerX,
-                                      double centerY) {
+                                     double centerY) {
         return Math.sqrt((xPos - centerX) * (xPos - centerX) +
                 (yPos - centerY) * (yPos - centerY));
     }
@@ -124,7 +132,7 @@ public class Edge extends Line implements  Undoable{
      * @return start coordinates of the line
      */
     public static double[] getStartCoordinates(double xPos, double yPos, double centerX,
-                                                double centerY, double distance) {
+                                               double centerY, double distance) {
 
         double xSide = xPos - centerX;
         double ySide = yPos - centerY;
@@ -134,10 +142,10 @@ public class Edge extends Line implements  Undoable{
     }
 
     @Override
-    public boolean create(){
+    public boolean create() {
 
-        if(this.n1.addEdge(this.n2,this))
-            this.n2.addEdge(this.n1,this);
+        if (this.n1.addEdge(this.n2, this))
+            this.n2.addEdge(this.n1, this);
         else {
             Drawer.getInstance().removeElement(this);
             return false;
@@ -145,25 +153,92 @@ public class Edge extends Line implements  Undoable{
 
         try {
             Drawer.getInstance().addElem(this);
-        }catch (IllegalArgumentException ex){
+            if(Graph.getInstance().areDistancesShown())
+                Drawer.getInstance().addElem(length);
+        } catch (IllegalArgumentException ex) {
             System.out.println("Already drawn");
         }
         return true;
     }
 
     @Override
-    public void remove(){
+    public void remove() {
         System.out.println("Remove " + n1 + " " + n2);
         n1.removeNeighbour(n2);
         n2.removeNeighbour(n1);
         Drawer.getInstance().removeElement(this);
+        Drawer.getInstance().removeElement(length);
     }
 
     @Override
-    public Edge clone() throws CloneNotSupportedException{
-        Edge clone = (Edge)super.clone();
-        clone.setNodes(this.n1,this.n2);
+    public Edge clone() throws CloneNotSupportedException {
+        Edge clone = (Edge) super.clone();
+        clone.setNodes(this.n1, this.n2);
         return clone;
     }
+
+    public void showLength() {
+
+        relocateLabel();
+        Drawer.getInstance().addElem(length);
+
+    }
+
+    public void hideLength() {
+
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void visit() {
+        visited = true;
+    }
+
+    public void unvisit() {
+        visited = false;
+    }
+
+
+    /**
+     * Moves length field after the edge
+     */
+    private void relocateLabel() {
+        if (length == null) return;
+
+        length.setLayoutX((this.getStartX() + this.getEndX()) / 2.0 + LABEL_GAP);
+        length.setLayoutY((this.getStartY() + this.getEndY()) / 2.0);
+    }
+
+    /**
+     * Sets mouse events handlers
+     */
+    private void setHandlers() {
+
+        setOnMouseEntered(x -> {
+            this.setStroke(Color.DARKGRAY);
+            setStrokeWidth(2.5);
+            getScene().setCursor(Cursor.HAND);
+        });
+        setOnMouseExited(x ->
+        {
+            this.setStrokeWidth(1.7);
+            this.setStroke(Color.DIMGRAY);
+            getScene().setCursor(Cursor.DEFAULT);
+        });
+
+        this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+            @Override
+            public void handle(ContextMenuEvent contextMenuEvent) {
+                MenuManager.getEdgeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
+                        contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+                System.out.println("show");
+            }
+        });
+
+        addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
+    }
+
 
 }

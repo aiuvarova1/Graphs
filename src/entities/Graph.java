@@ -2,7 +2,10 @@ package entities;
 
 import main.Drawer;
 
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.function.Consumer;
 
 /**
  * Represents the whole graph on the pane and stores
@@ -12,6 +15,9 @@ public class Graph {
     public static final int MAX_SIZE = 50;
     private ArrayList<Node> nodes = new ArrayList<Node>(20);
     private static Graph instance;
+    private Stack<Node> dfsStack = new Stack<Node>();
+
+    private boolean showDistances = false;
 
 
     public static Graph getInstance() {
@@ -23,6 +29,10 @@ public class Graph {
 
     public int getSize() {
         return nodes.size();
+    }
+
+    public boolean areDistancesShown(){
+        return showDistances;
     }
 
 
@@ -65,22 +75,6 @@ public class Graph {
             nodes.get(i).renewNum(i + 1);
     }
 
-
-    public boolean isOkToPlaceNode(Node node) {
-        for (Node n : nodes) {
-            if (!n.equals(node)) {
-                if (checkIntersection(node, n))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean checkIntersection(Node n1, Node n2) {
-        return Math.sqrt((n1.getX() - n2.getX()) * (n1.getX() - n2.getX()) +
-                (n1.getY() - n2.getY()) * (n1.getY() - n2.getY())) <= 2 * Node.RADIUS;
-    }
-
     /**
      * Connects two given nodes if there are no edge between them
      * @param n1 first node
@@ -118,4 +112,62 @@ public class Graph {
                 node.rescaleY(scale);
         }
     }
+
+    public void setLengths(){
+        showDistances = true;
+        runDFS(Node::showLengths);
+    }
+
+    /**
+     * Runs DFS for one node
+     * @param handler method to handle with each node
+     */
+    private void DFS(Consumer<Node> handler){
+        Node curNode;
+        while(!dfsStack.isEmpty()){
+            curNode = dfsStack.pop();
+            if(!curNode.isVisited()){
+                curNode.visit();
+                handler.accept(curNode);
+                for(Node n : curNode.getNeighbours()) {
+                    if(!n.isVisited())
+                        dfsStack.push(n);
+                }
+            }
+        }
+    }
+
+    /**
+     * Runs dfs for each node and counts components
+     * @param handler method to handle depending on what we need
+     * @return num of components
+     */
+    private int runDFS(Consumer<Node> handler){
+
+        if(nodes.size() == 0 ) return 0;
+
+        int components = 0;
+        for (Node n : nodes)
+        {
+            if(!n.isVisited())
+            {
+                components++;
+                dfsStack.push(n);
+                DFS(handler);
+            }
+        }
+
+        resetDFS();
+
+        return components;
+    }
+
+    /**
+     * Marks all nodes unvisited after dfs
+     */
+    private void resetDFS(){
+        for (Node n: nodes)
+            n.unvisit();
+    }
+
 }

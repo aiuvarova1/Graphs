@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 
-
+/**
+ * Represents a cycled stack of commands
+ */
 public class Cache extends Stack<Command> {
     private static final int CAPACITY = 20;
     private Command[] stack = new Command[CAPACITY];
@@ -12,21 +14,19 @@ public class Cache extends Stack<Command> {
     private int curCapacity;
 
     private int pointer = -1;
+    private int redoPointer = 0;
 
-
-    public void clear(){
-
-    }
 
     @Override
     public Command push(Command elem){
         pointer++;
+        redoPointer = 0;
 
         if(pointer == CAPACITY)
             pointer = 0;
         stack[pointer] = elem;
         System.out.println(pointer + " " );
-        if(curCapacity < 5) curCapacity ++;
+        if(curCapacity < CAPACITY) curCapacity ++;
         return elem;
     }
 
@@ -39,9 +39,25 @@ public class Cache extends Stack<Command> {
             if(pointer < 0)
                 pointer = CAPACITY - 1;
             curCapacity--;
+            redoPointer++;
             return toReturn;
         }else{
             return null;
         }
+    }
+
+    public Command getNext(){
+
+        if(curCapacity == CAPACITY || redoPointer == 0) return null;
+
+        pointer++;
+        redoPointer--;
+
+        if(pointer == CAPACITY)
+            pointer = 0;
+        curCapacity++;
+        System.out.println(pointer + " " + redoPointer + " " +
+                curCapacity + " ");
+        return stack[pointer];
     }
 }

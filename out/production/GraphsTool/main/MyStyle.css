@@ -1,0 +1,73 @@
+.radio-button .radio {
+    -fx-border-width: 1px;
+    -fx-border-color: #686060;
+    -fx-background-color: #ebebeb;
+    -fx-background-image: null;
+    -fx-border-radius: 15px;
+    -fx-padding: 4px;
+}
+.radio-button .radio:selected {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:armed {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:determinate {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button -radio:indeterminate {
+    -fx-background-color: white;
+    -fx-background-image: null;
+}
+.radio-button .dot {
+    -fx-background-radius: 4px;
+    -fx-padding: 4px;
+}
+
+
+
+.show-hide.toggle-button {
+
+    -fx-background-color: #e6e6e6,
+    linear-gradient(#d1d1d1 0%, #d4d4d4 49%, #d4d4d4 50%, #e8e8e8 100%);
+
+    -fx-text-fill:#808080;
+}
+
+.show-hide.toggle-button:selected {
+
+    -fx-background-color: #757171,
+
+    linear-gradient(#757171 0%, #9c9797 49%, #9c9797 50%, #b3abab 100%);
+
+    -fx-text-fill:#f5f5f5;
+}
+
+
+.toggle-group {
+    -fx-shadow-highlight-color: #686060;
+    -fx-background-radius: 5px;
+
+    -fx-background-color: #e6e6e6,
+    linear-gradient(#e6e6e6, #e6e6e6),
+    linear-gradient(#d1d1d1 0%, #d4d4d4 49%, #d4d4d4 50%, #e8e8e8 100%);
+
+
+}
+
+
+
+
+
+.titled-pane:focused > .title > .arrow-button {
+    -fx-background-color: null;
+    -fx-focus-color: #babbf5;
+
+}
+
+.titled-pane {
+    -fx-animated: true;
+}
