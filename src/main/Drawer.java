@@ -48,6 +48,10 @@ public class Drawer {
         pane.getChildren().remove(node);
     }
 
+    public void setFocus(){
+        pane.requestFocus();
+    }
+
     public void setPane(AnchorPane pane){
         this.pane = pane;
     }

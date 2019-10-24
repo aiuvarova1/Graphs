@@ -1,5 +1,6 @@
 package main;
 
+import entities.Distance;
 import entities.Edge;
 import entities.Node;
 import entities.Undoable;
@@ -11,6 +12,27 @@ public interface Command {
     void undo();
     //void redo();
     boolean execute();
+}
+
+class ChangeDistCommand implements Command{
+    private Distance dist;
+    private String oldDist;
+    private String newDist;
+
+    public ChangeDistCommand(Distance dist, String text){
+        this.dist = dist;
+        oldDist = dist.getText();
+        newDist = text;
+    }
+    public boolean execute(){
+        dist.setText(newDist);
+      //  System.out.println(oldDist + " " + dist.getText());
+        return !oldDist.equals(dist.getText());
+    }
+
+    public void undo(){
+        dist.setText(oldDist);
+    }
 }
 
 class CreateCommand implements  Command{

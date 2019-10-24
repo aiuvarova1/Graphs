@@ -1,11 +1,7 @@
 package entities;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -14,12 +10,6 @@ import javafx.scene.shape.Line;
 import main.Drawer;
 import main.Handlers;
 import main.MenuManager;
-import org.jfree.fx.FXGraphics2D;
-import org.scilab.forge.jlatexmath.*;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 
 /**
@@ -32,9 +22,9 @@ public class Edge extends Line implements Undoable, Visitable {
 
     private boolean visited = false;
 
-    private TexLabel length ;
+    private Distance length ;
 
-    private static final double LABEL_GAP = 5;
+    private static final double LABEL_GAP = 15;
 
     public Edge(double v1, double v2, double v3, double v4) {
 
@@ -55,7 +45,7 @@ public class Edge extends Line implements Undoable, Visitable {
         this.n2 = n2;
         setHandlers();
 
-        length = new TexLabel();
+        length = new Distance();
         relocateLabel();
 
     }
@@ -99,11 +89,25 @@ public class Edge extends Line implements Undoable, Visitable {
                 node2.getCenterY(),
                 node1.getCenterX(), node1.getCenterY(), dist);
 
-        this.setStartX(startCordsNode[0]);
-        this.setStartY(startCordsNode[1]);
+//        this.setStartX(startCordsNode[0]);
+//        this.setStartY(startCordsNode[1]);
+//
+//        this.setEndX(startCordsPretender[0]);
+//        this.setEndY(startCordsPretender[1]);
 
-        this.setEndX(startCordsPretender[0]);
-        this.setEndY(startCordsPretender[1]);
+        if(startCordsNode[1] > startCordsPretender[1] ){
+            this.setStartX(startCordsNode[0]);
+            this.setStartY(startCordsNode[1]);
+
+            this.setEndX(startCordsPretender[0]);
+            this.setEndY(startCordsPretender[1]);
+        }else{
+            this.setEndX(startCordsNode[0]);
+            this.setEndY(startCordsNode[1]);
+
+            this.setStartX(startCordsPretender[0]);
+            this.setStartY(startCordsPretender[1]);
+        }
         relocateLabel();
     }
 
@@ -148,13 +152,14 @@ public class Edge extends Line implements Undoable, Visitable {
             this.n2.addEdge(this.n1, this);
         else {
             Drawer.getInstance().removeElement(this);
+            length.hide();
             return false;
         }
 
         try {
             Drawer.getInstance().addElem(this);
             if(Graph.getInstance().areDistancesShown())
-                Drawer.getInstance().addElem(length);
+                length.show();
         } catch (IllegalArgumentException ex) {
             System.out.println("Already drawn");
         }
@@ -180,13 +185,21 @@ public class Edge extends Line implements Undoable, Visitable {
     public void showLength() {
 
         relocateLabel();
-        Drawer.getInstance().addElem(length);
+        length.show();
 
     }
 
     public void hideLength() {
-
+        length.hide();
     }
+
+    public void changeLength(String len){
+        length.setText(len);
+    }
+
+    public void changeLength(){changeLength("\\infty");}
+
+    public String getCurText() {return length.getText();}
 
     public boolean isVisited() {
         return visited;
@@ -207,8 +220,13 @@ public class Edge extends Line implements Undoable, Visitable {
     private void relocateLabel() {
         if (length == null) return;
 
-        length.setLayoutX((this.getStartX() + this.getEndX()) / 2.0 + LABEL_GAP);
-        length.setLayoutY((this.getStartY() + this.getEndY()) / 2.0);
+
+        double coef = (getEndX() - getStartX())/
+                getDistance(getStartX(),getStartY(),getEndX(),getEndY());
+        length.setLayoutX((this.getStartX() + this.getEndX()) / 2.0 + LABEL_GAP*(Math.sqrt(1-coef*coef)));
+        length.setLayoutY((this.getStartY() + this.getEndY()) / 2.0 + LABEL_GAP * coef);
+
+        length.toFront();
     }
 
     /**

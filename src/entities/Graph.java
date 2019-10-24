@@ -113,9 +113,24 @@ public class Graph {
         }
     }
 
+    /**
+     * Sets lengths for all edges in graph
+     */
     public void setLengths(){
         showDistances = true;
         runDFS(Node::showLengths);
+    }
+
+    /**
+     * Hides lengths for all edges in graph
+     */
+    public void hideLengths(){
+        showDistances = false;
+        runDFS(Node::hideLengths);
+    }
+
+    public void resetDistances(){
+        runDFS(Node::resetLengths);
     }
 
     /**

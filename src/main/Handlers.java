@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 
 public class Handlers {
 
@@ -19,13 +20,25 @@ public class Handlers {
 
     private static boolean dragging = false;
 
-    public static boolean edgeStarted = false;
+    private static boolean edgeStarted = false;
+    private static boolean editing = false;
 
     private static Node pretender;
     private static Edge edgePretender;
 
     private static final int CURSOR_GAP = 5;
 
+    public static boolean isEdgeStarted(){
+        return edgeStarted;
+    }
+
+    public static boolean isEditing(){
+        return editing;
+    }
+
+    public static void endEdit(){
+        editing = false;
+    }
     /**
      * Distinguishes dragging from pane click
      */
@@ -33,6 +46,7 @@ public class Handlers {
         @Override
         public void handle(final MouseEvent event) {
 
+            if(editing) return;
             if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
                     event.getButton() == MouseButton.PRIMARY) {
                 dragging = true;
@@ -53,6 +67,13 @@ public class Handlers {
 //            System.out.println(event.getSource().getClass());
 //            System.out.println(event.getTarget());
 
+            if(editing && (event.getTarget().getClass() != Text.class ||
+                    event.getSource().getClass() == Node.class)) {
+                event.consume();
+                Drawer.getInstance().setFocus();
+                return;
+            }
+
             if (event.getSource().getClass() == Node.class) {
                 event.consume();
                 if (event.getButton() == MouseButton.SECONDARY) {
@@ -62,10 +83,8 @@ public class Handlers {
                     Invoker.getInstance().deleteElement(circle);
 
                 } else if (event.getButton() == MouseButton.PRIMARY) {
-                    System.out.println(edgeStarted);
                     if (!edgeStarted) {
                         edgeStarted = true;
-
                         pretender = (Node) event.getSource();
 
                         edgePretender = new Edge(0, 0, 0, 0);
@@ -89,12 +108,8 @@ public class Handlers {
 
                // System.out.println(event.getTarget().getClass() + " target");
                 event.consume();
-                edgeStarted = false;
+                removeStartedEdge();
 
-                edgePretender.setVisible(false);
-                Drawer.getInstance().removeElement(edgePretender);
-
-                Drawer.getInstance().removeMoveHandler();
             } else if (event.getSource().getClass() == Edge.class) {
                 event.consume();
 //                if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
@@ -105,11 +120,26 @@ public class Handlers {
 //
 //                    //e.remove();
 //                }
+            }else if(event.getSource().getClass() == Distance.class){
+                event.consume();
+
+                Distance curDist = (Distance)event.getSource();
+                curDist.showInput();
+                editing = true;
+                if(edgeStarted)
+                    removeStartedEdge();
             }
         }
-
-
     };
+
+    private static void removeStartedEdge(){
+        edgeStarted = false;
+
+        edgePretender.setVisible(false);
+        Drawer.getInstance().removeElement(edgePretender);
+
+        Drawer.getInstance().removeMoveHandler();
+    }
 
 
     /**

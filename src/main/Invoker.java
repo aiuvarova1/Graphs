@@ -1,7 +1,6 @@
 package main;
 
-import entities.Node;
-import entities.Undoable;
+import entities.*;
 
 import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
@@ -46,6 +45,12 @@ public class Invoker {
             commands.push(c);
     }
 
+    public void changeDistance(Distance d, String text){
+        Command c = new ChangeDistCommand(d, text);
+        System.out.println("dist");
+        if(c.execute())
+            commands.push(c);
+    }
     /**
      * Reverts last command in cache
      */
@@ -53,16 +58,28 @@ public class Invoker {
 
         toUndo = commands.pop();
 
+//        while(toUndo!= null &&
+//                !Graph.getInstance().areDistancesShown()
+//                && toUndo instanceof ChangeDistCommand)
+//            toUndo = commands.pop();
+
         if(toUndo !=null)
             toUndo.undo();
     }
 
     public void redoLast(){
         toRedo = commands.getNext();
+//        while(toRedo!= null &&
+//                !Graph.getInstance().areDistancesShown()
+//                && toRedo instanceof ChangeDistCommand)
+//            toRedo = commands.getNext();
+
         if (toRedo != null) {
             toRedo.execute();
         }
     }
+
+
 
     public void moveElement(Node el, double[] init, double[] newPos){
         Command c = new MoveCommand(el,init,newPos);

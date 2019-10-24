@@ -32,11 +32,15 @@ public class EdgeContextMenu extends ContextMenu {
             }
         });
         this.getItems().addAll(deletion, addLength);
+
+        System.out.println(getStyle());
+        //setStyle("MyStyle");
     }
 
 
     @Override
     public void show(javafx.scene.Node node, double x, double y){
+        System.out.println(getStyle());
         super.show(node, x, y);
         elem = (Undoable) node;
     }

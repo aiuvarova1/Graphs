@@ -1,9 +1,9 @@
 package main;
 
+import entities.Distance;
 import entities.Edge;
 import entities.Graph;
 import entities.Node;
-import entities.TexLabel;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -48,6 +48,9 @@ public class Controller {
     private Canvas canvas;
 
     @FXML
+    private Button resetDistances;
+
+    @FXML
     private Button clearButton;
 
     @FXML
@@ -61,6 +64,9 @@ public class Controller {
 
     @FXML
     private ImageView redoIcon;
+
+    @FXML
+    private ImageView resetIcon;
 
     @FXML
     private AnchorPane drawingArea;
@@ -100,6 +106,22 @@ public class Controller {
         drag.setImage(new Image("/assets/drag.png"));
         undoIcon.setImage(new Image("/assets/undo.png"));
         redoIcon.setImage(new Image("/assets/redo.png"));
+        resetIcon.setImage(new Image("/assets/reset.png"));
+    }
+
+    @FXML
+    void setButtons(){
+        clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
+        clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+
+        undoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
+        undoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+
+        redoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
+        redoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+
+        resetDistances.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
+        resetDistances.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
     }
 
     @FXML
@@ -111,14 +133,7 @@ public class Controller {
 
         drawer.setPane(drawingArea);
 
-        clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
-
-        undoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        undoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
-
-        redoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        redoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+        setButtons();
 
         drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
             System.out.println("resize");
@@ -137,8 +152,8 @@ public class Controller {
         accordion.setExpandedPane(drawTitledPane);
         setIcons();
 
-        new TexLabel();
-        
+        new Distance();
+
     }
 
     /**
@@ -165,7 +180,7 @@ public class Controller {
     void clearWorkingArea() {
         System.out.println("clear");
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class
-        || x.getClass() == TexLabel.class);
+        || x.getClass() == Distance.class);
         graph.clearGraph();
     }
 
@@ -179,13 +194,18 @@ public class Controller {
 
     @FXML
     void showDist(){
-
-        System.out.println("dist");
         graph.setLengths();
-
-       // new TexLabel();
     }
 
+    @FXML
+    void hideDist(){
+        graph.hideLengths();
+    }
+
+    @FXML
+    void resetDist(){
+        graph.resetDistances();
+    }
 
 
     @FXML

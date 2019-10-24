@@ -2,66 +2,74 @@ package entities;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import main.Drawer;
+import javafx.scene.control.TextField;
 import org.jfree.fx.FXGraphics2D;
-import org.scilab.forge.jlatexmath.*;
-
+import org.scilab.forge.jlatexmath.ParseException;
+import org.scilab.forge.jlatexmath.TeXConstants;
+import org.scilab.forge.jlatexmath.TeXFormula;
+import org.scilab.forge.jlatexmath.TeXIcon;
 
 public class TexLabel extends Canvas {
 
+    public static final String DEFAULT = "\\infty";
+
     private FXGraphics2D gc;
+    private TeXIcon icon;
+    private TextField input;
 
-    public TexLabel(){
+    TexLabel(){
         super();
-        setLayoutX(50);
-        setLayoutY(70);
-        setText("\\infty");
+        this.gc = new FXGraphics2D(getGraphicsContext2D());
 
-        if(Graph.getInstance().areDistancesShown())
-            show();
+        input = new TextField();
+        setText(DEFAULT);
+
+
     }
 
-    public void setText(String text) {
-        this.gc = new FXGraphics2D(getGraphicsContext2D());
-        this.gc.scale(100, 100);
-
+    String setText(String text) {
         // create a formula
         TeXFormula formula = null;
+
+        if (text.isEmpty()) text = DEFAULT;
+
         try {
-            formula = new TeXFormula("1" + text);
+            formula = new TeXFormula(text);
         }catch(ParseException e){
-            formula = new TeXFormula("1" + "\\infty");
+            formula = new TeXFormula(DEFAULT);
+            text = DEFAULT;
         }
+        String curText = text;
 
+        if(text!=DEFAULT)
+            icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,17);
+        else
+            icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,22);
 
-        TeXIcon texIcon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,25);
 
         GraphicsContext gc = getGraphicsContext2D();
         gc.clearRect(0, 0, getWidth(), getHeight());
 
-        double width = texIcon.getIconWidth();
-        double height = texIcon.getIconHeight();
+        double width = icon.getIconWidth();
+        double height = icon.getIconHeight();
 
         setWidth(width);
         setHeight(height);
 
-        gc.clearRect(0, 0, width*10, height);
+        gc.clearRect(0, 0, width, height);
 
         FXGraphics2D graphics = new FXGraphics2D(gc);
-        texIcon.paintIcon(null, graphics, 0, 0);
-//        getGraphicsContext2D().clearRect(0, 0, icon.getIconWidth(), icon.getIconHeight());
-   //     this.box.draw(graphics, 1, 5);
+        icon.paintIcon(null, graphics, 0, 0);
+        return curText;
+    }
+
+    private void checkText(String text){
+        boolean isCommand = false;
 
     }
 
-    public void show(){
-        System.out.println("show");
-        Drawer.getInstance().addElem(this);
-    }
 
-    public void hide(){
-        Drawer.getInstance().removeElement(this);
+    public void showInput(){
+
     }
 }

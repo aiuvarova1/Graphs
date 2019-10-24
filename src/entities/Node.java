@@ -261,6 +261,11 @@ public class Node extends StackPane implements Undoable, Visitable {
         handleEdges(Edge::hideLength);
     }
 
+    public void resetLengths()
+    {
+        handleEdges(Edge::changeLength);
+    }
+
     /**
      * Visits all edges and handles them
      * @param handler method to handle with each edge
@@ -350,7 +355,8 @@ public class Node extends StackPane implements Undoable, Visitable {
             @Override
             public void handle(MouseEvent event) {
 
-                if (Handlers.edgeStarted) return;
+                if (Handlers.isEdgeStarted() ||
+                        Handlers.isEditing()) return;
                 initialPosition[0] = getLayoutX();
                 initialPosition[1] = getLayoutY();
                 getScene().setCursor(Cursor.MOVE);
@@ -376,7 +382,7 @@ public class Node extends StackPane implements Undoable, Visitable {
             @Override
             public void handle(MouseEvent event) {
 
-                if (Handlers.edgeStarted || event.getButton() != MouseButton.PRIMARY) return;
+                if (Handlers.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY) return;
 
                 boolean[] crossedBounds = checkBoundsCrossed(event);
                 if (!crossedBounds[0])
