@@ -1,23 +1,15 @@
 package entities;
 
-import com.sun.webkit.network.data.Handler;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import main.Drawer;
-import main.Handlers;
+import main.Filter;
 import main.Invoker;
-import org.jfree.fx.FXGraphics2D;
-import org.scilab.forge.jlatexmath.ParseException;
-import org.scilab.forge.jlatexmath.TeXConstants;
-import org.scilab.forge.jlatexmath.TeXFormula;
-import org.scilab.forge.jlatexmath.TeXIcon;
 
 /**
  * Control with distance text label and input field
@@ -25,6 +17,8 @@ import org.scilab.forge.jlatexmath.TeXIcon;
 public class Distance extends Pane {
     private TexLabel label;
     private TextField input;
+
+    private double value;
     private String curText = TexLabel.DEFAULT;
 
     private static final int MAX_LENGTH = 20;
@@ -39,7 +33,7 @@ public class Distance extends Pane {
             public void handle(ActionEvent actionEvent) {
 
                 showLabel();
-                Handlers.endEdit();
+                Filter.endEdit();
             }
         });
         input.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -50,7 +44,7 @@ public class Distance extends Pane {
                 System.out.println(old + " " + newVal);
                 if(!newVal){
                     showLabel();
-                    Handlers.endEdit();
+                    Filter.endEdit();
                 }
             }
         });
@@ -72,14 +66,14 @@ public class Distance extends Pane {
         if(Graph.getInstance().areDistancesShown())
             show();
 
-        this.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
+        this.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
     }
 
     /**
      * Hides label and shows input field
      */
     public void showInput(){
-        if(Handlers.isEditing()) return;
+        if(Filter.isEditing()) return;
 
         this.getChildren().add(input);
         input.requestFocus();
@@ -91,7 +85,7 @@ public class Distance extends Pane {
      * Hides input field and returns label
      */
     public void showLabel(){
-        if(!Handlers.isEditing()) return;
+        if(!Filter.isEditing()) return;
 //        setText(input.getText());
 
         Invoker.getInstance().changeDistance(this,input.getText());

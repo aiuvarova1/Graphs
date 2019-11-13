@@ -10,7 +10,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
-public class Handlers {
+public class Filter {
 
     private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 19px;"
             + "-fx-font-family: \"Constantia\";";

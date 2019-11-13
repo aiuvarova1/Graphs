@@ -6,11 +6,9 @@ import entities.Node;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
 
@@ -132,7 +130,7 @@ public class Drawer {
 
         Circle node = new Circle(xPos, yPos, Node.RADIUS, Color.WHITE);
 
-        node.addEventFilter(MouseEvent.MOUSE_DRAGGED, Handlers.dragFilter);
+        node.addEventFilter(MouseEvent.MOUSE_DRAGGED, Filter.dragFilter);
         node.setStroke(Color.BLACK);
 
         Node layout = new Node(Graph.getInstance().getSize() + 1);

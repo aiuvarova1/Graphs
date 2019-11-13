@@ -10,8 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import main.Drawer;
-import main.Handlers;
-import main.Invoker;
+import main.Filter;
 
 
 import java.util.ArrayList;
@@ -348,15 +347,15 @@ public class Node extends StackPane implements Undoable, Visitable {
      * (dragging, clicking, etc)
      */
     private void setHandlers() {
-        addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
-        addEventFilter(MouseEvent.MOUSE_DRAGGED, Handlers.dragFilter);
+        addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
+        addEventFilter(MouseEvent.MOUSE_DRAGGED, Filter.dragFilter);
 
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
 
-                if (Handlers.isEdgeStarted() ||
-                        Handlers.isEditing()) return;
+                if (Filter.isEdgeStarted() ||
+                        Filter.isEditing()) return;
                 initialPosition[0] = getLayoutX();
                 initialPosition[1] = getLayoutY();
                 getScene().setCursor(Cursor.MOVE);
@@ -382,7 +381,7 @@ public class Node extends StackPane implements Undoable, Visitable {
             @Override
             public void handle(MouseEvent event) {
 
-                if (Handlers.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY) return;
+                if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY) return;
 
                 boolean[] crossedBounds = checkBoundsCrossed(event);
                 if (!crossedBounds[0])

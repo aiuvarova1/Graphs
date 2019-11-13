@@ -90,44 +90,44 @@ public class Controller {
 
     @FXML
     public void changeIcon() {
-        trashIcon.setImage(new Image("/assets/opened.png"));
+        trashIcon.setImage(new Image(Manager.class.getResource("/assets/opened.png").toExternalForm()));
     }
 
     @FXML
     public void setOldIcon() {
-        trashIcon.setImage(new Image("/assets/trash.png"));
+        trashIcon.setImage(new Image(Manager.class.getResource("/assets/trash.png").toExternalForm()));
     }
 
     @FXML
     private void setIcons() {
-        leftClick.setImage(new Image("/assets/leftClick.png"));
-        rightClick.setImage(new Image("/assets/rightClick.png"));
-        nodeClick.setImage(new Image("/assets/nodeClick.png"));
-        drag.setImage(new Image("/assets/drag.png"));
-        undoIcon.setImage(new Image("/assets/undo.png"));
-        redoIcon.setImage(new Image("/assets/redo.png"));
-        resetIcon.setImage(new Image("/assets/reset.png"));
+        leftClick.setImage(new Image(Manager.class.getResource("/assets/leftClick.png").toExternalForm()));
+        rightClick.setImage(new Image(Manager.class.getResource("/assets/rightClick.png").toExternalForm()));
+        nodeClick.setImage(new Image(Manager.class.getResource("/assets/nodeClick.png").toExternalForm()));
+        drag.setImage(new Image(Manager.class.getResource("/assets/drag.png").toExternalForm()));
+        undoIcon.setImage(new Image(Manager.class.getResource("/assets/undo.png").toExternalForm()));
+        redoIcon.setImage(new Image(Manager.class.getResource("/assets/redo.png").toExternalForm()));
+        resetIcon.setImage(new Image(Manager.class.getResource("/assets/reset.png").toExternalForm()));
     }
 
     @FXML
     void setButtons(){
-        clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+        clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
-        undoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        undoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+        undoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        undoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
-        redoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        redoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+        redoButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        redoButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
-        resetDistances.addEventHandler(MouseEvent.MOUSE_ENTERED, Handlers.buttonEnterHandler);
-        resetDistances.addEventHandler(MouseEvent.MOUSE_EXITED, Handlers.buttonExitHandler);
+        resetDistances.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        resetDistances.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
     }
 
     @FXML
     void initialize() {
-        drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.dragFilter);
-        drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
+        drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.dragFilter);
+        drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
 
         setOldIcon();
 

@@ -23,8 +23,6 @@ public class TexLabel extends Canvas {
 
         input = new TextField();
         setText(DEFAULT);
-
-
     }
 
     String setText(String text) {
@@ -41,7 +39,7 @@ public class TexLabel extends Canvas {
         }
         String curText = text;
 
-        if(text!=DEFAULT)
+        if(!text.equals(DEFAULT))
             icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,17);
         else
             icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,22);

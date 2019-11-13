@@ -27,12 +27,12 @@ public class Manager extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        javafx.scene.text.Font.loadFont(TexLabel.class.
-                getResourceAsStream("/org/scilab/forge/jlatexmath/fonts/base/jlm_cmmi10.ttf"), 1);
-        javafx.scene.text.Font.loadFont(TexLabel.class.
-                getResourceAsStream("/org/scilab/forge/jlatexmath/fonts/maths/jlm_cmsy10.ttf"), 1);
-        javafx.scene.text.Font.loadFont(TexLabel.class.
-                getResourceAsStream("/org/scilab/forge/jlatexmath/fonts/latin/jlm_cmr10.ttf"), 1);
+        javafx.scene.text.Font.loadFont(Manager.class.
+                getResource("/assets/jlm_cmmi10.ttf").toExternalForm(), 1);
+        javafx.scene.text.Font.loadFont(Manager.class.
+                getResource("/assets/jlm_cmsy10.ttf").toExternalForm(), 1);
+        javafx.scene.text.Font.loadFont(Manager.class.
+                getResource("/assets/jlm_cmr10.ttf").toExternalForm(), 1);
 
         javafx.scene.text.Font.loadFont(TexLabel.class.
                 getResourceAsStream("/org/scilab/forge/jlatexmath/greek/fonts/maths/jlm_fcmrpg.ttf"), 1);

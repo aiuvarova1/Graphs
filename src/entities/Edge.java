@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import main.Drawer;
-import main.Handlers;
+import main.Filter;
 import main.MenuManager;
 
 
@@ -255,7 +255,7 @@ public class Edge extends Line implements Undoable, Visitable {
             }
         });
 
-        addEventFilter(MouseEvent.MOUSE_CLICKED, Handlers.clickFilter);
+        addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
     }
 
 
