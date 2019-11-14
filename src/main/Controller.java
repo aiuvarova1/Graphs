@@ -4,6 +4,8 @@ import entities.Distance;
 import entities.Edge;
 import entities.Graph;
 import entities.Node;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -48,10 +50,19 @@ public class Controller {
     private Canvas canvas;
 
     @FXML
+    private Button visualizeAmplitudes;
+
+    @FXML
+    private ImageView startIcon;
+
+    @FXML
     private Button resetDistances;
 
     @FXML
     private Button clearButton;
+
+    @FXML
+    private CheckBox calculate;
 
     @FXML
     private Button undoButton;
@@ -81,6 +92,9 @@ public class Controller {
     private ToggleButton showDictances;
 
     @FXML
+    private Label tip;
+
+    @FXML
     private ToggleButton hideDistances;
 
     public Controller() {
@@ -107,6 +121,7 @@ public class Controller {
         undoIcon.setImage(new Image(Manager.class.getResource("/assets/undo.png").toExternalForm()));
         redoIcon.setImage(new Image(Manager.class.getResource("/assets/redo.png").toExternalForm()));
         resetIcon.setImage(new Image(Manager.class.getResource("/assets/reset.png").toExternalForm()));
+        startIcon.setImage(new Image(Manager.class.getResource("/assets/play.png").toExternalForm()));
     }
 
     @FXML
@@ -122,6 +137,9 @@ public class Controller {
 
         resetDistances.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         resetDistances.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        visualizeAmplitudes.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        visualizeAmplitudes.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
     }
 
     @FXML
@@ -147,12 +165,26 @@ public class Controller {
             graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
+        calculate.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue)
+                    drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                            forEach((x)->((Distance)x).calculate());
+                else
+                    drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                            forEach((x)->((Distance)x).decalculate());
+
+            }
+        });
+
         drawTitledPane.setAnimated(true);
         helpTitledPane.setAnimated(true);
         accordion.setExpandedPane(drawTitledPane);
         setIcons();
 
         new Distance();
+        PopupMessage.setPopup(tip);
 
     }
 
@@ -194,12 +226,16 @@ public class Controller {
 
     @FXML
     void showDist(){
+
         graph.setLengths();
+        calculate.setDisable(false);
     }
 
     @FXML
     void hideDist(){
+
         graph.hideLengths();
+        calculate.setDisable(true);
     }
 
     @FXML
@@ -220,5 +256,21 @@ public class Controller {
                 Invoker.getInstance().redoLast();
         }
     };
+
+    @FXML
+    void visualizeAmplitudes(){
+
+        if(!graph.areDistancesShown()){
+            PopupMessage.showMessage("The distances are disabled");
+            return;
+        }
+        for(javafx.scene.Node dist: drawingArea.getChildren().filtered(x-> x instanceof Distance)){
+            if(((Distance)dist).isInfty()) {
+                PopupMessage.showMessage("There must be no infinities in distances");
+                return;
+            }
+        }
+        graph.visualizeAmplitudes();
+    }
 
 }

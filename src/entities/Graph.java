@@ -1,6 +1,7 @@
 package entities;
 
 import main.Drawer;
+import main.PopupMessage;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -129,9 +130,22 @@ public class Graph {
         runDFS(Node::hideLengths);
     }
 
+    /**
+     * Sets all distances to \\infty
+     */
     public void resetDistances(){
         runDFS(Node::resetLengths);
     }
+
+    public void visualizeAmplitudes(){
+        if(runDFS(null) > 1) {
+            PopupMessage.showMessage("The graph is not connected");
+            return;
+        }
+
+
+    }
+
 
     /**
      * Runs DFS for one node
@@ -143,7 +157,8 @@ public class Graph {
             curNode = dfsStack.pop();
             if(!curNode.isVisited()){
                 curNode.visit();
-                handler.accept(curNode);
+                if(handler!=null)
+                    handler.accept(curNode);
                 for(Node n : curNode.getNeighbours()) {
                     if(!n.isVisited())
                         dfsStack.push(n);

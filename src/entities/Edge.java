@@ -193,11 +193,10 @@ public class Edge extends Line implements Undoable, Visitable {
         length.hide();
     }
 
-    public void changeLength(String len){
-        length.setText(len);
+    public void changeLength(){
+        //changeLength("\\infty");
+        length.reset();
     }
-
-    public void changeLength(){changeLength("\\infty");}
 
     public String getCurText() {return length.getText();}
 

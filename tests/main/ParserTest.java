@@ -32,8 +32,8 @@ class ParserTest {
     }
     @Test
     void parseSimple4() {
-        res = Parser.parseDistance("7-9");
-        assertEquals(-1,res);
+        //res = Parser.parseDistance("7-9");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("7-9"));
     }
 
     @Test
@@ -67,14 +67,14 @@ class ParserTest {
 
     @Test
     void checkBrackets4() {
-        res = Parser.parseDistance("()");
-        assertEquals(-1,res);
+       // res = Parser.parseDistance("()");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("()"));
     }
 
     @Test
     void checkBrackets5() {
-        res = Parser.parseDistance("((15-7)");
-        assertEquals(-1,res);
+        //res = Parser.parseDistance("((15-7)");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("((15-7)"));
     }
 
     @Test
@@ -84,8 +84,8 @@ class ParserTest {
     }
     @Test
     void checkNum1() {
-        res = Parser.parseDistance("0");
-        assertEquals(-1,res);
+       // res = Parser.parseDistance("0");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("0"));
     }
 
     @Test
@@ -127,20 +127,20 @@ class ParserTest {
 
     @Test
     void sqrt2() {
-        res = Parser.parseDistance("\\{sqrt{{{}{}4}}");
-        assertEquals(-1,res);
+       // res = Parser.parseDistance("\\{sqrt{{{}{}4}}");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("\\{sqrt{{{}{}4}}"));
     }
 
     @Test
     void sqrt3() {
-        res = Parser.parseDistance("{2}");
-        assertEquals(-1,res);
+        //res = Parser.parseDistance("{2}");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("{2}"));
     }
 
     @Test
     void sqrt4() {
-        res = Parser.parseDistance("\\sqrt{-4}");
-        assertEquals(-1,res);
+        //res = Parser.parseDistance("\\sqrt{-4}");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("\\sqrt{-4}"));
     }
 
     @Test
@@ -176,6 +176,25 @@ class ParserTest {
         assertEquals(3.75,res);
     }
 
+    @Test
+    void testFrac1() {
+        res = Parser.parseDistance("\\frac{1}{2}");
+        assertEquals(0.5,res);
+    }
+
+    @Test
+    void testFrac2() {
+        res = Parser.parseDistance("\\frac{\\frac{4}{2}}{2}");
+        assertEquals(1,res);
+    }
+
+    @Test
+    void testFrac3() {
+        res = Parser.parseDistance("2+3*\\frac{5*(5-3)+2}{\\frac{8-2}{1}}");
+        assertEquals(8,res);
+    }
+
+
 /////////////////////////////////////////////////////////
     @Test
     void test1() {
@@ -185,8 +204,8 @@ class ParserTest {
 
     @Test
     void test2() {
-        res = Parser.parseDistance("{5+2}");
-        assertEquals(-1,res);
+        //res = Parser.parseDistance("{5+2}");
+        assertThrows(IllegalArgumentException.class,()->Parser.parseDistance("{5+2}"));
     }
 
 

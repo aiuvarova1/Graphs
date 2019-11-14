@@ -12,10 +12,10 @@ import javafx.scene.text.Text;
 
 public class Filter {
 
-    private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 19px;"
+    private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 18px;"
             + "-fx-font-family: \"Constantia\";";
 
-    private static String UNSELECTED_BUTTON = "-fx-background-color: #f5f5f5;" + "-fx-font-size: 18px;"
+    private static String UNSELECTED_BUTTON = "-fx-background-color: #f5f5f5;" + "-fx-font-size: 17px;"
             + "-fx-font-family: \"Constantia\";";
 
     private static boolean dragging = false;

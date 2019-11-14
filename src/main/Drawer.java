@@ -86,6 +86,10 @@ public class Drawer {
         return instance.pane.getBoundsInLocal();
     }
 
+    public Bounds getCommonBounds(){
+        return instance.pane.getBoundsInParent();
+    }
+
 
     /**
      * Checks whether the click position crosses the bounds and changes it if needed
