@@ -1,7 +1,14 @@
 package entities;
 
+import javafx.animation.PathTransition;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.util.Duration;
 import main.Drawer;
 import main.PopupMessage;
+import main.Visualizer;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -20,6 +27,29 @@ public class Graph {
 
     private boolean showDistances = false;
 
+    private Edge startEdge;
+    private Node startNode;
+
+    public Edge getStartEdge(){
+        return startEdge;
+    }
+
+    public Node getStartNode(){
+        return startNode;
+    }
+
+    public Node getNode(int i){
+        return nodes.get(i);
+    }
+
+    public void setStartEdge(Edge start) {
+        startEdge = start;
+    }
+
+    public void setStartNode(Node start) {
+        startNode = start;
+    }
+
 
     public static Graph getInstance() {
         if (instance == null) {
@@ -32,7 +62,7 @@ public class Graph {
         return nodes.size();
     }
 
-    public boolean areDistancesShown(){
+    public boolean areDistancesShown() {
         return showDistances;
     }
 
@@ -52,8 +82,8 @@ public class Graph {
      */
     public void removeNode(Node circle) {
 
-        ArrayList<Edge> edges  =circle.getEdges();
-        while(edges.size() != 0)
+        ArrayList<Edge> edges = circle.getEdges();
+        while (edges.size() != 0)
             edges.get(0).remove();
 
 //        for(Node n : nodes.get(num).getNeighbours()){
@@ -66,12 +96,14 @@ public class Graph {
 //        for (int i = num; i < nodes.size(); i++)
 //            nodes.get(i).renewNum(i + 1);
 
+        if (startNode == circle)
+            startNode = null;
         Drawer.getInstance().removeElement(circle);
     }
 
-    public void refreshLabels(Node circle){
+    public void refreshLabels(Node circle) {
         int num = Integer.parseInt(circle.getId()) - 1;
-       // nodes.
+        // nodes.
         for (int i = num; i < nodes.size(); i++)
             nodes.get(i).renewNum(i + 1);
     }
@@ -117,7 +149,7 @@ public class Graph {
     /**
      * Sets lengths for all edges in graph
      */
-    public void setLengths(){
+    public void setLengths() {
         showDistances = true;
         runDFS(Node::showLengths);
     }
@@ -125,7 +157,7 @@ public class Graph {
     /**
      * Hides lengths for all edges in graph
      */
-    public void hideLengths(){
+    public void hideLengths() {
         showDistances = false;
         runDFS(Node::hideLengths);
     }
@@ -133,34 +165,47 @@ public class Graph {
     /**
      * Sets all distances to \\infty
      */
-    public void resetDistances(){
+    public void resetDistances() {
         runDFS(Node::resetLengths);
     }
 
-    public void visualizeAmplitudes(){
-        if(runDFS(null) > 1) {
+    public void visualizeAmplitudes() {
+        if (runDFS(null) > 1) {
             PopupMessage.showMessage("The graph is not connected");
             return;
         }
 
+        if(startNode == null)
+        {
+            PopupMessage.showMessage("The beginning node is not selected");
+            return;
+        }
 
+        if(startEdge == null)
+        {
+            PopupMessage.showMessage("The beginning edge is not selected");
+            return;
+        }
+
+        Visualizer.startVisualization(startEdge, startNode);
     }
 
 
     /**
      * Runs DFS for one node
+     *
      * @param handler method to handle with each node
      */
-    private void DFS(Consumer<Node> handler){
+    private void DFS(Consumer<Node> handler) {
         Node curNode;
-        while(!dfsStack.isEmpty()){
+        while (!dfsStack.isEmpty()) {
             curNode = dfsStack.pop();
-            if(!curNode.isVisited()){
+            if (!curNode.isVisited()) {
                 curNode.visit();
-                if(handler!=null)
+                if (handler != null)
                     handler.accept(curNode);
-                for(Node n : curNode.getNeighbours()) {
-                    if(!n.isVisited())
+                for (Node n : curNode.getNeighbours()) {
+                    if (!n.isVisited())
                         dfsStack.push(n);
                 }
             }
@@ -169,18 +214,17 @@ public class Graph {
 
     /**
      * Runs dfs for each node and counts components
+     *
      * @param handler method to handle depending on what we need
      * @return num of components
      */
-    private int runDFS(Consumer<Node> handler){
+    private int runDFS(Consumer<Node> handler) {
 
-        if(nodes.size() == 0 ) return 0;
+        if (nodes.size() == 0) return 0;
 
         int components = 0;
-        for (Node n : nodes)
-        {
-            if(!n.isVisited())
-            {
+        for (Node n : nodes) {
+            if (!n.isVisited()) {
                 components++;
                 dfsStack.push(n);
                 DFS(handler);
@@ -195,8 +239,8 @@ public class Graph {
     /**
      * Marks all nodes unvisited after dfs
      */
-    private void resetDFS(){
-        for (Node n: nodes)
+    private void resetDFS() {
+        for (Node n : nodes)
             n.unvisit();
     }
 

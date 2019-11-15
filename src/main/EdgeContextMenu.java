@@ -1,47 +1,34 @@
 package main;
 
-import entities.Undoable;
+import entities.Edge;
+import entities.Graph;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
-public class EdgeContextMenu extends ContextMenu {
-    private MenuItem deletion;
-    private MenuItem addLength;
-    private Undoable elem;
-
+public class EdgeContextMenu extends MyContextMenu{
     public EdgeContextMenu(){
-
-        deletion = new MenuItem("Delete");
-
-        deletion.setOnAction(new EventHandler<ActionEvent>() {
+        MenuItem selection = new MenuItem("Select as a beginning edge");
+        selection.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-                Invoker.getInstance().deleteElement(elem);
+            public void handle(ActionEvent event) {
+
+                if(Graph.getInstance().getStartNode()!=null &&
+                        Graph.getInstance().getStartNode() != ((Edge) elem).getNodes()[0] &&
+                        Graph.getInstance().getStartNode() != ((Edge) elem).getNodes()[1] )
+                {
+                        Graph.getInstance().getStartNode().deselect();
+                        Graph.getInstance().setStartNode(null);
+
+                }
+                if(Graph.getInstance().getStartEdge() != null)
+                    Graph.getInstance().getStartEdge().deselect();
+
+                Graph.getInstance().setStartEdge((Edge)elem);
+                ((Edge) elem).select();
+
             }
         });
-
-        addLength = new MenuItem("Add length");
-
-        addLength.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.out.println("add length");
-            }
-        });
-        this.getItems().addAll(deletion, addLength);
-
-        System.out.println(getStyle());
-        //setStyle("MyStyle");
-    }
-
-
-    @Override
-    public void show(javafx.scene.Node node, double x, double y){
-        System.out.println(getStyle());
-        super.show(node, x, y);
-        elem = (Undoable) node;
+        this.getItems().add(selection);
     }
 }

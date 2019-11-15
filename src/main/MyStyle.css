@@ -60,18 +60,27 @@
 
 
 .context-menu {
-    -fx-skin: "com.sun.javafx.scene.control.skin.ContextMenuSkin";
-    -fx-background-color: #006699;
+    -fx-background-color: #757171;
     -fx-text-fill: white;
+    -fx-font-family: Constantia;
+    -fx-font-size: 11px;
+    -fx-opacity: 0.95;
 }
 
 .menu-item .label {
-    -fx-text-fill: yellow;
+    -fx-text-fill: white;
 }
 
-.menu-item:focused .label {
-    -fx-text-fill: white;
-    -fx-background-color: red;
+.context-menu .menu-item {
+    -fx-background-color: #757171;
+    -fx-font-size: 11px;
+    -fx-opacity: 0.95;
+}
+
+.context-menu .menu-item:focused {
+    -fx-background-color: null;
+    -fx-font-size: 11px;
+    -fx-opacity: 0.95;
 }
 
 

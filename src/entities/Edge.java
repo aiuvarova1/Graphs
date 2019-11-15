@@ -22,16 +22,44 @@ public class Edge extends Line implements Undoable, Visitable {
 
     private boolean visited = false;
 
-    private Distance length ;
+    private Distance length;
 
     private static final double LABEL_GAP = 15;
+    private static final Color color = Color.DIMGRAY;
+    private static final Color selectedColor = Color.LIGHTBLUE;
+
+    private Color curColor = color;
+
+    private double[] n1Nearest;
+    private double[] n2Nearest;
 
     public Edge(double v1, double v2, double v3, double v4) {
 
         super(v1, v2, v3, v4);
         this.setStrokeWidth(1.7);
 
-        setStroke(Color.DIMGRAY);
+        setStroke(color);
+
+        n1Nearest = new double[2];
+        n2Nearest = new double[2];
+    }
+
+    public void select() {
+        setStroke(selectedColor);
+        curColor = selectedColor;
+    }
+
+    public void deselect() {
+        setStroke(color);
+        curColor = color;
+    }
+
+    public double[] getFirstNodesNearest(){
+        return n1Nearest;
+    }
+
+    public double[] getSecondNodesNearest(){
+        return n2Nearest;
     }
 
     /**
@@ -89,19 +117,24 @@ public class Edge extends Line implements Undoable, Visitable {
                 node2.getCenterY(),
                 node1.getCenterX(), node1.getCenterY(), dist);
 
+        n1Nearest = startCordsPretender;
+        n2Nearest = startCordsNode;
+
 //        this.setStartX(startCordsNode[0]);
 //        this.setStartY(startCordsNode[1]);
 //
 //        this.setEndX(startCordsPretender[0]);
 //        this.setEndY(startCordsPretender[1]);
 
-        if(startCordsNode[1] > startCordsPretender[1] ){
+        if (startCordsNode[1] > startCordsPretender[1]) {
             this.setStartX(startCordsNode[0]);
             this.setStartY(startCordsNode[1]);
 
+
             this.setEndX(startCordsPretender[0]);
             this.setEndY(startCordsPretender[1]);
-        }else{
+
+        } else {
             this.setEndX(startCordsNode[0]);
             this.setEndY(startCordsNode[1]);
 
@@ -158,8 +191,11 @@ public class Edge extends Line implements Undoable, Visitable {
 
         try {
             Drawer.getInstance().addElem(this);
-            if(Graph.getInstance().areDistancesShown())
+            if (Graph.getInstance().areDistancesShown())
                 length.show();
+            setStroke(color);
+            curColor = color;
+            connectNodes(n1.getCircle(), n2.getCircle());
         } catch (IllegalArgumentException ex) {
             System.out.println("Already drawn");
         }
@@ -173,6 +209,8 @@ public class Edge extends Line implements Undoable, Visitable {
         n2.removeNeighbour(n1);
         Drawer.getInstance().removeElement(this);
         Drawer.getInstance().removeElement(length);
+        if (Graph.getInstance().getStartEdge() == this)
+            Graph.getInstance().setStartEdge(null);
     }
 
     @Override
@@ -193,12 +231,14 @@ public class Edge extends Line implements Undoable, Visitable {
         length.hide();
     }
 
-    public void changeLength(){
+    public void changeLength() {
         //changeLength("\\infty");
         length.reset();
     }
 
-    public String getCurText() {return length.getText();}
+    public String getCurText() {
+        return length.getText();
+    }
 
     public boolean isVisited() {
         return visited;
@@ -220,9 +260,9 @@ public class Edge extends Line implements Undoable, Visitable {
         if (length == null) return;
 
 
-        double coef = (getEndX() - getStartX())/
-                getDistance(getStartX(),getStartY(),getEndX(),getEndY());
-        length.setLayoutX((this.getStartX() + this.getEndX()) / 2.0 + LABEL_GAP*(Math.sqrt(1-coef*coef)));
+        double coef = (getEndX() - getStartX()) /
+                getDistance(getStartX(), getStartY(), getEndX(), getEndY());
+        length.setLayoutX((this.getStartX() + this.getEndX()) / 2.0 + LABEL_GAP * (Math.sqrt(1 - coef * coef)));
         length.setLayoutY((this.getStartY() + this.getEndY()) / 2.0 + LABEL_GAP * coef);
 
         length.toFront();
@@ -241,16 +281,19 @@ public class Edge extends Line implements Undoable, Visitable {
         setOnMouseExited(x ->
         {
             this.setStrokeWidth(1.7);
-            this.setStroke(Color.DIMGRAY);
+            this.setStroke(curColor);
             getScene().setCursor(Cursor.DEFAULT);
         });
+
 
         this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override
             public void handle(ContextMenuEvent contextMenuEvent) {
-                MenuManager.getEdgeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
+                if (Filter.isEdgeStarted()) return;
+                // System.out.println(contextMenuEvent.getSource());
+                MenuManager.getEdgeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
+                MenuManager.getEdgeMenu().show((javafx.scene.Node) n1,
                         contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-                System.out.println("show");
             }
         });
 

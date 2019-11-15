@@ -3,6 +3,8 @@ package entities;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -11,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import main.Drawer;
 import main.Filter;
+import main.MenuManager;
 
 
 import java.util.ArrayList;
@@ -26,11 +29,17 @@ public class Node extends StackPane implements Undoable, Visitable {
     public static final double RADIUS = 22;
 
     private int num;
-    private double amplitude;
     private boolean visited;
 
     private ArrayList<Edge> edges;
+    private ArrayList<Point> points;
+
     private double[] initialPosition;
+
+    private static final Color color = Color.WHITE;
+    private static final Color selectedColor = Color.LIGHTBLUE;
+
+    private Color curColor = color;
 
     public double getX() {
         return getLayoutX();
@@ -51,6 +60,30 @@ public class Node extends StackPane implements Undoable, Visitable {
 
     public int getNum() {
         return num;
+    }
+
+    public void select(){
+        getCircle().setFill(selectedColor);
+        curColor = selectedColor;
+    }
+
+    public void deselect(){
+        getCircle().setFill(color);
+        curColor = color;
+    }
+
+    public void addPoint(Point p){
+        if(points == null)
+            points = new ArrayList<>(5);
+        points.add(p);
+    }
+
+    public void handlePoints(){
+
+//        for (Point p: points)
+//            p.
+
+        points.clear();
     }
 
     /**
@@ -232,6 +265,8 @@ public class Node extends StackPane implements Undoable, Visitable {
             System.out.println("Already drawn node");
         }
         Graph.getInstance().refreshLabels(this);
+        getCircle().setFill(color);
+        curColor = color;
 
         return true;
     }
@@ -355,14 +390,27 @@ public class Node extends StackPane implements Undoable, Visitable {
             public void handle(MouseEvent event) {
 
                 if (Filter.isEdgeStarted() ||
-                        Filter.isEditing()) return;
+                        Filter.isEditing() || event.isSecondaryButtonDown()) return;
+
                 initialPosition[0] = getLayoutX();
                 initialPosition[1] = getLayoutY();
                 getScene().setCursor(Cursor.MOVE);
                 toFront();
 
+               MenuManager.getNodeMenu().hide();
             }
         });
+
+        this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
+            @Override
+            public void handle(ContextMenuEvent contextMenuEvent) {
+                if(Filter.isEdgeStarted()) return;
+                MenuManager.getNodeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
+                MenuManager.getNodeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
+                        contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
+            }
+        });
+
 
         setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
@@ -411,7 +459,7 @@ public class Node extends StackPane implements Undoable, Visitable {
                 if (!mouseEvent.isPrimaryButtonDown()) {
                     getScene().setCursor(Cursor.DEFAULT);
                 }
-                getCircle().setFill(Color.WHITE);
+                getCircle().setFill(curColor);
             }
         });
 

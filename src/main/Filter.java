@@ -76,14 +76,17 @@ public class Filter {
 
             if (event.getSource().getClass() == Node.class) {
                 event.consume();
-                if (event.getButton() == MouseButton.SECONDARY) {
+//                if (event.getButton() == MouseButton.SECONDARY) {
+//
+//                    Node circle = (Node) event.getSource();
+//                    //circle.remove();
+//                    Invoker.getInstance().deleteElement(circle);
 
-                    Node circle = (Node) event.getSource();
-                    //circle.remove();
-                    Invoker.getInstance().deleteElement(circle);
-
-                } else if (event.getButton() == MouseButton.PRIMARY) {
+               // } else
+                if (event.getButton() == MouseButton.PRIMARY) {
                     if (!edgeStarted) {
+                        if(MenuManager.getEdgeMenu().isShowing()) return;
+
                         edgeStarted = true;
                         pretender = (Node) event.getSource();
 
@@ -96,9 +99,10 @@ public class Filter {
                         edgeStarted = false;
                         Node node = (Node) event.getSource();
 
+                        edgePretender.setNodes(node,pretender);
                         edgePretender.connectNodes(node.getCircle(), pretender.getCircle());
                         //Graph.getInstance().connectNodes(node, pretender, edgePretender);
-                        edgePretender.setNodes(node,pretender);
+
                         Invoker.getInstance().createElement(edgePretender);
                         //edgePretender.create();
                         Drawer.getInstance().removeMoveHandler();

@@ -20,7 +20,7 @@ public class Controller {
 
     private Graph graph;
     private Drawer drawer;
-    private EdgeContextMenu edgeMenu = new EdgeContextMenu();
+    private MyContextMenu edgeMenu = new MyContextMenu();
 
     @FXML
     private Label label;
