@@ -1,5 +1,13 @@
 package entities;
 
+import javafx.animation.ParallelTransition;
+import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -14,11 +22,11 @@ import javafx.scene.text.Text;
 import main.Drawer;
 import main.Filter;
 import main.MenuManager;
+import main.Visualizer;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -28,26 +36,18 @@ public class Node extends StackPane implements Undoable, Visitable {
 
     public static final double RADIUS = 22;
 
+    private Timer wait = new Timer();
+
     private int num;
     private boolean visited;
 
     private ArrayList<Edge> edges;
-    private ArrayList<Point> points;
-
     private double[] initialPosition;
 
     private static final Color color = Color.WHITE;
     private static final Color selectedColor = Color.LIGHTBLUE;
 
     private Color curColor = color;
-
-    public double getX() {
-        return getLayoutX();
-    }
-
-    public double getY() {
-        return getLayoutY();
-    }
 
     public Circle getCircle() {
         return (Circle) getChildren().get(0);
@@ -57,33 +57,95 @@ public class Node extends StackPane implements Undoable, Visitable {
         return edges.size();
     }
 
+    public volatile BooleanProperty  processed = new SimpleBooleanProperty(false);
+    public AtomicInteger guests = new AtomicInteger(0);
+    public AtomicInteger guestsExpected =  new AtomicInteger(0);
+
+
 
     public int getNum() {
         return num;
     }
 
+    public Node(int num) {
+        edges = new ArrayList<>(5);
+        this.num = num;
+        initialPosition = new double[]{getLayoutX(), getLayoutY()};
+
+        setId("" + num);
+        setHandlers();
+        processed.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(oldValue) return;
+               // processed.setValue(false);
+
+                wait.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+
+                            while(guests.get() != guestsExpected.get()){
+
+                            }
+
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                handlePoints(guests.get());
+                            }
+                        });
+                        guests.set(0);
+                        guestsExpected.set(0);
+                        processed.setValue(false);
+                    }
+
+                },120);
+            }
+        });
+    }
+
+
+    /**
+     * Resets info needed for visualization
+     */
+    public void resetNode(){
+        guestsExpected.set(0);
+        guests.set(0);
+        processed.set(false);
+        for (Edge e: edges)
+            e.resetProceed();
+        wait.cancel();
+    }
+
+    /**
+     * Selects the node as the start one
+     */
     public void select(){
         getCircle().setFill(selectedColor);
         curColor = selectedColor;
     }
 
+    /**
+     * Deselects the node as the start one
+     */
     public void deselect(){
         getCircle().setFill(color);
         curColor = color;
     }
 
-    public void addPoint(Point p){
-        if(points == null)
-            points = new ArrayList<>(5);
-        points.add(p);
-    }
+    /**
+     * Proceeds all points which came to the node and restarts their animations
+     * @param numOfPoints the total number of accepted points
+     */
+    public void handlePoints(int numOfPoints){
 
-    public void handlePoints(){
+        if(!Visualizer.isRunning())
+            return;
+        ParallelTransition tr = new ParallelTransition();
+        for(Edge e: edges)
+            tr.getChildren().add(e.handlePoint(this,numOfPoints,edges.size()));
+        tr.play();
 
-//        for (Point p: points)
-//            p.
-
-        points.clear();
     }
 
     /**
@@ -97,18 +159,13 @@ public class Node extends StackPane implements Undoable, Visitable {
         }
         return nodes;
     }
+
+    /**
+     *
+     * @return the list of nodes' edges
+     */
     public ArrayList<Edge> getEdges(){
         return edges;
-    }
-
-
-    public Node(int num) {
-        edges = new ArrayList<>(5);
-        this.num = num;
-        initialPosition = new double[]{getLayoutX(), getLayoutY()};
-
-        setId("" + num);
-        setHandlers();
     }
 
     /**
@@ -172,6 +229,10 @@ public class Node extends StackPane implements Undoable, Visitable {
     }
 
 
+    /**
+     *
+     * @return Nodes' text on the label
+     */
     public Text getText() {
         return (Text) getChildren().get(1);
     }
@@ -249,12 +310,19 @@ public class Node extends StackPane implements Undoable, Visitable {
         relocateCircleCenter(getLayoutX(), getLayoutY());
     }
 
+    /**
+     * Removes the node from the drawing ares
+     */
     @Override
     public void remove(){
         Graph.getInstance().removeNode(this);
     }
 
 
+    /**
+     * (Re)creates the node
+     * @return whether succeeded in creation
+     */
     @Override
     public boolean create(){
         Graph.getInstance().addNode(this);
@@ -279,6 +347,9 @@ public class Node extends StackPane implements Undoable, Visitable {
         visited = true;
     }
 
+    /**
+     * Marks the node as not visited (for dfs)
+     */
     public void unvisit(){
         visited = false;
 
@@ -286,15 +357,23 @@ public class Node extends StackPane implements Undoable, Visitable {
             e.unvisit();
     }
 
-
+    /**
+     * Shows labels of all edges
+     */
     public void showLengths(){
         handleEdges(Edge::showLength);
     }
 
+    /**
+     * Hides labels of all edges
+     */
     public void hideLengths(){
         handleEdges(Edge::hideLength);
     }
 
+    /**
+     * Resets edges' lengths
+     */
     public void resetLengths()
     {
         handleEdges(Edge::changeLength);
@@ -319,7 +398,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      */
     private void recalculateEdges() {
         for (Edge e : edges) {
-            e.connectNodes(getCircle(), e.getNeighbour(this).getCircle());
+            e.connectNodes(this, e.getNeighbour(this));
         }
     }
 
@@ -390,7 +469,8 @@ public class Node extends StackPane implements Undoable, Visitable {
             public void handle(MouseEvent event) {
 
                 if (Filter.isEdgeStarted() ||
-                        Filter.isEditing() || event.isSecondaryButtonDown()) return;
+                        Filter.isEditing() || event.isSecondaryButtonDown()
+                || Visualizer.isRunning()) return;
 
                 initialPosition[0] = getLayoutX();
                 initialPosition[1] = getLayoutY();
@@ -404,7 +484,7 @@ public class Node extends StackPane implements Undoable, Visitable {
         this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
             @Override
             public void handle(ContextMenuEvent contextMenuEvent) {
-                if(Filter.isEdgeStarted()) return;
+                if(Filter.isEdgeStarted() || Visualizer.isRunning()) return;
                 MenuManager.getNodeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
                 MenuManager.getNodeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
                         contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
@@ -415,7 +495,8 @@ public class Node extends StackPane implements Undoable, Visitable {
         setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() != MouseButton.PRIMARY) return;
+                if (mouseEvent.getButton() != MouseButton.PRIMARY ||
+                Visualizer.isRunning()) return;
 
                 getScene().setCursor(Cursor.HAND);
                 Node n = (Node)mouseEvent.getSource();
@@ -429,7 +510,8 @@ public class Node extends StackPane implements Undoable, Visitable {
             @Override
             public void handle(MouseEvent event) {
 
-                if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY) return;
+                if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY
+                || Visualizer.isRunning()) return;
 
                 boolean[] crossedBounds = checkBoundsCrossed(event);
                 if (!crossedBounds[0])

@@ -11,7 +11,7 @@ import org.scilab.forge.jlatexmath.TeXIcon;
 
 public class TexLabel extends Canvas {
 
-    public static final String DEFAULT = "\\infty";
+    public static final String DEFAULT = "1";
 
     private FXGraphics2D gc;
     private TeXIcon icon;
@@ -39,7 +39,7 @@ public class TexLabel extends Canvas {
         }
         String curText = text;
 
-        if(!text.equals(DEFAULT))
+        if(!text.equals("\\infty"))
             icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,17);
         else
             icon = formula.createTeXIcon(TeXConstants.ALIGN_CENTER,22);

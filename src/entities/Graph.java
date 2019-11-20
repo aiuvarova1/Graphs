@@ -51,6 +51,10 @@ public class Graph {
     }
 
 
+    /**
+     * Singleton
+     * @return graph's instance
+     */
     public static Graph getInstance() {
         if (instance == null) {
             instance = new Graph();
@@ -66,12 +70,14 @@ public class Graph {
         return showDistances;
     }
 
-
+    /**
+     * Adds the given node to the graph
+     * @param node node to add
+     */
     public void addNode(Node node) {
 
         int num = Integer.parseInt(node.getId()) - 1;
         instance.nodes.add(num, node);
-        //instance.pane.getChildren().add(node);
         Drawer.getInstance().addElem(node);
     }
 
@@ -86,15 +92,8 @@ public class Graph {
         while (edges.size() != 0)
             edges.get(0).remove();
 
-//        for(Node n : nodes.get(num).getNeighbours()){
-//            n.removeNeighbour(nodes.get(num));
-//        }
         nodes.remove(circle);
-
         refreshLabels(circle);
-//        int num = Integer.parseInt(circle.getId()) - 1;
-//        for (int i = num; i < nodes.size(); i++)
-//            nodes.get(i).renewNum(i + 1);
 
         if (startNode == circle)
             startNode = null;
@@ -108,17 +107,6 @@ public class Graph {
             nodes.get(i).renewNum(i + 1);
     }
 
-    /**
-     * Connects two given nodes if there are no edge between them
-     * @param n1 first node
-     * @param n2 second node
-     * @param edge edge to connect
-     */
-//    public void connectNodes(Node n1, Node n2, Edge edge){
-//        //no multiple edges!!!!!!!!
-//
-//
-//    }
 
     /**
      * Removes all nodes from the list
@@ -147,6 +135,15 @@ public class Graph {
     }
 
     /**
+     * Resets nodes' visualization info
+     */
+    public void resetNodes(){
+        for(Node n: nodes){
+            n.resetNode();
+        }
+    }
+
+    /**
      * Sets lengths for all edges in graph
      */
     public void setLengths() {
@@ -169,6 +166,9 @@ public class Graph {
         runDFS(Node::resetLengths);
     }
 
+    /**
+     * Checks data correctness and starts the distribution
+     */
     public void visualizeAmplitudes() {
         if (runDFS(null) > 1) {
             PopupMessage.showMessage("The graph is not connected");

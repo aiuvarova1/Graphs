@@ -1,8 +1,10 @@
 package main;
 
+import entities.Edge;
 import entities.Graph;
 import entities.Node;
 
+import entities.Point;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.AnchorPane;
@@ -78,6 +80,14 @@ public class Drawer {
     }
 
     /**
+     * Removes all points from the graph
+     */
+    public void removePoints(){
+        pane.getChildren().removeIf(x->x instanceof Point);
+       // pane.getChildren().filtered(x->x instanceof Edge).forEach();
+    }
+
+    /**
      *
      * @return bounds of the drawing area
      */
@@ -85,11 +95,6 @@ public class Drawer {
         //return instance.pane.localToParent(instance.pane.getBoundsInLocal());
         return instance.pane.getBoundsInLocal();
     }
-
-    public Bounds getCommonBounds(){
-        return instance.pane.getBoundsInParent();
-    }
-
 
     /**
      * Checks whether the click position crosses the bounds and changes it if needed

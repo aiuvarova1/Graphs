@@ -10,6 +10,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
+/**
+ * Filters clicks and some other user's input
+ */
 public class Filter {
 
     private static String SELECTED_BUTTON = "-fx-background-color: #ebebeb;" + "-fx-font-size: 18px;"
@@ -46,7 +49,8 @@ public class Filter {
         @Override
         public void handle(final MouseEvent event) {
 
-            if(editing) return;
+            if(editing || Visualizer.isRunning())
+                return;
             if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
                     event.getButton() == MouseButton.PRIMARY) {
                 dragging = true;
@@ -67,6 +71,11 @@ public class Filter {
 //            System.out.println(event.getSource().getClass());
 //            System.out.println(event.getTarget());
 
+            if(Visualizer.isRunning()){
+                event.consume();
+                return;
+            }
+
             if(editing && (event.getTarget().getClass() != Text.class ||
                     event.getSource().getClass() == Node.class)) {
                 event.consume();
@@ -76,13 +85,7 @@ public class Filter {
 
             if (event.getSource().getClass() == Node.class) {
                 event.consume();
-//                if (event.getButton() == MouseButton.SECONDARY) {
-//
-//                    Node circle = (Node) event.getSource();
-//                    //circle.remove();
-//                    Invoker.getInstance().deleteElement(circle);
 
-               // } else
                 if (event.getButton() == MouseButton.PRIMARY) {
                     if (!edgeStarted) {
                         if(MenuManager.getEdgeMenu().isShowing()) return;
@@ -95,12 +98,18 @@ public class Filter {
                         Drawer.getInstance().setMoveHandler(edgeMoveHandler);
                         Drawer.getInstance().addElem(edgePretender);
                     } else {
+                        //System.out.println("here");
                         event.consume();
                         edgeStarted = false;
                         Node node = (Node) event.getSource();
+                        if(node == pretender)
+                        {
+                            Drawer.getInstance().removeMoveHandler();
+                            return;
+                        }
 
                         edgePretender.setNodes(node,pretender);
-                        edgePretender.connectNodes(node.getCircle(), pretender.getCircle());
+                        edgePretender.connectNodes(node, pretender);
                         //Graph.getInstance().connectNodes(node, pretender, edgePretender);
 
                         Invoker.getInstance().createElement(edgePretender);
@@ -116,16 +125,10 @@ public class Filter {
 
             } else if (event.getSource().getClass() == Edge.class) {
                 event.consume();
-//                if (!edgeStarted && event.getButton() == MouseButton.SECONDARY) {
-//                    Edge e = (Edge) event.getSource();
-//
-//                    //Invoker.getInstance().deleteElement(e);
-//
-//
-//                    //e.remove();
-//                }
+
             }else if(event.getSource().getClass() == Distance.class){
                 event.consume();
+                System.out.println("and here");
 
                 Distance curDist = (Distance)event.getSource();
                 curDist.showInput();

@@ -20,7 +20,8 @@ public class Distance extends Pane {
     private TexLabel label;
     private TextField input;
 
-    private double value = Double.MAX_VALUE;
+    private double value = 1;
+            //Double.MAX_VALUE;
     private String curText = TexLabel.DEFAULT;
 
     private static final int MAX_LENGTH = 70;
@@ -69,6 +70,7 @@ public class Distance extends Pane {
         this.setWidth(label.getWidth());
 
         this.getChildren().add(label);
+        input.setDisable(true);
 
         if(Graph.getInstance().areDistancesShown())
             show();
@@ -83,6 +85,7 @@ public class Distance extends Pane {
         if(Filter.isEditing()) return;
 
         this.getChildren().add(input);
+        input.setDisable(false);
         input.requestFocus();
         this.getChildren().remove(label);
         input.toFront();
@@ -109,6 +112,7 @@ public class Distance extends Pane {
             this.getChildren().add(label);
             this.getChildren().remove(input);
             label.toFront();
+            input.setDisable(true);
         }
     }
 
@@ -125,22 +129,34 @@ public class Distance extends Pane {
     }
     public String getText(){return curText;}
 
+    /**
+     * Calculates the length in input
+     */
     public void calculate(){
         System.out.println(value);
         if(value != Double.MAX_VALUE && value!= Double.MIN_VALUE)
             label.setText(formatter.format(value));
     }
 
+    /**
+     * Returns the length to the initial state (before any computations)
+     */
     public void decalculate(){
         if(value != Double.MAX_VALUE && value!= Double.MIN_VALUE)
             label.setText(curText);
     }
 
+    /**
+     * Resets the length to infinity
+     */
     public void reset(){
         value = Double.MAX_VALUE;
         curText = label.setText("\\infty");
     }
 
+    /**
+     * @return Is length infinite
+     */
     public boolean isInfty(){
         return value==Double.MAX_VALUE || value==Double.MIN_VALUE;
     }

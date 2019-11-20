@@ -20,10 +20,13 @@ public class Controller {
 
     private Graph graph;
     private Drawer drawer;
-    private MyContextMenu edgeMenu = new MyContextMenu();
 
     @FXML
-    private Label label;
+    private Button stopVisualize;
+
+    @FXML
+    private ImageView stopIcon;
+
 
     @FXML
     private ImageView leftClick;
@@ -35,9 +38,6 @@ public class Controller {
     private TitledPane helpTitledPane;
 
     @FXML
-    private AnchorPane menu;
-
-    @FXML
     private ImageView trashIcon;
 
     @FXML
@@ -45,9 +45,6 @@ public class Controller {
 
     @FXML
     private TitledPane drawTitledPane;
-
-    @FXML
-    private Canvas canvas;
 
     @FXML
     private Button visualizeAmplitudes;
@@ -74,6 +71,9 @@ public class Controller {
     private Button redoButton;
 
     @FXML
+    private TitledPane distancesTitledPane;
+
+    @FXML
     private ImageView redoIcon;
 
     @FXML
@@ -89,13 +89,8 @@ public class Controller {
     private ImageView drag;
 
     @FXML
-    private ToggleButton showDictances;
-
-    @FXML
     private Label tip;
 
-    @FXML
-    private ToggleButton hideDistances;
 
     public Controller() {
         graph = Graph.getInstance();
@@ -122,6 +117,7 @@ public class Controller {
         redoIcon.setImage(new Image(Manager.class.getResource("/assets/redo.png").toExternalForm()));
         resetIcon.setImage(new Image(Manager.class.getResource("/assets/reset.png").toExternalForm()));
         startIcon.setImage(new Image(Manager.class.getResource("/assets/play.png").toExternalForm()));
+        stopIcon.setImage(new Image(Manager.class.getResource("/assets/stop.png").toExternalForm()));
     }
 
     @FXML
@@ -140,6 +136,9 @@ public class Controller {
 
         visualizeAmplitudes.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         visualizeAmplitudes.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        stopVisualize.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        stopVisualize.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
     }
 
     @FXML
@@ -154,13 +153,15 @@ public class Controller {
         setButtons();
 
         drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
-            System.out.println("resize");
+
+            if(Visualizer.isRunning()) return;
             drawingArea.setPrefWidth(newVal.doubleValue());
             graph.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
-            System.out.println("resize");
+
+            if(Visualizer.isRunning()) return;
             // drawingArea.setPrefHeight(newVal.doubleValue());
             graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
@@ -195,7 +196,8 @@ public class Controller {
      */
     @FXML
     void createNode(MouseEvent event) {
-        System.out.println("Canvas clicked");
+        if(Visualizer.isRunning()) return;
+
         if(event.getButton() != MouseButton.PRIMARY) return;
         if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
@@ -210,7 +212,7 @@ public class Controller {
      */
     @FXML
     void clearWorkingArea() {
-        System.out.println("clear");
+
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class
         || x.getClass() == Distance.class);
         graph.clearGraph();
@@ -240,16 +242,21 @@ public class Controller {
 
     @FXML
     void resetDist(){
+
         graph.resetDistances();
     }
 
-
+    /**
+     * Shortcuts event handlers for undo and redo
+     */
     @FXML
     public static final EventHandler<KeyEvent> shortCuts = new EventHandler<KeyEvent>() {
         final KeyCodeCombination undoComb = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination redoComb = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
         @Override
         public void handle(KeyEvent event) {
+            if(Visualizer.isRunning()) return;
+
             if(undoComb.match(event))
                 Invoker.getInstance().undoLast();
             else if(redoComb.match(event))
@@ -257,8 +264,12 @@ public class Controller {
         }
     };
 
+    /**
+     * Starts amplitudes' distribution
+     */
     @FXML
     void visualizeAmplitudes(){
+
 
         if(!graph.areDistancesShown()){
             PopupMessage.showMessage("The distances are disabled");
@@ -270,7 +281,28 @@ public class Controller {
                 return;
             }
         }
+
         graph.visualizeAmplitudes();
+        if(Visualizer.isRunning()) {
+            drawTitledPane.setDisable(true);
+            distancesTitledPane.setDisable(true);
+            visualizeAmplitudes.setDisable(true);
+            stopVisualize.setDisable(false);
+        }
+    }
+
+    /**
+     * Stops amplitudes' distribution
+     */
+    @FXML
+    void stopVisualizing(){
+        Visualizer.stopVisualization();
+
+        visualizeAmplitudes.setDisable(false);
+        stopVisualize.setDisable(true);
+
+        drawTitledPane.setDisable(false);
+        distancesTitledPane.setDisable(false);
     }
 
 }
