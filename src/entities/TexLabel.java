@@ -11,7 +11,7 @@ import org.scilab.forge.jlatexmath.TeXIcon;
 
 public class TexLabel extends Canvas {
 
-    public static final String DEFAULT = "1";
+    public static final String DEFAULT = "\\infty";
 
     private FXGraphics2D gc;
     private TeXIcon icon;

@@ -187,6 +187,9 @@ public class Graph {
             return;
         }
 
+        for (Node n : nodes)
+            n.restartTimer();
+
         Visualizer.startVisualization(startEdge, startNode);
     }
 

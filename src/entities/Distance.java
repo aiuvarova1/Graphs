@@ -20,8 +20,7 @@ public class Distance extends Pane {
     private TexLabel label;
     private TextField input;
 
-    private double value = 1;
-            //Double.MAX_VALUE;
+    private double value = Double.MAX_VALUE;
     private String curText = TexLabel.DEFAULT;
 
     private static final int MAX_LENGTH = 70;

@@ -10,6 +10,7 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
+import main.Visualizer;
 
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,6 +47,7 @@ public class Point extends Circle {
             @Override
             public void handle(ActionEvent event){
 
+               // Visualizer.removeAnimation((PathTransition)event.getSource());
                 while(!ref.get().guestsExpected.compareAndSet(ref.get().guests.get(),
                         ref.get().guestsExpected.get()+1)){
 
@@ -63,6 +65,8 @@ public class Point extends Circle {
                         return null;
                     }
                 };
+                if(!Visualizer.isRunning())
+                    return;
                 t.run();
             }
         });

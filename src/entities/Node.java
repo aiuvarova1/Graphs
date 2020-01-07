@@ -1,6 +1,7 @@
 package entities;
 
 import javafx.animation.ParallelTransition;
+import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -8,6 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -36,7 +38,8 @@ public class Node extends StackPane implements Undoable, Visitable {
 
     public static final double RADIUS = 22;
 
-    private Timer wait = new Timer();
+    private Timer wait;
+    private TimerTask task;
 
     private int num;
     private boolean visited;
@@ -80,28 +83,41 @@ public class Node extends StackPane implements Undoable, Visitable {
                 if(oldValue) return;
                // processed.setValue(false);
 
-                wait.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
+                try {
+                    task = new TimerTask() {
+                        @Override
+                        public void run() {
 
-                            while(guests.get() != guestsExpected.get()){
-
+                            while (guests.get() != guestsExpected.get()) {
+                                if(!Visualizer.isRunning())
+                                    return;
                             }
 
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                handlePoints(guests.get());
-                            }
-                        });
-                        guests.set(0);
-                        guestsExpected.set(0);
-                        processed.setValue(false);
-                    }
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
 
-                },120);
+                                    if(!Visualizer.isRunning())
+                                        return;
+                                    handlePoints(guests.get());
+                                }
+                            });
+                            guests.set(0);
+                            guestsExpected.set(0);
+                            processed.setValue(false);
+                        }
+
+                    };
+                    wait.schedule(task, 120);
+                }catch(IllegalStateException e) {
+                    return;
+                }
             }
         });
+    }
+
+    public void restartTimer(){
+        wait = new Timer();
     }
 
 
@@ -109,12 +125,16 @@ public class Node extends StackPane implements Undoable, Visitable {
      * Resets info needed for visualization
      */
     public void resetNode(){
+        if(task!=null)
+            task.cancel();
+        wait.cancel();
+        wait = new Timer();
         guestsExpected.set(0);
         guests.set(0);
         processed.set(false);
         for (Edge e: edges)
             e.resetProceed();
-        wait.cancel();
+
     }
 
     /**
@@ -142,9 +162,22 @@ public class Node extends StackPane implements Undoable, Visitable {
         if(!Visualizer.isRunning())
             return;
         ParallelTransition tr = new ParallelTransition();
-        for(Edge e: edges)
-            tr.getChildren().add(e.handlePoint(this,numOfPoints,edges.size()));
+        PathTransition p;
+        for(Edge e: edges) {
+            p = e.handlePoint(this, numOfPoints, edges.size());
+            tr.getChildren().add(p);
+           // Visualizer.addAnimation(p);
+        }
+        if(!Visualizer.isRunning())
+            return;
+        Visualizer.addParallel(tr);
         tr.play();
+        tr.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Visualizer.removeParallel((ParallelTransition)event.getSource());
+            }
+        });
 
     }
 
