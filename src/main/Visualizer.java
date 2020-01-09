@@ -5,7 +5,11 @@ import entities.Graph;
 import entities.Node;
 import entities.Point;
 import javafx.animation.PathTransition;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.concurrent.Task;
+import javafx.scene.control.Label;
+
 
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
@@ -19,10 +23,13 @@ public class Visualizer {
 
     private static final int MAX_POINTS = 500;
 
-    private static double curMin = 1000;
+    /** Min length of the edge on the pane,
+     * needed to compute animation's velocity.
+     */
+    private static double curMinEdge = 1000;
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
     private static HashSet<PathTransition> animations = new HashSet<>();
-    //private static HashSet<ParallelTransition> parallel = new HashSet<>();
+
     private static boolean isRunning = false;
     private static int numOfPoints = 0;
 
@@ -30,8 +37,17 @@ public class Visualizer {
     private static boolean colour = false;
     private static boolean arrows = false;
 
+    /**Current lowest possible value of the amplitude**/
+    private static LongProperty lowerBound = new SimpleLongProperty(0);
+
+    /**Current biggest possible value of the amplitude**/
+    private static LongProperty upperBound = new SimpleLongProperty(1);
 
 
+    /**
+     * Submits new task to the common pool
+     * @param t task to submit
+     */
     public static void runTask(Task t){
         threadPool.submit(t);
     }
@@ -58,16 +74,59 @@ public class Visualizer {
     }
 
     public static void setMin(double pretender){
-        curMin = Math.min(pretender,curMin);
+        curMinEdge = Math.min(pretender, curMinEdge);
     }
 
-    public static double getCurMin(){
-        return curMin;
+    public static double getCurMinEdge(){
+        return curMinEdge;
     }
 
+    /**
+     * Controls the number of points in order not to fail with
+     * OutOfMemoryException.
+     * @return whether the limit of points is exceeded
+     */
     public static boolean checkOOM(){
         return ++numOfPoints < MAX_POINTS;
     }
+
+    public static LongProperty getLowerBound(){
+        return lowerBound;
+    }
+
+    public static LongProperty getUpperBound(){
+        return upperBound;
+    }
+
+
+    /**
+     * Checks whether an upper/lower bound changes after a new amplitude
+     * appearance.
+     * @param val new amplitude to check
+     */
+    public static void checkMinMaxAmplitudes(double val){
+
+        val = Math.round(val);
+
+        if((long)val > upperBound.get())
+            upperBound.set((long)val);
+
+        if((long) val < lowerBound.get())
+            lowerBound.set((long)val);
+    }
+
+    /**
+     * Binds corresponding colour labels to properties
+     * @param lower lower bound of amplitudes
+     * @param upper upper bound of amplitudes
+     */
+    static void bindBounds(Label lower, Label upper){
+        lowerBound.addListener((observable, oldValue, newValue) ->
+                lower.setText(Long.toString((newValue.intValue()))));
+        upperBound.addListener((observable, oldValue, newValue) ->
+                upper.setText(Long.toString((newValue.intValue()))));
+    }
+
 
     /**
      * Prepares and starts the distribution
@@ -75,6 +134,9 @@ public class Visualizer {
      * @param startNode node from which the first point goes
      */
     public static void startVisualization(Edge startEdge, Node startNode){
+
+        lowerBound.set(0);
+        upperBound.set(1);
 
         numOfPoints = 1;
         isRunning = true;
@@ -87,20 +149,16 @@ public class Visualizer {
         Point point = new Point(startEdge.getNeighbour(startNode), startEdge);
         Drawer.getInstance().addElem(point);
 
-        //point.setCenterX(start[0]);
-       // point.setCenterY(start[1]);
-
         PathTransition par = point.startPath(start, end,startEdge.getLength());
-        //par.setDuration(new Duration(startEdge.getLength()/curMin * 2000));
-        //par.getChildren().add(point.startPath(start, end));
-       // par.setOnFinished(event -> removeParallel((ParallelTransition)event.getSource()));
         animations.add(par);
         par.play();
 
     }
 
-
-
+    /**
+     * Adds animation of the new point to the list
+     * @param p animation to add
+     */
     public static void addPath(PathTransition p){
         animations.add(p);
     }
@@ -129,6 +187,5 @@ public class Visualizer {
     public static boolean isRunning(){
         return  isRunning;
     }
-
 
 }

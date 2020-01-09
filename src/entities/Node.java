@@ -49,17 +49,17 @@ public class Node extends StackPane implements Undoable, Visitable {
         return edges.size();
     }
 
-    public volatile BooleanProperty processed = new SimpleBooleanProperty(false);
-    public volatile AtomicInteger guests = new AtomicInteger(0);
-    public volatile double amplitudesSum = 0;
+    volatile BooleanProperty processed = new SimpleBooleanProperty(false);
+    volatile AtomicInteger guests = new AtomicInteger(0);
+    private volatile double amplitudesSum = 0;
 
 
-    public double getAmplitudesSum()
+    double getAmplitudesSum()
     {
         return amplitudesSum;
     }
 
-    public synchronized  void increaseAmplitudesSum(double amplitude){
+    synchronized  void increaseAmplitudesSum(double amplitude){
         amplitudesSum += amplitude;
     }
 
@@ -125,25 +125,15 @@ public class Node extends StackPane implements Undoable, Visitable {
 //                wait.schedule(task, 120);
             } catch (IllegalStateException e) {
                 System.out.println("illegal state");
-                return;
             }
         });
-    }
-
-    public void restartTimer() {
-        //wait = new Timer();
     }
 
 
     /**
      * Resets info needed for visualization
      */
-    public void resetNode() {
-//        if(task!=null)
-//            task.cancel();
-//        wait.cancel();
-//        wait = new Timer();
-        //  guestsExpected.set(0);
+    void resetNode() {
         guests.set(0);
         processed.set(false);
         for (Edge e : edges)
@@ -171,7 +161,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      * Proceeds all points which came to the node and restarts their animations
      *
      */
-    public void handlePoints() {
+    void handlePoints() {
 
         if (!Visualizer.isRunning())
             return;
@@ -224,7 +214,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      *
      * @param num new number
      */
-    public void renewNum(int num) {
+    void renewNum(int num) {
         this.num = num;
         setId("" + num);
         setText();
@@ -235,7 +225,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      *
      * @param scale scale param
      */
-    public void rescaleX(double scale) {
+    void rescaleX(double scale) {
 
         Bounds b = Drawer.getInstance().getBounds();
 
@@ -261,7 +251,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      *
      * @param scale scale param
      */
-    public void rescaleY(double scale) {
+    void rescaleY(double scale) {
         Bounds b = Drawer.getInstance().getBounds();
 
         double oldY = getLayoutY();
@@ -294,7 +284,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      * @param edge      edge to add
      * @return whether the adding was successful
      */
-    public Boolean addEdge(Node neighbour, Edge edge) {
+    Boolean addEdge(Node neighbour, Edge edge) {
         //NO MULTIPLE EDGES
         for (Edge e : edges) {
             System.out.println(e.getNeighbour(this) + " edge neigh " + this);
@@ -312,7 +302,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      *
      * @param n number of the node to remove
      */
-    public void removeNeighbour(Node n) {
+    void removeNeighbour(Node n) {
 
         Edge toRemove = null;
         for (Edge e : edges) {
@@ -412,21 +402,21 @@ public class Node extends StackPane implements Undoable, Visitable {
     /**
      * Shows labels of all edges
      */
-    public void showLengths() {
+    void showLengths() {
         handleEdges(Edge::showLength);
     }
 
     /**
      * Hides labels of all edges
      */
-    public void hideLengths() {
+    void hideLengths() {
         handleEdges(Edge::hideLength);
     }
 
     /**
      * Resets edges' lengths
      */
-    public void resetLengths() {
+    void resetLengths() {
         handleEdges(Edge::changeLength);
     }
 

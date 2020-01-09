@@ -1,6 +1,7 @@
 package entities;
 
 import javafx.animation.PathTransition;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -21,21 +22,27 @@ public class Point extends Circle {
 
     private static final int RADIUS = 6;
     private static final int SHIFT = 10;
+    private static final Color BASE_COLOR = Color.GRAY;
 
     private double amplitude;
     private Node destination;
+
+    /**Animation object**/
     private PathTransition pathTransition;
+
+    /**Edge on which the point exists**/
     private Edge edge;
 
     private LineTo line;
     private Path path;
     private MoveTo move;
 
+    /**Text representation of the amplitude**/
     private Text numAmplitude;
 
     public Point() {
 
-        super(RADIUS, Color.DARKGREY);
+        super(RADIUS, BASE_COLOR);
 
         numAmplitude = new Text();
 
@@ -46,26 +53,25 @@ public class Point extends Circle {
         path = new Path();
         move = new MoveTo();
 
-        pathTransition.setOnFinished(event -> {
-
-            Visualizer.runTask(new Task() {
-                @Override
-                protected Object call() {
-                    if (!destination.processed.get())
-                        destination.processed.setValue(true);
-                    setPointToEdge();
-                    destination.increaseAmplitudesSum(amplitude);
-                    destination.guests.incrementAndGet();
-                    return null;
-                }
-            });
-        });
+        pathTransition.setOnFinished(event -> Visualizer.runTask(new Task() {
+            @Override
+            protected Object call() {
+                if (!destination.processed.get())
+                    destination.processed.setValue(true);
+                setPointToEdge();
+                destination.increaseAmplitudesSum(amplitude);
+                destination.guests.incrementAndGet();
+                return null;
+            }
+        }));
         numAmplitude.setText("1");
         numAmplitude.getStyleClass().add("pointLabel");
 
         if(Visualizer.isNumeric())
             showNumbers();
 
+        if(Visualizer.isColoured())
+            showColour();
 
         translateXProperty().addListener(((observable, oldValue, newValue) ->
                 numAmplitude.setTranslateX(newValue.doubleValue() + SHIFT)));
@@ -82,20 +88,36 @@ public class Point extends Circle {
     }
 
 
+    /**
+     * Shows numeric value of the amplitude
+     */
     public void showNumbers() {
         Drawer.getInstance().addElem(numAmplitude);
     }
 
+    /**
+     * Hides numeric value of the amplitude
+     */
     public void hideNumbers() {
         Drawer.getInstance().removeElement(numAmplitude);
     }
 
+    /**
+     * Applies corresponding color to the point
+     */
     public void showColour() {
+        fillProperty().set(calculateInterpolation());
 
+        fillProperty().bind(Bindings.createObjectBinding(this::calculateInterpolation,
+                Visualizer.getLowerBound(), Visualizer.getUpperBound(),numAmplitude.textProperty()));
     }
 
+    /**
+     * Returns base point's color
+     */
     public void hideColour() {
-
+        fillProperty().unbind();
+        fillProperty().set(BASE_COLOR);
     }
 
     public void showArrow() {
@@ -106,23 +128,20 @@ public class Point extends Circle {
 
     }
 
+    /**
+     * Hides amplitude's number and arrow
+     */
     public void hideEnabled(){
         Drawer.getInstance().removeElement(numAmplitude);
     }
 
-    /**
-     * Notifies the edge that this point must be proceeded
-     */
-    public void setPointToEdge() {
-        edge.addToProceed(destination, this);
-    }
 
     /**
      * Sets the new destination node
      *
      * @param n node that will be reached in the end of the way
      */
-    public void setDestination(Node n) {
+    void setDestination(Node n) {
         destination = n;
     }
 
@@ -131,13 +150,13 @@ public class Point extends Circle {
      *
      * @param degree degree of the node
      */
-    public void changeAmplitude(int degree) {
+    void changeAmplitude(int degree) {
         if (degree == 1)
             amplitude = amplitude != 0 ? -amplitude : 0;
         else
             amplitude = ( 2.0 / degree - 1) * amplitude
                     + (destination.getAmplitudesSum() - amplitude) * (2.0 / degree);
-        numAmplitude.setText(Formatter.format(amplitude));
+        updateInfo();
     }
 
     /**
@@ -145,10 +164,20 @@ public class Point extends Circle {
      *
      * @param degree degree of the node
      */
-    public void setAmplitude(int degree) {
+    void setAmplitude(int degree) {
         amplitude = edge.getNeighbour(destination).getAmplitudesSum() * (2.0 / degree);
-        numAmplitude.setText(Formatter.format(amplitude));
+        updateInfo();
     }
+
+    /**
+     * Updates all needed information after amplitude's updating
+     */
+    private void updateInfo(){
+        numAmplitude.setText(Formatter.format(amplitude));
+        Visualizer.checkMinMaxAmplitudes(amplitude);
+
+    }
+
 
     /**
      * Creates the animation instance for the point
@@ -175,9 +204,32 @@ public class Point extends Circle {
         path.getElements().add(line);
 
         pathTransition.setPath(path);
-        pathTransition.setDuration(new Duration(startEdge / Visualizer.getCurMin() * 2000));
+        pathTransition.setDuration(new Duration(startEdge / Visualizer.getCurMinEdge() * 2000));
 
         pathTransition.setNode(this);
         return pathTransition;
+    }
+
+
+    /**
+     * Notifies the edge that this point must be proceeded
+     */
+    private void setPointToEdge() {
+        edge.addToProceed(destination, this);
+    }
+
+    /**
+     * Calculates corresponding to the amplitude Color
+     * @return current amplitude's color
+     */
+    private Color calculateInterpolation(){
+        System.out.println(amplitude + " " +
+                (amplitude - Visualizer.getLowerBound().get())/
+                        (Visualizer.getUpperBound().get() -
+                                Visualizer.getLowerBound().get())+ " ");
+        return Color.ROYALBLUE.interpolate(Color.INDIANRED,
+                (amplitude - Visualizer.getLowerBound().get())/
+                        (Visualizer.getUpperBound().get() -
+                                Visualizer.getLowerBound().get()));
     }
 }

@@ -94,6 +94,12 @@ public class Controller {
     @FXML
     private Label tip;
 
+    @FXML
+    private Label minColor;
+
+    @FXML
+    private Label maxColor;
+
 
     public Controller() {
         graph = Graph.getInstance();
@@ -124,7 +130,7 @@ public class Controller {
     }
 
     @FXML
-    private void setButtons(){
+    private void setButtons() {
         clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
@@ -144,6 +150,65 @@ public class Controller {
         stopVisualize.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
     }
 
+    private void addListeners() {
+        drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
+
+            if (Visualizer.isRunning()) return;
+            drawingArea.setPrefWidth(newVal.doubleValue());
+            graph.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
+        });
+
+        drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
+
+            if (Visualizer.isRunning()) return;
+            // drawingArea.setPrefHeight(newVal.doubleValue());
+            graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
+        });
+
+        calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                        forEach((x) -> ((Distance) x).calculate());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                        forEach((x) -> ((Distance) x).decalculate());
+
+        });
+
+        numeric.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).showNumbers());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).hideNumbers());
+            Visualizer.setNumeric(newValue);
+
+        });
+
+        colour.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).showColour());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).hideColour());
+            Visualizer.setColour(newValue);
+
+        });
+
+        arrows.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).showArrow());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x) -> ((Point) x).hideArrow());
+            Visualizer.setArrows(newValue);
+
+        });
+    }
+
     @FXML
     void initialize() {
         drawingArea.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.dragFilter);
@@ -155,64 +220,8 @@ public class Controller {
 
         setButtons();
 
-        drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
-
-            if(Visualizer.isRunning()) return;
-            drawingArea.setPrefWidth(newVal.doubleValue());
-            graph.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
-        });
-
-        drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
-
-            if(Visualizer.isRunning()) return;
-            // drawingArea.setPrefHeight(newVal.doubleValue());
-            graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
-        });
-
-        calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue)
-                drawingArea.getChildren().filtered(x -> x instanceof Distance).
-                        forEach((x)->((Distance)x).calculate());
-            else
-                drawingArea.getChildren().filtered(x -> x instanceof Distance).
-                        forEach((x)->((Distance)x).decalculate());
-
-        });
-
-        numeric.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue)
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).showNumbers());
-            else
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).hideNumbers());
-            Visualizer.setNumeric(newValue);
-
-        });
-
-        colour.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue)
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).showColour());
-            else
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).hideColour());
-            Visualizer.setColour(newValue);
-
-        });
-
-        arrows.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue)
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).showArrow());
-            else
-                drawingArea.getChildren().filtered(x -> x instanceof Point).
-                        forEach((x)->((Point)x).hideArrow());
-            Visualizer.setArrows(newValue);
-
-        });
-
-
+        addListeners();
+        Visualizer.bindBounds(minColor, maxColor);
 
         drawTitledPane.setAnimated(true);
         helpTitledPane.setAnimated(true);
@@ -231,9 +240,9 @@ public class Controller {
      */
     @FXML
     void createNode(MouseEvent event) {
-        if(Visualizer.isRunning()) return;
+        if (Visualizer.isRunning()) return;
 
-        if(event.getButton() != MouseButton.PRIMARY) return;
+        if (event.getButton() != MouseButton.PRIMARY) return;
         if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
 
             Node node = drawer.drawNode(event);
@@ -249,34 +258,36 @@ public class Controller {
     void clearWorkingArea() {
 
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class
-        || x.getClass() == Distance.class);
+                || x.getClass() == Distance.class);
         graph.clearGraph();
     }
 
     @FXML
-    void undoAction(){
+    void undoAction() {
         Invoker.getInstance().undoLast();
     }
 
     @FXML
-    void redoAction(){Invoker.getInstance().redoLast();}
+    void redoAction() {
+        Invoker.getInstance().redoLast();
+    }
 
     @FXML
-    void showDist(){
+    void showDist() {
 
         graph.setLengths();
         calculate.setDisable(false);
     }
 
     @FXML
-    void hideDist(){
+    void hideDist() {
 
         graph.hideLengths();
         calculate.setDisable(true);
     }
 
     @FXML
-    void resetDist(){
+    void resetDist() {
 
         graph.resetDistances();
     }
@@ -304,22 +315,22 @@ public class Controller {
      * Starts amplitudes' distribution
      */
     @FXML
-    void visualizeAmplitudes(){
+    void visualizeAmplitudes() {
 
 
-        if(!graph.areDistancesShown()){
+        if (!graph.areDistancesShown()) {
             PopupMessage.showMessage("The distances are disabled");
             return;
         }
-        for(javafx.scene.Node dist: drawingArea.getChildren().filtered(x-> x instanceof Distance)){
-            if(((Distance)dist).isInfty()) {
+        for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
+            if (((Distance) dist).isInfty()) {
                 PopupMessage.showMessage("There must be no infinities in distances");
                 return;
             }
         }
 
         graph.visualizeAmplitudes();
-        if(Visualizer.isRunning()) {
+        if (Visualizer.isRunning()) {
             drawTitledPane.setDisable(true);
             distancesTitledPane.setDisable(true);
             visualizeAmplitudes.setDisable(true);
@@ -331,7 +342,7 @@ public class Controller {
      * Stops amplitudes' distribution
      */
     @FXML
-    void stopVisualizing(){
+    void stopVisualizing() {
         Visualizer.stopVisualization();
 
         visualizeAmplitudes.setDisable(false);
@@ -340,5 +351,6 @@ public class Controller {
         drawTitledPane.setDisable(false);
         distancesTitledPane.setDisable(false);
     }
+
 
 }

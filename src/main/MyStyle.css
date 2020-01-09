@@ -152,3 +152,8 @@
     -fx-font-family: "Times New Roman";
     -fx-background-color: #babbf5;
 }
+
+.gradient
+{
+    -fx-background-color: linear-gradient(royalblue, indianred);
+}

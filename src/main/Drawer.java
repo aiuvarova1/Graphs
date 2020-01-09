@@ -1,13 +1,11 @@
 package main;
 
-import entities.Edge;
 import entities.Graph;
 import entities.Node;
 
 import entities.Point;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.scene.Group;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -25,7 +23,7 @@ public class Drawer {
 
     public static final int BOUNDS_GAP = 25;
 
-    public static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
+    private static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
             "-fx-font-size: 26px;";
 
     private static Drawer instance;
@@ -51,11 +49,11 @@ public class Drawer {
         pane.getChildren().remove(node);
     }
 
-    public void setFocus(){
+    void setFocus(){
         pane.requestFocus();
     }
 
-    public void setPane(AnchorPane pane){
+    void setPane(AnchorPane pane){
         this.pane = pane;
     }
 
@@ -63,14 +61,14 @@ public class Drawer {
      * Sets handler for the drawing pane
      * @param h handler to set
      */
-    public void setMoveHandler(EventHandler h){
+    void setMoveHandler(EventHandler h){
         pane.setOnMouseMoved(h);
     }
 
     /**
      * Removes onMouseMove handler
      */
-    public void removeMoveHandler(){
+    void removeMoveHandler(){
         pane.setOnMouseMoved(null);
     }
 
@@ -85,7 +83,7 @@ public class Drawer {
     /**
      * Removes all points from the graph
      */
-    public void removePoints(){
+    void removePoints(){
 
         ArrayList<Point> lst = new ArrayList<>();
         pane.getChildren().removeIf(x->
@@ -100,37 +98,15 @@ public class Drawer {
 
     }
 
+
     /**
      *
      * @return bounds of the drawing area
      */
     public Bounds getBounds(){
-        //return instance.pane.localToParent(instance.pane.getBoundsInLocal());
         return instance.pane.getBoundsInLocal();
     }
 
-    /**
-     * Checks whether the click position crosses the bounds and changes it if needed
-     * @param xPos x-coordinate of a click
-     * @param yPos y-coordinate of a click
-     * @return renewed (if needed) coordinates
-     */
-    public double[] checkBounds(double xPos, double yPos){
-
-        Bounds bounds = (instance.pane.getBoundsInLocal());
-
-        if(xPos - Node.RADIUS < bounds.getMinX())
-            xPos = bounds.getMinX() + Node.RADIUS;
-        else if(xPos + Node.RADIUS > bounds.getMaxX())
-            xPos = bounds.getMaxX() - Node.RADIUS - BOUNDS_GAP;
-
-        if(yPos - Node.RADIUS < bounds.getMinY())
-            yPos = bounds.getMinY() + Node.RADIUS + BOUNDS_GAP;
-        else if (yPos + Node.RADIUS > bounds.getMaxY())
-            yPos = bounds.getMaxY() - Node.RADIUS - BOUNDS_GAP;
-
-        return new double[] {xPos,yPos};
-    }
 
     /**
      * Draws the node by calling needed methods and adds it to the scene
@@ -166,6 +142,29 @@ public class Drawer {
         layout.setLayoutY(yPos - Node.RADIUS);
 
         return layout;
+    }
+
+    /**
+     * Checks whether the click position crosses the bounds and changes it if needed
+     * @param xPos x-coordinate of a click
+     * @param yPos y-coordinate of a click
+     * @return renewed (if needed) coordinates
+     */
+    private double[] checkBounds(double xPos, double yPos){
+
+        Bounds bounds = (instance.pane.getBoundsInLocal());
+
+        if(xPos - Node.RADIUS < bounds.getMinX())
+            xPos = bounds.getMinX() + Node.RADIUS;
+        else if(xPos + Node.RADIUS > bounds.getMaxX())
+            xPos = bounds.getMaxX() - Node.RADIUS - BOUNDS_GAP;
+
+        if(yPos - Node.RADIUS < bounds.getMinY())
+            yPos = bounds.getMinY() + Node.RADIUS + BOUNDS_GAP;
+        else if (yPos + Node.RADIUS > bounds.getMaxY())
+            yPos = bounds.getMaxY() - Node.RADIUS - BOUNDS_GAP;
+
+        return new double[] {xPos,yPos};
     }
 
 }

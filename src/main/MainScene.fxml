@@ -13,6 +13,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -192,7 +193,7 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
-                                          <VBox alignment="CENTER" prefHeight="114.0" prefWidth="284.0" spacing="4.0">
+                                          <VBox alignment="CENTER" fillWidth="false" prefHeight="182.0" prefWidth="284.0" spacing="6.0">
                                              <children>
                                                 <Label alignment="CENTER" graphicTextGap="1.0" prefHeight="38.0" prefWidth="281.0" style="-fx-background-color: e8e8e8;" text="Visualization" textAlignment="CENTER" textFill="#686060" wrapText="true">
                                                    <font>
@@ -204,16 +205,49 @@
                                                       <Font name="Constantia" size="14.0" />
                                                    </font>
                                                 </CheckBox>
-                                                <CheckBox fx:id="colour" alignment="CENTER" mnemonicParsing="false" prefHeight="18.0" prefWidth="170.0" text="Colour" textFill="#686060">
-                                                   <font>
-                                                      <Font name="Constantia" size="14.0" />
-                                                   </font>
-                                                </CheckBox>
                                                 <CheckBox fx:id="arrows" alignment="CENTER" mnemonicParsing="false" prefHeight="18.0" prefWidth="170.0" text="Arrows" textFill="#686060">
                                                    <font>
                                                       <Font name="Constantia" size="14.0" />
                                                    </font>
                                                 </CheckBox>
+                                                <CheckBox fx:id="colour" alignment="CENTER" graphicTextGap="0.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="170.0" text="Colour" textFill="#686060">
+                                                   <font>
+                                                      <Font name="Constantia" size="14.0" />
+                                                   </font>
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
+                                                </CheckBox>
+                                                <VBox alignment="CENTER" prefHeight="59.0" prefWidth="277.0">
+                                                   <children>
+                                                      <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="15.0" prefWidth="109.0" rotate="-90.0" scaleX="0.25" scaleY="10.0" styleClass="gradient" textAlignment="CENTER">
+                                                         <VBox.margin>
+                                                            <Insets top="5.0" />
+                                                         </VBox.margin>
+                                                         <opaqueInsets>
+                                                            <Insets />
+                                                         </opaqueInsets>
+                                                      </Label>
+                                                      <Pane prefHeight="200.0" prefWidth="200.0">
+                                                         <children>
+                                                            <Label fx:id="minColor" layoutX="44.0" layoutY="10.0" prefHeight="17.0" prefWidth="74.0" text="0" textFill="#686060">
+                                                               <font>
+                                                                  <Font name="Times New Roman" size="14.0" />
+                                                               </font>
+                                                            </Label>
+                                                            <Label fx:id="maxColor" layoutX="222.0" layoutY="10.0" prefHeight="17.0" prefWidth="62.0" text="1" textFill="#686060">
+                                                               <font>
+                                                                  <Font name="Times New Roman" size="14.0" />
+                                                               </font>
+                                                            </Label>
+                                                         </children>
+                                                      </Pane>
+                                                      <HBox alignment="CENTER" prefHeight="23.0" prefWidth="277.0" spacing="110.0" />
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets top="7.0" />
+                                                   </VBox.margin>
+                                                </VBox>
                                              </children>
                                           </VBox>
                                        </children>
