@@ -1,17 +1,10 @@
 package entities;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import main.*;
 
-import javax.swing.text.NumberFormatter;
-import java.text.DecimalFormat;
 
 /**
  * Control with distance text label and input field
@@ -25,34 +18,23 @@ public class Distance extends Pane {
 
     private static final int MAX_LENGTH = 70;
     private static boolean isCalculated = false;
-    private static DecimalFormat formatter = new DecimalFormat();
-    static{
-        formatter.setMaximumFractionDigits(4);
-        formatter.setMinimumFractionDigits(0);
-    }
 
-    public static void setCalc(boolean val){isCalculated = val;}
+
+   // public static void setCalc(boolean val){isCalculated = val;}
 
 
     public Distance(){
         label = new TexLabel();
         input = new TextField();
 
-        input.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
+        input.setOnAction(actionEvent -> {
+            showLabel();
+            Filter.endEdit();
+        });
+        input.focusedProperty().addListener((observableValue, old, newVal) -> {
+            if(!newVal){
                 showLabel();
                 Filter.endEdit();
-            }
-        });
-        input.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue,
-                                Boolean old, Boolean newVal) {
-                if(!newVal){
-                    showLabel();
-                    Filter.endEdit();
-                }
             }
         });
 
@@ -99,11 +81,11 @@ public class Distance extends Pane {
 
         try{
             value = Parser.parseDistance(input.getText());
-            System.out.println(value);
+
             if(!isCalculated)
-                Invoker.getInstance().changeDistance(this,input.getText());
+                Invoker.getInstance().changeDistance(this,input.getText(),value);
             else
-                Invoker.getInstance().changeDistance(this, formatter.format(value) );
+                Invoker.getInstance().changeDistance(this, Formatter.format(value),value );
         }catch(IllegalArgumentException ex){
             System.out.println(ex.getMessage());
             PopupMessage.showMessage(ex.getMessage());
@@ -123,8 +105,10 @@ public class Distance extends Pane {
         Drawer.getInstance().removeElement(this);
     }
 
-    public void setText(String text){
+    public void setText(String text, double val){
         curText = label.setText(text);
+        value = val;
+        Visualizer.setMin(value);
     }
     public String getText(){return curText;}
 
@@ -132,9 +116,8 @@ public class Distance extends Pane {
      * Calculates the length in input
      */
     public void calculate(){
-        System.out.println(value);
         if(value != Double.MAX_VALUE && value!= Double.MIN_VALUE)
-            label.setText(formatter.format(value));
+            label.setText(Formatter.format(value));
     }
 
     /**
@@ -158,6 +141,10 @@ public class Distance extends Pane {
      */
     public boolean isInfty(){
         return value==Double.MAX_VALUE || value==Double.MIN_VALUE;
+    }
+
+    public double getValue(){
+        return value;
     }
 
 }

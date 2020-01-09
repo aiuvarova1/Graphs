@@ -1,14 +1,8 @@
 package main;
 
-import entities.Distance;
-import entities.Edge;
-import entities.Graph;
-import entities.Node;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import entities.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,6 +14,15 @@ public class Controller {
 
     private Graph graph;
     private Drawer drawer;
+
+    @FXML
+    private CheckBox numeric;
+
+    @FXML
+    private CheckBox colour;
+
+    @FXML
+    private CheckBox arrows;
 
     @FXML
     private Button stopVisualize;
@@ -121,7 +124,7 @@ public class Controller {
     }
 
     @FXML
-    void setButtons(){
+    private void setButtons(){
         clearButton.addEventHandler(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         clearButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
@@ -166,18 +169,50 @@ public class Controller {
             graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
-        calculate.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(newValue)
-                    drawingArea.getChildren().filtered(x -> x instanceof Distance).
-                            forEach((x)->((Distance)x).calculate());
-                else
-                    drawingArea.getChildren().filtered(x -> x instanceof Distance).
-                            forEach((x)->((Distance)x).decalculate());
+        calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                        forEach((x)->((Distance)x).calculate());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Distance).
+                        forEach((x)->((Distance)x).decalculate());
 
-            }
         });
+
+        numeric.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).showNumbers());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).hideNumbers());
+            Visualizer.setNumeric(newValue);
+
+        });
+
+        colour.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).showColour());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).hideColour());
+            Visualizer.setColour(newValue);
+
+        });
+
+        arrows.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue)
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).showArrow());
+            else
+                drawingArea.getChildren().filtered(x -> x instanceof Point).
+                        forEach((x)->((Point)x).hideArrow());
+            Visualizer.setArrows(newValue);
+
+        });
+
+
 
         drawTitledPane.setAnimated(true);
         helpTitledPane.setAnimated(true);
@@ -250,16 +285,17 @@ public class Controller {
      * Shortcuts event handlers for undo and redo
      */
     @FXML
-    public static final EventHandler<KeyEvent> shortCuts = new EventHandler<KeyEvent>() {
+    static final EventHandler<KeyEvent> shortCuts = new EventHandler<>() {
         final KeyCodeCombination undoComb = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination redoComb = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
+
         @Override
         public void handle(KeyEvent event) {
-            if(Visualizer.isRunning()) return;
+            if (Visualizer.isRunning()) return;
 
-            if(undoComb.match(event))
+            if (undoComb.match(event))
                 Invoker.getInstance().undoLast();
-            else if(redoComb.match(event))
+            else if (redoComb.match(event))
                 Invoker.getInstance().redoLast();
         }
     };

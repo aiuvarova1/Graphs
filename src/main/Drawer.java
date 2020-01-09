@@ -7,11 +7,14 @@ import entities.Node;
 import entities.Point;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+
+import java.util.ArrayList;
 
 
 /**
@@ -83,8 +86,18 @@ public class Drawer {
      * Removes all points from the graph
      */
     public void removePoints(){
-        pane.getChildren().removeIf(x->x instanceof Point);
-       // pane.getChildren().filtered(x->x instanceof Edge).forEach();
+
+        ArrayList<Point> lst = new ArrayList<>();
+        pane.getChildren().removeIf(x->
+        {
+            if(x instanceof Point)
+                lst.add((Point)x);
+            return x instanceof Point;
+        });
+
+        for (Point p : lst)
+            p.hideEnabled();
+
     }
 
     /**

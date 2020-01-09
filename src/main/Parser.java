@@ -1,10 +1,9 @@
 package main;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class Parser {
 
@@ -154,7 +153,6 @@ public class Parser {
      * @param queue here the notation itself is stored
      * @param stack keeps operations and braces
      * @param input user's input
-     * @return poland notation in the queue
      */
     private static void createPolandNotation(ArrayDeque<Token> queue, ArrayDeque<Token> stack,
                                              String input){

@@ -6,7 +6,6 @@ import javafx.scene.Cursor;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import main.Drawer;
 import main.Filter;
@@ -14,7 +13,6 @@ import main.MenuManager;
 import main.Visualizer;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -84,27 +82,30 @@ public class Edge extends Line implements Undoable, Visitable {
     /**
      * Renews the amplitude of the point and builds a new way (or creates the new point)
      * @param n node to which the point came
-     * @param numOfPoints total number of the nodes accepted by n
      * @param degree degree of the node n
      * @return instance of animation to proceed
      */
-    public PathTransition handlePoint(Node n, int numOfPoints, int degree){
+    public PathTransition handlePoint(Node n,  int degree){
 
         if(pointsToProceed.containsKey(n)) {
-            pointsToProceed.get(n).changeAmplitude(degree, numOfPoints);
+
+            pointsToProceed.get(n).changeAmplitude(degree);
             pointsToProceed.get(n).setDestination(getNeighbour(n));
-            PathTransition p = pointsToProceed.get(n).startPath(nearestCoords.get(n),nearestCoords.get(getNeighbour(n)));
+            PathTransition p = pointsToProceed.get(n).startPath(nearestCoords.get(n),
+                    nearestCoords.get(getNeighbour(n)),length.getValue());
             pointsToProceed.remove(n);
             return p;
 
         }else{
+
+            if(!Visualizer.checkOOM())
+                return null;
             Point p = new Point(getNeighbour(n), this);
 
-            p.setCenterX(nearestCoords.get(n)[0]);
-            p.setCenterY(nearestCoords.get(n)[1]);
             Drawer.getInstance().addElem(p);
-            p.setAmplitude(degree, numOfPoints);
-            return p.startPath(nearestCoords.get(n),nearestCoords.get(getNeighbour(n)));
+            p.setAmplitude(degree);
+
+            return p.startPath(nearestCoords.get(n),nearestCoords.get(getNeighbour(n)),length.getValue());
         }
     }
 
@@ -296,6 +297,10 @@ public class Edge extends Line implements Undoable, Visitable {
      */
     public void changeLength() {
         length.reset();
+    }
+
+    public double getLength(){
+        return length.getValue();
     }
 
 

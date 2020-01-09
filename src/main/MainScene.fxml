@@ -162,7 +162,7 @@
                                  <children>
                                     <VBox alignment="TOP_CENTER" fillWidth="false" layoutX="15.0" minWidth="208.0" prefHeight="405.0" prefWidth="284.0" spacing="10.0" style="-fx-border-color: #f5f5f5;" AnchorPane.leftAnchor="-18.0" AnchorPane.rightAnchor="-18.0">
                                        <children>
-                                          <Button fx:id="visualizeAmplitudes" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" onMouseClicked="#visualizeAmplitudes" prefHeight="31.0" prefWidth="277.0" style="-fx-background-color: #f5f5f5;" text="Play" textAlignment="CENTER" textFill="#686060">
+                                          <Button fx:id="visualizeAmplitudes" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" onMouseClicked="#visualizeAmplitudes" prefHeight="32.0" prefWidth="275.0" style="-fx-background-color: #f5f5f5;" text="Play" textAlignment="CENTER" textFill="#686060">
                                              <font>
                                                 <Font name="Constantia" size="17.0" />
                                              </font>
@@ -192,6 +192,30 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
+                                          <VBox alignment="CENTER" prefHeight="114.0" prefWidth="284.0" spacing="4.0">
+                                             <children>
+                                                <Label alignment="CENTER" graphicTextGap="1.0" prefHeight="38.0" prefWidth="281.0" style="-fx-background-color: e8e8e8;" text="Visualization" textAlignment="CENTER" textFill="#686060" wrapText="true">
+                                                   <font>
+                                                      <Font name="Constantia" size="16.0" />
+                                                   </font>
+                                                </Label>
+                                                <CheckBox fx:id="numeric" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="1.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="169.0" selected="true" text="Numeric" textFill="#686060">
+                                                   <font>
+                                                      <Font name="Constantia" size="14.0" />
+                                                   </font>
+                                                </CheckBox>
+                                                <CheckBox fx:id="colour" alignment="CENTER" mnemonicParsing="false" prefHeight="18.0" prefWidth="170.0" text="Colour" textFill="#686060">
+                                                   <font>
+                                                      <Font name="Constantia" size="14.0" />
+                                                   </font>
+                                                </CheckBox>
+                                                <CheckBox fx:id="arrows" alignment="CENTER" mnemonicParsing="false" prefHeight="18.0" prefWidth="170.0" text="Arrows" textFill="#686060">
+                                                   <font>
+                                                      <Font name="Constantia" size="14.0" />
+                                                   </font>
+                                                </CheckBox>
+                                             </children>
+                                          </VBox>
                                        </children>
                                        <padding>
                                           <Insets top="15.0" />

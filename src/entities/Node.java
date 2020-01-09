@@ -1,20 +1,12 @@
 package entities;
 
-import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -38,9 +30,6 @@ public class Node extends StackPane implements Undoable, Visitable {
 
     public static final double RADIUS = 22;
 
-    private Timer wait;
-    private TimerTask task;
-
     private int num;
     private boolean visited;
 
@@ -60,14 +49,18 @@ public class Node extends StackPane implements Undoable, Visitable {
         return edges.size();
     }
 
-    public volatile BooleanProperty  processed = new SimpleBooleanProperty(false);
-    public AtomicInteger guests = new AtomicInteger(0);
-    public AtomicInteger guestsExpected =  new AtomicInteger(0);
+    public volatile BooleanProperty processed = new SimpleBooleanProperty(false);
+    public volatile AtomicInteger guests = new AtomicInteger(0);
+    public volatile double amplitudesSum = 0;
 
 
+    public double getAmplitudesSum()
+    {
+        return amplitudesSum;
+    }
 
-    public int getNum() {
-        return num;
+    public synchronized  void increaseAmplitudesSum(double amplitude){
+        amplitudesSum += amplitude;
     }
 
     public Node(int num) {
@@ -77,62 +70,83 @@ public class Node extends StackPane implements Undoable, Visitable {
 
         setId("" + num);
         setHandlers();
-        processed.addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(oldValue) return;
-               // processed.setValue(false);
+        processed.addListener((observable, oldValue, newValue) -> {
+            if (oldValue) return;
+            // processed.setValue(false);
 
-                try {
-                    task = new TimerTask() {
-                        @Override
-                        public void run() {
+            try {
 
-                            while (guests.get() != guestsExpected.get()) {
-                                if(!Visualizer.isRunning())
-                                    return;
+                Visualizer.runTask(new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+
+                        synchronized (Node.this) {
+                            try {
+                                Node.this.wait(110);
+                            } catch (InterruptedException ex) {
+                                System.out.println("Interrupted in waiting points");
+                                return null;
                             }
-
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    if(!Visualizer.isRunning())
-                                        return;
-                                    handlePoints(guests.get());
-                                }
+                            Platform.runLater(() -> {
+                                handlePoints();
+                                //guests.set(0);
+                                processed.setValue(false);
+                                amplitudesSum = 0;
                             });
-                            guests.set(0);
-                            guestsExpected.set(0);
-                            processed.setValue(false);
-                        }
 
-                    };
-                    wait.schedule(task, 120);
-                }catch(IllegalStateException e) {
-                    return;
-                }
+
+                        }
+                        return null;
+                    }
+                });
+
+
+//                task = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//
+//                        while (guests.get() != guestsExpected.get()) {
+//                            if(!Visualizer.isRunning())
+//                                return;
+//                        }
+//
+//                        Platform.runLater(() -> {
+//
+//                            if(!Visualizer.isRunning())
+//                                return;
+//                            handlePoints(guests.get());
+//                        });
+//                        guests.set(0);
+//                        guestsExpected.set(0);
+//                        processed.setValue(false);
+//                    }
+//
+//                };
+//                wait.schedule(task, 120);
+            } catch (IllegalStateException e) {
+                System.out.println("illegal state");
+                return;
             }
         });
     }
 
-    public void restartTimer(){
-        wait = new Timer();
+    public void restartTimer() {
+        //wait = new Timer();
     }
 
 
     /**
      * Resets info needed for visualization
      */
-    public void resetNode(){
-        if(task!=null)
-            task.cancel();
-        wait.cancel();
-        wait = new Timer();
-        guestsExpected.set(0);
+    public void resetNode() {
+//        if(task!=null)
+//            task.cancel();
+//        wait.cancel();
+//        wait = new Timer();
+        //  guestsExpected.set(0);
         guests.set(0);
         processed.set(false);
-        for (Edge e: edges)
+        for (Edge e : edges)
             e.resetProceed();
 
     }
@@ -140,7 +154,7 @@ public class Node extends StackPane implements Undoable, Visitable {
     /**
      * Selects the node as the start one
      */
-    public void select(){
+    public void select() {
         getCircle().setFill(selectedColor);
         curColor = selectedColor;
     }
@@ -148,41 +162,46 @@ public class Node extends StackPane implements Undoable, Visitable {
     /**
      * Deselects the node as the start one
      */
-    public void deselect(){
+    public void deselect() {
         getCircle().setFill(color);
         curColor = color;
     }
 
     /**
      * Proceeds all points which came to the node and restarts their animations
-     * @param numOfPoints the total number of accepted points
+     *
      */
-    public void handlePoints(int numOfPoints){
+    public void handlePoints() {
 
-        if(!Visualizer.isRunning())
+        if (!Visualizer.isRunning())
             return;
-        ParallelTransition tr = new ParallelTransition();
+        //ParallelTransition tr = new ParallelTransition();
+        ArrayList<PathTransition> toPlay = new ArrayList<>();
         PathTransition p;
-        for(Edge e: edges) {
-            p = e.handlePoint(this, numOfPoints, edges.size());
-            tr.getChildren().add(p);
-           // Visualizer.addAnimation(p);
-        }
-        if(!Visualizer.isRunning())
-            return;
-        Visualizer.addParallel(tr);
-        tr.play();
-        tr.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Visualizer.removeParallel((ParallelTransition)event.getSource());
+        for (Edge e : edges) {
+            p = e.handlePoint(this, edges.size());
+            if(p!=null) {
+                Visualizer.addPath(p);
+                toPlay.add(p);
             }
-        });
+            // tr.getChildren().add(p);
+            // Visualizer.addAnimation(p);
+        }
+        if (!Visualizer.isRunning())
+            return;
+
+        for (PathTransition path : toPlay) {
+            path.play();
+        }
+        //Visualizer.addParallel(tr);
+        // tr.play();
+        //tr.setOnFinished(event -> Visualizer.removeParallel((ParallelTransition)event.getSource()));
 
     }
 
     /**
      * Gets list of neighbours through passing the list of edges
+     *
      * @return list of neighbour nodes
      */
     Set<Node> getNeighbours() {
@@ -194,10 +213,9 @@ public class Node extends StackPane implements Undoable, Visitable {
     }
 
     /**
-     *
      * @return the list of nodes' edges
      */
-    public ArrayList<Edge> getEdges(){
+    public ArrayList<Edge> getEdges() {
         return edges;
     }
 
@@ -263,7 +281,6 @@ public class Node extends StackPane implements Undoable, Visitable {
 
 
     /**
-     *
      * @return Nodes' text on the label
      */
     public Text getText() {
@@ -280,8 +297,8 @@ public class Node extends StackPane implements Undoable, Visitable {
     public Boolean addEdge(Node neighbour, Edge edge) {
         //NO MULTIPLE EDGES
         for (Edge e : edges) {
-            System.out.println(e.getNeighbour(this ) + " edge neigh " + this);
-            if (e.getNeighbour(this).equals( neighbour)) {
+            System.out.println(e.getNeighbour(this) + " edge neigh " + this);
+            if (e.getNeighbour(this).equals(neighbour)) {
                 return false;
             }
         }
@@ -330,10 +347,11 @@ public class Node extends StackPane implements Undoable, Visitable {
 
     /**
      * Fixes node's position after dragging
+     *
      * @param xPos x final coordinate
      * @param yPos y final coordinate
      */
-    public void fixPosition(double xPos, double yPos){
+    public void fixPosition(double xPos, double yPos) {
         setLayoutX(xPos);
         setTranslateX(0);
 
@@ -347,22 +365,23 @@ public class Node extends StackPane implements Undoable, Visitable {
      * Removes the node from the drawing ares
      */
     @Override
-    public void remove(){
+    public void remove() {
         Graph.getInstance().removeNode(this);
     }
 
 
     /**
      * (Re)creates the node
+     *
      * @return whether succeeded in creation
      */
     @Override
-    public boolean create(){
+    public boolean create() {
         Graph.getInstance().addNode(this);
 
         try {
             Drawer.getInstance().addElem(this);
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             System.out.println("Already drawn node");
         }
         Graph.getInstance().refreshLabels(this);
@@ -372,54 +391,53 @@ public class Node extends StackPane implements Undoable, Visitable {
         return true;
     }
 
-    public boolean isVisited(){
+    public boolean isVisited() {
         return visited;
     }
 
-    public void visit(){
+    public void visit() {
         visited = true;
     }
 
     /**
      * Marks the node as not visited (for dfs)
      */
-    public void unvisit(){
+    public void unvisit() {
         visited = false;
 
-        for(Edge e: edges)
+        for (Edge e : edges)
             e.unvisit();
     }
 
     /**
      * Shows labels of all edges
      */
-    public void showLengths(){
+    public void showLengths() {
         handleEdges(Edge::showLength);
     }
 
     /**
      * Hides labels of all edges
      */
-    public void hideLengths(){
+    public void hideLengths() {
         handleEdges(Edge::hideLength);
     }
 
     /**
      * Resets edges' lengths
      */
-    public void resetLengths()
-    {
+    public void resetLengths() {
         handleEdges(Edge::changeLength);
     }
 
     /**
      * Visits all edges and handles them
+     *
      * @param handler method to handle with each edge
      */
-    private void handleEdges(Consumer<Edge> handler){
-        for(Edge e: edges){
-            if(!e.isVisited())
-            {
+    private void handleEdges(Consumer<Edge> handler) {
+        for (Edge e : edges) {
+            if (!e.isVisited()) {
                 e.visit();
                 handler.accept(e);
             }
@@ -488,7 +506,6 @@ public class Node extends StackPane implements Undoable, Visitable {
     }
 
 
-
     /**
      * Sets filters and handlers for mouse events
      * (dragging, clicking, etc)
@@ -497,85 +514,66 @@ public class Node extends StackPane implements Undoable, Visitable {
         addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
         addEventFilter(MouseEvent.MOUSE_DRAGGED, Filter.dragFilter);
 
-        setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
+        setOnMousePressed(event -> {
 
-                if (Filter.isEdgeStarted() ||
-                        Filter.isEditing() || event.isSecondaryButtonDown()
-                || Visualizer.isRunning()) return;
+            if (Filter.isEdgeStarted() ||
+                    Filter.isEditing() || event.isSecondaryButtonDown()
+                    || Visualizer.isRunning()) return;
 
-                initialPosition[0] = getLayoutX();
-                initialPosition[1] = getLayoutY();
-                getScene().setCursor(Cursor.MOVE);
-                toFront();
+            initialPosition[0] = getLayoutX();
+            initialPosition[1] = getLayoutY();
+            getScene().setCursor(Cursor.MOVE);
+            toFront();
 
-               MenuManager.getNodeMenu().hide();
-            }
+            MenuManager.getNodeMenu().hide();
         });
 
-        this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-            @Override
-            public void handle(ContextMenuEvent contextMenuEvent) {
-                if(Filter.isEdgeStarted() || Visualizer.isRunning()) return;
-                MenuManager.getNodeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
-                MenuManager.getNodeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
-                        contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-            }
+        this.setOnContextMenuRequested(contextMenuEvent -> {
+            if (Filter.isEdgeStarted() || Visualizer.isRunning()) return;
+            MenuManager.getNodeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
+            MenuManager.getNodeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
+                    contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
 
 
-        setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() != MouseButton.PRIMARY ||
-                Visualizer.isRunning()) return;
+        setOnMouseReleased(mouseEvent -> {
+            if (mouseEvent.getButton() != MouseButton.PRIMARY ||
+                    Visualizer.isRunning()) return;
 
+            getScene().setCursor(Cursor.HAND);
+          //  Node n = (Node) mouseEvent.getSource();
+            // Invoker.getInstance().moveElement(n, initialPosition,new double[]{getLayoutX() + getTranslateX(),
+            // getLayoutY() + getTranslateY()});
+            fixPosition(getLayoutX() + getTranslateX(), getLayoutY() + getTranslateY());
+
+        });
+        setOnMouseDragged(event -> {
+
+            if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY
+                    || Visualizer.isRunning()) return;
+
+            boolean[] crossedBounds = checkBoundsCrossed(event);
+            if (!crossedBounds[0])
+                setTranslateX(getTranslateX() + event.getX() - RADIUS);
+            if (!crossedBounds[1])
+                setTranslateY(getTranslateY() + event.getY() - RADIUS);
+
+            recalculateEdges();
+
+            relocateCircleCenter(getLayoutX() + getTranslateX(),
+                    getLayoutY() + getTranslateY());
+        });
+        setOnMouseEntered(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
                 getScene().setCursor(Cursor.HAND);
-                Node n = (Node)mouseEvent.getSource();
-                // Invoker.getInstance().moveElement(n, initialPosition,new double[]{getLayoutX() + getTranslateX(),
-                // getLayoutY() + getTranslateY()});
-                fixPosition(getLayoutX() + getTranslateX(), getLayoutY() + getTranslateY());
-
             }
+            getCircle().setFill(Color.AZURE);
         });
-        setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-
-                if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY
-                || Visualizer.isRunning()) return;
-
-                boolean[] crossedBounds = checkBoundsCrossed(event);
-                if (!crossedBounds[0])
-                    setTranslateX(getTranslateX() + event.getX() - RADIUS);
-                if (!crossedBounds[1])
-                    setTranslateY(getTranslateY() + event.getY() - RADIUS);
-
-                recalculateEdges();
-
-                relocateCircleCenter(getLayoutX() + getTranslateX(),
-                        getLayoutY() + getTranslateY());
+        setOnMouseExited(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                getScene().setCursor(Cursor.DEFAULT);
             }
-        });
-        setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.HAND);
-                }
-                getCircle().setFill(Color.AZURE);
-            }
-
-        });
-        setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (!mouseEvent.isPrimaryButtonDown()) {
-                    getScene().setCursor(Cursor.DEFAULT);
-                }
-                getCircle().setFill(curColor);
-            }
+            getCircle().setFill(curColor);
         });
 
     }

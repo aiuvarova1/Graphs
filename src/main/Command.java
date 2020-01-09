@@ -17,21 +17,24 @@ public interface Command {
 class ChangeDistCommand implements Command{
     private Distance dist;
     private String oldDist;
+    private double oldVal;
     private String newDist;
+    private double newVal;
 
-    public ChangeDistCommand(Distance dist, String text){
+    public ChangeDistCommand(Distance dist, String text, double newVal){
         this.dist = dist;
         oldDist = dist.getText();
+        oldVal = dist.getValue();
         newDist = text;
+        this.newVal = newVal;
     }
     public boolean execute(){
-        dist.setText(newDist);
-      //  System.out.println(oldDist + " " + dist.getText());
+        dist.setText(newDist, newVal);
         return !oldDist.equals(dist.getText());
     }
 
     public void undo(){
-        dist.setText(oldDist);
+        dist.setText(oldDist,oldVal);
     }
 }
 

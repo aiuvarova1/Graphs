@@ -2,39 +2,42 @@ package entities;
 
 import javafx.animation.PathTransition;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import main.Drawer;
+import main.Formatter;
 import main.Visualizer;
 
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Represents the point moving along the edge
  */
 public class Point extends Circle {
+
+    private static final int RADIUS = 6;
+    private static final int SHIFT = 10;
+
     private double amplitude;
     private Node destination;
-    private AtomicReference<Node> ref;
     private PathTransition pathTransition;
-    private AtomicReference<Edge> edge;
+    private Edge edge;
 
     private LineTo line;
     private Path path;
     private MoveTo move;
 
-    public Point(){
+    private Text numAmplitude;
 
-        super(6,Color.DARKGREY);
+    public Point() {
 
-        ref = new AtomicReference<>();
-        edge = new AtomicReference<>();
+        super(RADIUS, Color.DARKGREY);
+
+        numAmplitude = new Text();
 
         setStroke(Color.BLACK);
         amplitude = 1;
@@ -43,89 +46,120 @@ public class Point extends Circle {
         path = new Path();
         move = new MoveTo();
 
-        pathTransition.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event){
+        pathTransition.setOnFinished(event -> {
 
-               // Visualizer.removeAnimation((PathTransition)event.getSource());
-                while(!ref.get().guestsExpected.compareAndSet(ref.get().guests.get(),
-                        ref.get().guestsExpected.get()+1)){
-
+            Visualizer.runTask(new Task() {
+                @Override
+                protected Object call() {
+                    if (!destination.processed.get())
+                        destination.processed.setValue(true);
+                    setPointToEdge();
+                    destination.increaseAmplitudesSum(amplitude);
+                    destination.guests.incrementAndGet();
+                    return null;
                 }
-                Task<Void> t = new Task<Void>() {
-                    @Override
-                    protected Void call() throws Exception {
-                        setPointToEdge();
-                        while(!ref.get().guests.compareAndSet(ref.get().guests.get(),
-                                ref.get().guests.get()+1)){
-                        }
-                        if(ref.get().processed.get())
-                            return null;
-                        ref.get().processed.setValue(true);
-                        return null;
-                    }
-                };
-                if(!Visualizer.isRunning())
-                    return;
-                t.run();
-            }
+            });
         });
+        numAmplitude.setText("1");
+        numAmplitude.getStyleClass().add("pointLabel");
+
+        if(Visualizer.isNumeric())
+            showNumbers();
+
+
+        translateXProperty().addListener(((observable, oldValue, newValue) ->
+                numAmplitude.setTranslateX(newValue.doubleValue() + SHIFT)));
+
+        translateYProperty().addListener(((observable, oldValue, newValue) ->
+                numAmplitude.setTranslateY(newValue.doubleValue() + SHIFT)));
 
     }
 
-    public Point(Node n, Edge e){
+    public Point(Node n, Edge e) {
         this();
         destination = n;
-        ref.set(n);
-        this.edge.set (e);
+        this.edge = e;
+    }
+
+
+    public void showNumbers() {
+        Drawer.getInstance().addElem(numAmplitude);
+    }
+
+    public void hideNumbers() {
+        Drawer.getInstance().removeElement(numAmplitude);
+    }
+
+    public void showColour() {
+
+    }
+
+    public void hideColour() {
+
+    }
+
+    public void showArrow() {
+
+    }
+
+    public void hideArrow() {
+
+    }
+
+    public void hideEnabled(){
+        Drawer.getInstance().removeElement(numAmplitude);
     }
 
     /**
      * Notifies the edge that this point must be proceeded
      */
-    public synchronized void setPointToEdge(){
-        edge.get().addToProceed(destination, this);
+    public void setPointToEdge() {
+        edge.addToProceed(destination, this);
     }
 
     /**
      * Sets the new destination node
+     *
      * @param n node that will be reached in the end of the way
      */
-    public void setDestination(Node n){
+    public void setDestination(Node n) {
         destination = n;
-        ref.set(n);
     }
 
     /**
      * Changes amplitude with the given rule
+     *
      * @param degree degree of the node
-     * @param num total num of points in the node
      */
-    public void changeAmplitude(int degree, int num){
-        if(num == 1)
-            amplitude = -amplitude;
+    public void changeAmplitude(int degree) {
+        if (degree == 1)
+            amplitude = amplitude != 0 ? -amplitude : 0;
         else
-            amplitude = 1-2.0/degree + num*(2.0/degree);
+            amplitude = ( 2.0 / degree - 1) * amplitude
+                    + (destination.getAmplitudesSum() - amplitude) * (2.0 / degree);
+        numAmplitude.setText(Formatter.format(amplitude));
     }
 
     /**
      * Sets the amplitude for the new point
+     *
      * @param degree degree of the node
-     * @param num total num of accepted points
      */
-    public void setAmplitude(int degree, int num){
-        amplitude = num*(2.0/degree);
+    public void setAmplitude(int degree) {
+        amplitude = edge.getNeighbour(destination).getAmplitudesSum() * (2.0 / degree);
+        numAmplitude.setText(Formatter.format(amplitude));
     }
 
     /**
      * Creates the animation instance for the point
+     *
      * @param start start coordinates
-     * @param end end coordinates
+     * @param end   end coordinates
      * @return instance of animation
      */
-    public PathTransition startPath(double[] start, double[] end){
+    public PathTransition startPath(double[] start, double[] end, double startEdge) {
 
-        pathTransition.setDuration(Duration.millis(2000));
+        // pathTransition.setDuration(Duration.millis(2000));
         path.getElements().clear();
 
         line.setX(end[0]);
@@ -134,10 +168,14 @@ public class Point extends Circle {
         move.setX(start[0]);
         move.setY(start[1]);
 
+        numAmplitude.setTranslateX(start[0]);
+        numAmplitude.setTranslateY(start[1]);
+
         path.getElements().add(move);
         path.getElements().add(line);
 
         pathTransition.setPath(path);
+        pathTransition.setDuration(new Duration(startEdge / Visualizer.getCurMin() * 2000));
 
         pathTransition.setNode(this);
         return pathTransition;

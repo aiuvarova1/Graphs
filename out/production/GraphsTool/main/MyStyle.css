@@ -146,3 +146,9 @@
     -fx-background-color: #e6e6e6;
 
 }
+
+.pointLabel{
+    -fx-font-size: 15;
+    -fx-font-family: "Times New Roman";
+    -fx-background-color: #babbf5;
+}

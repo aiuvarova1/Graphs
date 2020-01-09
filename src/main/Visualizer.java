@@ -4,10 +4,12 @@ import entities.Edge;
 import entities.Graph;
 import entities.Node;
 import entities.Point;
-import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
+import javafx.concurrent.Task;
 
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Class that starts and stops amplitudes' distribution
@@ -15,12 +17,57 @@ import java.util.HashSet;
 
 public class Visualizer {
 
+    private static final int MAX_POINTS = 500;
 
-
-   // private static HashSet<PathTransition> animations = new HashSet<>();
-    private static PathTransition initial ;
-    private static HashSet<ParallelTransition> parallel = new HashSet<>();
+    private static double curMin = 1000;
+    private static ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static HashSet<PathTransition> animations = new HashSet<>();
+    //private static HashSet<ParallelTransition> parallel = new HashSet<>();
     private static boolean isRunning = false;
+    private static int numOfPoints = 0;
+
+    private static boolean numeric = true;
+    private static boolean colour = false;
+    private static boolean arrows = false;
+
+
+
+    public static void runTask(Task t){
+        threadPool.submit(t);
+    }
+
+    static void setNumeric(boolean val){
+        numeric = val;
+    }
+    public static boolean isNumeric(){
+        return numeric;
+    }
+
+    static void setColour(boolean val){
+        colour = val;
+    }
+    public static boolean isColoured(){
+        return colour;
+    }
+
+    static void setArrows(boolean val){
+        arrows = val;
+    }
+    public static boolean isArrows(){
+        return arrows;
+    }
+
+    public static void setMin(double pretender){
+        curMin = Math.min(pretender,curMin);
+    }
+
+    public static double getCurMin(){
+        return curMin;
+    }
+
+    public static boolean checkOOM(){
+        return ++numOfPoints < MAX_POINTS;
+    }
 
     /**
      * Prepares and starts the distribution
@@ -29,6 +76,7 @@ public class Visualizer {
      */
     public static void startVisualization(Edge startEdge, Node startNode){
 
+        numOfPoints = 1;
         isRunning = true;
         double[] start;
         double[] end;
@@ -39,35 +87,36 @@ public class Visualizer {
         Point point = new Point(startEdge.getNeighbour(startNode), startEdge);
         Drawer.getInstance().addElem(point);
 
-        point.setCenterX(start[0]);
-        point.setCenterY(start[1]);
+        //point.setCenterX(start[0]);
+       // point.setCenterY(start[1]);
 
-        ParallelTransition par = new ParallelTransition();
-        par.getChildren().add(point.startPath(start, end));
-        par.setOnFinished(event -> removeParallel((ParallelTransition)event.getSource()));
-        parallel.add(par);
+        PathTransition par = point.startPath(start, end,startEdge.getLength());
+        //par.setDuration(new Duration(startEdge.getLength()/curMin * 2000));
+        //par.getChildren().add(point.startPath(start, end));
+       // par.setOnFinished(event -> removeParallel((ParallelTransition)event.getSource()));
+        animations.add(par);
         par.play();
 
     }
 
 
 
-    public static void addParallel(ParallelTransition p){
-        parallel.add(p);
+    public static void addPath(PathTransition p){
+        animations.add(p);
     }
 
-    public static void removeParallel(ParallelTransition p){
-        parallel.remove(p);
-    }
 
     /**
      * Stops the visualization and refreshes the needed data
      */
-    public static void stopVisualization(){
+    static void stopVisualization(){
         isRunning = false;
-        for (ParallelTransition p : parallel)
+        for (PathTransition p : animations)
             p.stop();
-        parallel.clear();
+        animations.clear();
+
+        threadPool.shutdownNow();
+        threadPool = Executors.newCachedThreadPool();
 
         Drawer.getInstance().removePoints();
         Graph.getInstance().resetNodes();

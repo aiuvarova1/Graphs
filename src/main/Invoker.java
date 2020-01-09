@@ -45,9 +45,8 @@ public class Invoker {
             commands.push(c);
     }
 
-    public void changeDistance(Distance d, String text){
-        Command c = new ChangeDistCommand(d, text);
-        System.out.println("dist");
+    public void changeDistance(Distance d, String text, double val){
+        Command c = new ChangeDistCommand(d, text,val);
         if(c.execute())
             commands.push(c);
     }
