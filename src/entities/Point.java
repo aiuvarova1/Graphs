@@ -20,7 +20,7 @@ import main.Visualizer;
  */
 public class Point extends Circle {
 
-    private static final int RADIUS = 6;
+    static final int RADIUS = 6;
     private static final int SHIFT = 10;
     private static final Color BASE_COLOR = Color.GRAY;
 
@@ -40,30 +40,23 @@ public class Point extends Circle {
     /**Text representation of the amplitude**/
     private Text numAmplitude;
 
+    private Arrow arrow;
+
     public Point() {
 
         super(RADIUS, BASE_COLOR);
 
         numAmplitude = new Text();
+        arrow = new Arrow(getCenterX(), getCenterY() - RADIUS);
 
         setStroke(Color.BLACK);
         amplitude = 1;
+
         pathTransition = new PathTransition();
         line = new LineTo();
         path = new Path();
         move = new MoveTo();
 
-        pathTransition.setOnFinished(event -> Visualizer.runTask(new Task() {
-            @Override
-            protected Object call() {
-                if (!destination.processed.get())
-                    destination.processed.setValue(true);
-                setPointToEdge();
-                destination.increaseAmplitudesSum(amplitude);
-                destination.guests.incrementAndGet();
-                return null;
-            }
-        }));
         numAmplitude.setText("1");
         numAmplitude.getStyleClass().add("pointLabel");
 
@@ -73,12 +66,10 @@ public class Point extends Circle {
         if(Visualizer.isColoured())
             showColour();
 
-        translateXProperty().addListener(((observable, oldValue, newValue) ->
-                numAmplitude.setTranslateX(newValue.doubleValue() + SHIFT)));
+        if(Visualizer.isArrows())
+            showArrow();
 
-        translateYProperty().addListener(((observable, oldValue, newValue) ->
-                numAmplitude.setTranslateY(newValue.doubleValue() + SHIFT)));
-
+        setBindings();
     }
 
     public Point(Node n, Edge e) {
@@ -120,19 +111,27 @@ public class Point extends Circle {
         fillProperty().set(BASE_COLOR);
     }
 
+    /**
+     * Shows a vector of an amplitude
+     */
     public void showArrow() {
-
+        arrow.addArrow();
+        arrow.redrawArrow(amplitude);
     }
 
+    /**
+     * Hides the vector of an amplitude
+     */
     public void hideArrow() {
-
+        arrow.removeArrow();
     }
 
     /**
      * Hides amplitude's number and arrow
      */
     public void hideEnabled(){
-        Drawer.getInstance().removeElement(numAmplitude);
+        hideNumbers();
+        hideArrow();
     }
 
 
@@ -167,15 +166,6 @@ public class Point extends Circle {
     void setAmplitude(int degree) {
         amplitude = edge.getNeighbour(destination).getAmplitudesSum() * (2.0 / degree);
         updateInfo();
-    }
-
-    /**
-     * Updates all needed information after amplitude's updating
-     */
-    private void updateInfo(){
-        numAmplitude.setText(Formatter.format(amplitude));
-        Visualizer.checkMinMaxAmplitudes(amplitude);
-
     }
 
 
@@ -223,13 +213,55 @@ public class Point extends Circle {
      * @return current amplitude's color
      */
     private Color calculateInterpolation(){
-        System.out.println(amplitude + " " +
-                (amplitude - Visualizer.getLowerBound().get())/
-                        (Visualizer.getUpperBound().get() -
-                                Visualizer.getLowerBound().get())+ " ");
         return Color.ROYALBLUE.interpolate(Color.INDIANRED,
                 (amplitude - Visualizer.getLowerBound().get())/
                         (Visualizer.getUpperBound().get() -
                                 Visualizer.getLowerBound().get()));
+    }
+
+    /**
+     * Binds needed properties
+     */
+    private void setBindings(){
+
+        pathTransition.setOnFinished(event -> Visualizer.runTask(new Task() {
+            @Override
+            protected Object call() {
+                if (!destination.processed.get())
+                    destination.processed.setValue(true);
+                setPointToEdge();
+                destination.increaseAmplitudesSum(amplitude);
+                destination.guests.incrementAndGet();
+                return null;
+            }
+        }));
+
+        translateXProperty().addListener(((observable, oldValue, newValue) ->
+        {
+            numAmplitude.setTranslateX(newValue.doubleValue() + SHIFT);
+            arrow.setArrowTranslateX(newValue.doubleValue());
+        }));
+
+        translateYProperty().addListener(((observable, oldValue, newValue) ->
+        {
+            numAmplitude.setTranslateY(newValue.doubleValue() + SHIFT);
+            arrow.setArrowTranslateY(newValue.doubleValue());
+        }));
+
+        numAmplitude.textProperty().addListener(((observable, oldValue, newValue) ->
+        {
+            if(Visualizer.isArrows())
+                arrow.redrawArrow(Double.valueOf(newValue));
+        }
+        ));
+    }
+
+    /**
+     * Updates all needed information after amplitude's updating
+     */
+    private void updateInfo(){
+        numAmplitude.setText(Formatter.format(amplitude));
+        Visualizer.checkMinMaxAmplitudes(amplitude);
+
     }
 }

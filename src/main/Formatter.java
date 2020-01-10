@@ -1,9 +1,10 @@
 package main;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 public class Formatter {
-    private static DecimalFormat formatter = new DecimalFormat();
+    private static DecimalFormat formatter = (DecimalFormat)DecimalFormat.getInstance(Locale.US);
     static{
         formatter.setMaximumFractionDigits(3);
         formatter.setMinimumFractionDigits(0);
