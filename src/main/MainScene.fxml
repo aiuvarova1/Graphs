@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -41,6 +42,11 @@
                                  <children>
                                     <VBox minWidth="208.0" prefHeight="473.0" prefWidth="283.0" spacing="10.0" style="-fx-border-color: #f5f5f5;" AnchorPane.leftAnchor="-18.0" AnchorPane.rightAnchor="-18.0">
                                        <children>
+                                          <Label alignment="CENTER" graphicTextGap="1.0" prefHeight="38.0" prefWidth="281.0" style="-fx-background-color: e8e8e8;" text="Edit" textAlignment="CENTER" textFill="#686060" wrapText="true">
+                                             <font>
+                                                <Font name="Constantia" size="16.0" />
+                                             </font>
+                                          </Label>
                                           <Button fx:id="undoButton" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" onMouseClicked="#undoAction" prefHeight="31.0" prefWidth="277.0" style="-fx-background-color: #f5f5f5;" text="Undo" textAlignment="CENTER" textFill="#686060">
                                              <font>
                                                 <Font name="Constantia" size="17.0" />
@@ -86,10 +92,57 @@
                                                 </ImageView>
                                              </graphic>
                                           </Button>
+                                          <Label alignment="CENTER" graphicTextGap="1.0" prefHeight="38.0" prefWidth="281.0" style="-fx-background-color: e8e8e8;" text="File" textAlignment="CENTER" textFill="#686060" wrapText="true">
+                                             <font>
+                                                <Font name="Constantia" size="16.0" />
+                                             </font>
+                                          </Label>
+                                          <Button fx:id="openButton" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="277.0" style="-fx-background-color: #f5f5f5;" text="Open" textAlignment="CENTER" textFill="#686060">
+                                             <font>
+                                                <Font name="Constantia" size="17.0" />
+                                             </font>
+                                             <graphic>
+                                                <ImageView fx:id="openIcon" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../resources/assets/open.png" />
+                                                   </image>
+                                                   <effect>
+                                                      <ColorAdjust brightness="0.48" />
+                                                   </effect>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button fx:id="saveButton" alignment="CENTER" disable="true" minWidth="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="277.0" style="-fx-background-color: #f5f5f5;" text="Save" textAlignment="CENTER" textFill="#686060">
+                                             <font>
+                                                <Font name="Constantia" size="17.0" />
+                                             </font>
+                                             <graphic>
+                                                <ImageView fx:id="saveIcon" fitHeight="19.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../resources/assets/save.png" />
+                                                   </image>
+                                                   <effect>
+                                                      <ColorAdjust brightness="0.48" />
+                                                   </effect>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button fx:id="saveAsButton" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="277.0" style="-fx-background-color: #f5f5f5;" text="Save as..." textAlignment="CENTER" textFill="#686060">
+                                             <font>
+                                                <Font name="Constantia" size="17.0" />
+                                             </font>
+                                             <graphic>
+                                                <ImageView fx:id="saveAsIcon" fitHeight="19.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../resources/assets/save.png" />
+                                                   </image>
+                                                   <effect>
+                                                      <ColorAdjust brightness="0.48" />
+                                                   </effect>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
                                        </children>
-                                       <padding>
-                                          <Insets top="15.0" />
-                                       </padding>
                                     </VBox>
                                  </children></AnchorPane>
                           </content>
@@ -386,5 +439,76 @@
                </children></AnchorPane>
          </children>
       </HBox>
+      <StackPane fx:id="dialog" disable="true" prefHeight="150.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <VBox alignment="TOP_CENTER" maxHeight="150.0" maxWidth="300.0" minHeight="100.0" minWidth="300.0" prefHeight="139.0" prefWidth="300.0" styleClass="dialog" stylesheets="@MyStyle.css">
+               <children>
+                  <Label prefHeight="90.0" prefWidth="210.0" text="Do you want to save changes? All unsaved data will be lost." textAlignment="CENTER" textFill="#686060" wrapText="true">
+                     <font>
+                        <Font name="Constantia" size="16.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" maxWidth="281.0" minWidth="300.0" prefHeight="39.0" prefWidth="281.0">
+                     <children>
+                        <Button fx:id="saveButton2" alignment="CENTER" minWidth="76.0" mnemonicParsing="false" onMouseClicked="#saveUnchanged" prefHeight="32.0" prefWidth="119.0" style="-fx-background-color: #e1e1e1;" text="Save" textAlignment="CENTER" textFill="#686060">
+                           <font>
+                              <Font name="Constantia" size="16.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fx:id="saveIcon2" fitHeight="22.0" fitWidth="20.0" onMouseClicked="#saveUnchanged" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/assets/save.png" />
+                                 </image>
+                                 <effect>
+                                    <ColorAdjust brightness="0.48" />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="discardButton" alignment="CENTER" minWidth="83.0" mnemonicParsing="false" onMouseClicked="#discardAndOpen" prefHeight="33.0" prefWidth="140.0" style="-fx-background-color: #e1e1e1;" text="Discard" textAlignment="CENTER" textFill="#686060">
+                           <font>
+                              <Font name="Constantia" size="16.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fx:id="discardIcon" fitHeight="25.0" fitWidth="21.0" onMouseClicked="#discardAndOpen" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/assets/discard.png" />
+                                 </image>
+                                 <effect>
+                                    <ColorAdjust brightness="0.48" />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cancelButton" alignment="CENTER" minWidth="79.0" mnemonicParsing="false" onMouseClicked="#hideDialog" prefHeight="32.0" prefWidth="141.0" style="-fx-background-color: #e1e1e1;" text="Cancel" textAlignment="CENTER" textFill="#686060">
+                           <font>
+                              <Font name="Constantia" size="16.0" />
+                           </font>
+                           <graphic>
+                              <ImageView fx:id="cancelIcon" fitHeight="19.0" fitWidth="17.0" onMouseClicked="#hideDialog" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/assets/close.png" />
+                                 </image>
+                                 <effect>
+                                    <ColorAdjust brightness="0.48" />
+                                 </effect>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets left="250.0" />
+         </padding>
+      </StackPane>
    </children>
 </AnchorPane>

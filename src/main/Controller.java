@@ -8,6 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+
 
 
 public class Controller {
@@ -118,6 +120,44 @@ public class Controller {
     @FXML
     private Label maxColor;
 
+    @FXML
+    private Button saveButton;
+
+    @FXML
+    private ImageView saveIcon;
+
+    @FXML
+    private Button openButton;
+
+    @FXML
+    private ImageView openIcon;
+
+    @FXML
+    private Button saveAsButton;
+
+    @FXML
+    private ImageView saveAsIcon;
+
+    @FXML
+    private StackPane dialog;
+
+    @FXML
+    private Button saveButton2;
+
+    @FXML
+    private ImageView saveIcon2;
+
+    @FXML
+    private Button discardButton;
+
+    @FXML
+    private ImageView discardIcon;
+
+    @FXML
+    private Button cancelButton;
+
+    @FXML
+    private ImageView cancelIcon;
 
     public Controller() {
         graph = Graph.getInstance();
@@ -146,6 +186,12 @@ public class Controller {
         startIcon.setImage(new Image(Manager.class.getResource("/assets/play.png").toExternalForm()));
         stopIcon.setImage(new Image(Manager.class.getResource("/assets/stop.png").toExternalForm()));
         setAllIcon.setImage(new Image(Manager.class.getResource("/assets/confirm.png").toExternalForm()));
+        openIcon.setImage(new Image(Manager.class.getResource("/assets/open.png").toExternalForm()));
+        saveIcon.setImage(new Image(Manager.class.getResource("/assets/save.png").toExternalForm()));
+        saveAsIcon.setImage(new Image(Manager.class.getResource("/assets/save.png").toExternalForm()));
+        saveIcon2.setImage(new Image(Manager.class.getResource("/assets/save.png").toExternalForm()));
+        discardIcon.setImage(new Image(Manager.class.getResource("/assets/discard.png").toExternalForm()));
+        cancelIcon.setImage(new Image(Manager.class.getResource("/assets/close.png").toExternalForm()));
     }
 
     @FXML
@@ -179,6 +225,41 @@ public class Controller {
             setAllIcon.setScaleY(1);
 
         });
+
+        saveButton.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        saveButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        saveAsButton.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        saveAsButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        openButton.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        openButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        String unselected = "-fx-background-color: #e1e1e1;" + "-fx-font-size: 16px;"
+                + "-fx-font-family: \"Constantia\";";
+
+        String selected = "-fx-background-color: #e1e1e1;" + "-fx-font-size: 17px;"
+                + "-fx-font-family: \"Constantia\";";
+
+        cancelButton.addEventFilter(MouseEvent.MOUSE_ENTERED, event ->
+            ((Button)event.getSource()).setStyle(selected));
+        cancelButton.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
+                ((Button)event.getSource()).setStyle(unselected));
+
+        saveButton2.addEventFilter(MouseEvent.MOUSE_ENTERED,event ->
+            ((Button)event.getSource()).setStyle(selected));
+        saveButton2.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
+            ((Button)event.getSource()).setStyle(unselected)
+        );
+
+        discardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event ->
+            ((Button)event.getSource()).setStyle(selected));
+
+        discardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
+            ((Button)event.getSource()).setStyle(unselected)
+        );
+
+
     }
 
     private void addListeners() {
@@ -250,7 +331,46 @@ public class Controller {
             }
         });
 
+        saveButton.setOnAction(event -> FileManager.save());
+        saveAsButton.setOnAction(event -> FileManager.saveAs());
+        openButton.setOnAction(event -> openFile());
+
+        saveButton.disableProperty().bind(FileManager.getDisable());
+
     }
+
+    private void openFile(){
+        if(FileManager.isSaveNeeded())
+        {
+            dialog.setDisable(false);
+            dialog.setVisible(true);
+
+        }else{
+            FileManager.open();
+        }
+
+    }
+
+    @FXML
+    void saveUnchanged(){
+        hideDialog();
+        FileManager.save();
+        FileManager.open();
+    }
+
+    @FXML
+    void discardAndOpen(){
+        hideDialog();
+        FileManager.open();
+    }
+
+    @FXML
+    void hideDialog(){
+        dialog.setDisable(true);
+        dialog.setVisible(false);
+    }
+
+
 
     @FXML
     void initialize() {
@@ -273,8 +393,6 @@ public class Controller {
 
         new Distance();
         PopupMessage.setPopup(tip);
-
-
     }
 
     /**
@@ -306,6 +424,8 @@ public class Controller {
         graph.clearGraph();
     }
 
+
+
     @FXML
     void undoAction() {
         Invoker.getInstance().undoLast();
@@ -316,6 +436,9 @@ public class Controller {
         Invoker.getInstance().redoLast();
     }
 
+    /**
+     * Shows lengths of the edges
+     */
     @FXML
     void showDist() {
 
@@ -330,6 +453,9 @@ public class Controller {
 
     }
 
+    /**
+     * Makes current graph not weighed
+     */
     @FXML
     void hideDist() {
 
@@ -356,12 +482,17 @@ public class Controller {
     }
 
     /**
-     * Shortcuts event handlers for undo and redo
+     * Shortcuts event handlers for undo, redo, save
      */
     @FXML
     static final EventHandler<KeyEvent> shortCuts = new EventHandler<>() {
         final KeyCodeCombination undoComb = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination redoComb = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
+        final KeyCodeCombination saveComb =
+                new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+        final KeyCodeCombination saveAsComb =
+                new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_ANY, KeyCombination.CONTROL_DOWN);
+
 
         @Override
         public void handle(KeyEvent event) {
@@ -371,6 +502,10 @@ public class Controller {
                 Invoker.getInstance().undoLast();
             else if (redoComb.match(event))
                 Invoker.getInstance().redoLast();
+            else if (saveComb.match(event) && FileManager.isSaveNeeded())
+                FileManager.save();
+            else if(saveAsComb.match(event))
+                FileManager.saveAs();
         }
     };
 

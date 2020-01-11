@@ -1,20 +1,12 @@
 package main;
 
 
-import entities.TexLabel;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.text.Font;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
-import javafx.scene.Group;
-import javafx.scene.text.Text;
-
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 public class Manager extends Application {
@@ -22,8 +14,6 @@ public class Manager extends Application {
     public static void main(String[] args) {
 
         Application.launch(args);
-       // Popup
-
     }
 
     @Override
@@ -59,6 +49,8 @@ public class Manager extends Application {
         stage.setMinHeight(550);
 
         stage.getScene().setOnKeyReleased(Controller.shortCuts);
+
+        FileManager.setStage(stage);
 
 
         stage.show();

@@ -19,6 +19,7 @@ import main.MenuManager;
 import main.Visualizer;
 
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -26,7 +27,8 @@ import java.util.function.Consumer;
 /**
  * Represents one node of the graph
  */
-public class Node extends StackPane implements Undoable, Visitable {
+public class Node extends StackPane implements
+        Undoable, Visitable, Serializable {
 
     public static final double RADIUS = 22;
 
@@ -36,10 +38,10 @@ public class Node extends StackPane implements Undoable, Visitable {
     private ArrayList<Edge> edges;
     private double[] initialPosition;
 
-    private static final Color color = Color.WHITE;
-    private static final Color selectedColor = Color.LIGHTBLUE;
+    private transient static final Color color = Color.WHITE;
+    private transient static final Color selectedColor = Color.LIGHTBLUE;
 
-    private Color curColor = color;
+    private transient Color curColor = color;
 
     public Circle getCircle() {
         return (Circle) getChildren().get(0);
@@ -49,8 +51,8 @@ public class Node extends StackPane implements Undoable, Visitable {
         return edges.size();
     }
 
-    volatile BooleanProperty processed = new SimpleBooleanProperty(false);
-    volatile AtomicInteger guests = new AtomicInteger(0);
+    volatile transient BooleanProperty processed = new SimpleBooleanProperty(false);
+    volatile transient AtomicInteger guests = new AtomicInteger(0);
     private volatile double amplitudesSum = 0;
 
 

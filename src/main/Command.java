@@ -14,6 +14,7 @@ public interface Command {
     boolean execute();
 }
 
+
 class ChangeDistCommand implements Command {
     private Distance dist;
     private String oldDist;

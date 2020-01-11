@@ -25,14 +25,14 @@ public class Cache extends Stack<Command> {
         if(pointer == CAPACITY)
             pointer = 0;
         stack[pointer] = elem;
-        System.out.println(pointer + " " );
         if(curCapacity < CAPACITY) curCapacity ++;
+        Invoker.checkLastCommand();
         return elem;
     }
 
     @Override
     public Command pop(){
-        System.out.println(curCapacity);
+
         if (stack.length > 0 && curCapacity > 0){
             Command toReturn = stack[pointer];
             pointer--;
@@ -41,9 +41,10 @@ public class Cache extends Stack<Command> {
             curCapacity--;
             redoPointer++;
             return toReturn;
-        }else{
-            return null;
         }
+
+        return null;
+
     }
 
     public Command getNext(){
@@ -56,8 +57,11 @@ public class Cache extends Stack<Command> {
         if(pointer == CAPACITY)
             pointer = 0;
         curCapacity++;
-        System.out.println(pointer + " " + redoPointer + " " +
-                curCapacity + " ");
+
         return stack[pointer];
+    }
+
+    public Command getCurrent(){
+        return pointer > - 1 && pointer < CAPACITY ? stack[pointer] : null;
     }
 }

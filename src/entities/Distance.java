@@ -5,13 +5,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import main.*;
 
+import java.io.Serializable;
+
 
 /**
  * Control with distance text label and input field
  */
-public class Distance extends Pane {
-    private TexLabel label;
-    private TextField input;
+public class Distance extends Pane implements Serializable {
+    private transient TexLabel label;
+    private transient TextField input;
 
     private double value = Double.MAX_VALUE;
     private String curText = TexLabel.DEFAULT;

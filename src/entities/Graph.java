@@ -7,6 +7,7 @@ import main.Invoker;
 import main.PopupMessage;
 import main.Visualizer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
  * Represents the whole graph on the pane and stores
  * the list of all nodes
  */
-public class Graph {
+public class Graph implements Serializable {
     public static final int MAX_SIZE = 50;
     private ArrayList<Node> nodes = new ArrayList<Node>(20);
     private static Graph instance;

@@ -12,6 +12,7 @@ import main.Filter;
 import main.MenuManager;
 import main.Visualizer;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Represents an edge between 2 nodes
  */
-public class Edge extends Line implements Undoable, Visitable {
+public class Edge extends Line implements Undoable, Visitable, Serializable {
 
     private Node n1;
     private Node n2;
@@ -32,10 +33,10 @@ public class Edge extends Line implements Undoable, Visitable {
     private static final Color color = Color.DIMGRAY;
     private static final Color selectedColor = Color.LIGHTBLUE;
 
-    private Color curColor = color;
+    private transient Color curColor = color;
 
     private HashMap<Node, double[]> nearestCoords;
-    private ConcurrentHashMap<Node, Point> pointsToProceed = new ConcurrentHashMap<>();
+    private transient ConcurrentHashMap<Node, Point> pointsToProceed = new ConcurrentHashMap<>();
 
     /**
      * Clears pointsToProceed before the new visualization

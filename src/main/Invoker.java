@@ -2,9 +2,6 @@ package main;
 
 import entities.*;
 
-import java.util.ArrayDeque;
-import java.util.NoSuchElementException;
-
 /**
  * Processes commands instances and stores them
  * in Cache stack
@@ -15,6 +12,7 @@ public class Invoker {
     private static Invoker instance;
     private Command toUndo;
     private Command toRedo;
+    private static Command lastSaveCommand;
 
     /**
      * Singleton
@@ -24,6 +22,34 @@ public class Invoker {
         if(instance == null) instance = new Invoker();
         return instance;
     }
+
+    /**
+     * Resets data for the new graph
+     */
+    static void reset(){
+        instance.commands.clear();
+        lastSaveCommand = null;
+    }
+
+    /**
+     * Renews last saved command
+     */
+    static void renewLastCommand(){
+        lastSaveCommand = instance.commands.getCurrent();
+        FileManager.setNoSave(true);
+    }
+
+    /**
+     * Checks whether the save is needed or not
+     */
+    static void checkLastCommand(){
+        if(lastSaveCommand != null &&
+                lastSaveCommand == instance.commands.getCurrent())
+            FileManager.setNoSave(true);
+        else
+            FileManager.setNoSave(false);
+    }
+
 
     /**
      * Calls create command
@@ -59,28 +85,25 @@ public class Invoker {
     /**
      * Reverts last command in cache
      */
-    public void undoLast(){
+    void undoLast(){
 
         toUndo = commands.pop();
 
-//        while(toUndo!= null &&
-//                !Graph.getInstance().areDistancesShown()
-//                && toUndo instanceof ChangeDistCommand)
-//            toUndo = commands.pop();
-
-        if(toUndo !=null)
+        if(toUndo !=null) {
             toUndo.undo();
+            checkLastCommand();
+        }
     }
 
-    public void redoLast(){
+    /**
+     * Reverts next command in cache
+     */
+    void redoLast(){
         toRedo = commands.getNext();
-//        while(toRedo!= null &&
-//                !Graph.getInstance().areDistancesShown()
-//                && toRedo instanceof ChangeDistCommand)
-//            toRedo = commands.getNext();
 
         if (toRedo != null) {
             toRedo.execute();
+            checkLastCommand();
         }
     }
 
