@@ -14,7 +14,7 @@ enum Position {
  */
 class Arrow extends Line {
 
-    private static final double BASE_LENGTH = 25;
+    private static final double BASE_LENGTH = 35;
     private Position curPos = Position.POSITIVE;
 
     private Polygon triangle;

@@ -35,6 +35,12 @@ public class Invoker {
             commands.push(c);
     }
 
+    public void changeAllDistances(String input){
+        Command c = new ChangeAllDistancesCommand(input);
+        if(c.execute())
+            commands.push(c);
+    }
+
     /**
      * Calls delete command
      * @param el element to delete

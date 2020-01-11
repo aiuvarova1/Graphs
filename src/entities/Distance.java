@@ -16,14 +16,16 @@ public class Distance extends Pane {
     private double value = Double.MAX_VALUE;
     private String curText = TexLabel.DEFAULT;
 
-    private static final int MAX_LENGTH = 70;
+    public static final int MAX_LENGTH = 70;
     private static boolean isCalculated = false;
 
 
-   // public static void setCalc(boolean val){isCalculated = val;}
+    public static void setCalc(boolean val) {
+        isCalculated = val;
+    }
 
 
-    public Distance(){
+    public Distance() {
         label = new TexLabel();
         input = new TextField();
 
@@ -32,7 +34,7 @@ public class Distance extends Pane {
             Filter.endEdit();
         });
         input.focusedProperty().addListener((observableValue, old, newVal) -> {
-            if(!newVal){
+            if (!newVal) {
                 showLabel();
                 Filter.endEdit();
             }
@@ -53,7 +55,7 @@ public class Distance extends Pane {
         this.getChildren().add(label);
         input.setDisable(true);
 
-        if(Graph.getInstance().areDistancesShown())
+        if (Graph.getInstance().areDistancesShown())
             show();
 
         this.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
@@ -62,8 +64,8 @@ public class Distance extends Pane {
     /**
      * Hides label and shows input field
      */
-    public void showInput(){
-        if(Filter.isEditing()) return;
+    public void showInput() {
+        if (Filter.isEditing()) return;
 
         this.getChildren().add(input);
         input.setDisable(false);
@@ -75,21 +77,21 @@ public class Distance extends Pane {
     /**
      * Hides input field and returns label
      */
-    public void showLabel(){
-        if(!Filter.isEditing()) return;
-//        setText(input.getText());
+    private void showLabel() {
+        if (!Filter.isEditing()) return;
+//        setDistance(input.getText());
 
-        try{
+        try {
             value = Parser.parseDistance(input.getText());
 
-            if(!isCalculated)
-                Invoker.getInstance().changeDistance(this,input.getText(),value);
+            if (!isCalculated)
+                Invoker.getInstance().changeDistance(this, input.getText(), value);
             else
-                Invoker.getInstance().changeDistance(this, Formatter.format(value),value );
-        }catch(IllegalArgumentException ex){
+                Invoker.getInstance().changeDistance(this, Formatter.format(value), value);
+        } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
             PopupMessage.showMessage(ex.getMessage());
-        }finally {
+        } finally {
             this.getChildren().add(label);
             this.getChildren().remove(input);
             label.toFront();
@@ -97,41 +99,53 @@ public class Distance extends Pane {
         }
     }
 
-    public void show(){
+    public void show() {
+        if (!isCalculated || value == Double.MAX_VALUE
+                || value == Double.MIN_VALUE)
+            curText = label.setText(curText);
+        else
+            label.setText(Formatter.format(value));
         Drawer.getInstance().addElem(this);
     }
 
-    public void hide(){
+    void hide() {
         Drawer.getInstance().removeElement(this);
     }
 
-    public void setText(String text, double val){
-        curText = label.setText(text);
+    public void setDistance(String text, double val) {
+        if (!isCalculated || val == Double.MAX_VALUE
+                || value == Double.MIN_VALUE)
+            curText = label.setText(text);
+        else
+            label.setText(Formatter.format(val));
         value = val;
         Visualizer.setMin(value);
     }
-    public String getText(){return curText;}
+
+    public String getText() {
+        return curText;
+    }
 
     /**
      * Calculates the length in input
      */
-    public void calculate(){
-        if(value != Double.MAX_VALUE && value!= Double.MIN_VALUE)
+    public void calculate() {
+        if (value != Double.MAX_VALUE && value != Double.MIN_VALUE)
             label.setText(Formatter.format(value));
     }
 
     /**
      * Returns the length to the initial state (before any computations)
      */
-    public void decalculate(){
-        if(value != Double.MAX_VALUE && value!= Double.MIN_VALUE)
+    public void decalculate() {
+        if (value != Double.MAX_VALUE && value != Double.MIN_VALUE)
             label.setText(curText);
     }
 
     /**
      * Resets the length to infinity
      */
-    public void reset(){
+    void reset() {
         value = Double.MAX_VALUE;
         curText = label.setText("\\infty");
     }
@@ -139,11 +153,11 @@ public class Distance extends Pane {
     /**
      * @return Is length infinite
      */
-    public boolean isInfty(){
-        return value==Double.MAX_VALUE || value==Double.MIN_VALUE;
+    public boolean isInfty() {
+        return value == Double.MAX_VALUE || value == Double.MIN_VALUE;
     }
 
-    public double getValue(){
+    public double getValue() {
         return value;
     }
 

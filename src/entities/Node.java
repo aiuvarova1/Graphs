@@ -417,7 +417,7 @@ public class Node extends StackPane implements Undoable, Visitable {
      * Resets edges' lengths
      */
     void resetLengths() {
-        handleEdges(Edge::changeLength);
+        handleEdges(Edge::resetLength);
     }
 
     /**

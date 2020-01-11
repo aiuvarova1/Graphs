@@ -16,6 +16,21 @@ public class Controller {
     private Drawer drawer;
 
     @FXML
+    private ToggleButton showDistances;
+
+//    @FXML
+//    private ToggleGroup showHide;
+
+    @FXML
+    private ToggleButton hideDistances;
+
+    @FXML
+    private Button setAll;
+
+    @FXML
+    private ImageView setAllIcon;
+
+    @FXML
     private CheckBox numeric;
 
     @FXML
@@ -29,6 +44,9 @@ public class Controller {
 
     @FXML
     private ImageView stopIcon;
+
+    @FXML
+    private TextField allLengths;
 
 
     @FXML
@@ -127,6 +145,7 @@ public class Controller {
         resetIcon.setImage(new Image(Manager.class.getResource("/assets/reset.png").toExternalForm()));
         startIcon.setImage(new Image(Manager.class.getResource("/assets/play.png").toExternalForm()));
         stopIcon.setImage(new Image(Manager.class.getResource("/assets/stop.png").toExternalForm()));
+        setAllIcon.setImage(new Image(Manager.class.getResource("/assets/confirm.png").toExternalForm()));
     }
 
     @FXML
@@ -148,6 +167,18 @@ public class Controller {
 
         stopVisualize.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         stopVisualize.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        setAll.addEventHandler(MouseEvent.MOUSE_ENTERED, event ->
+        {
+            setAllIcon.setScaleX(11 / 10.0);
+            setAllIcon.setScaleY(11 / 10.0);
+        });
+        setAll.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
+        {
+            setAllIcon.setScaleX(1);
+            setAllIcon.setScaleY(1);
+
+        });
     }
 
     private void addListeners() {
@@ -172,6 +203,7 @@ public class Controller {
             else
                 drawingArea.getChildren().filtered(x -> x instanceof Distance).
                         forEach((x) -> ((Distance) x).decalculate());
+            Distance.setCalc(newValue);
 
         });
 
@@ -207,6 +239,17 @@ public class Controller {
             Visualizer.setArrows(newValue);
 
         });
+
+        allLengths.setOnAction(event -> changeDist());
+        allLengths.setOnKeyTyped(event -> {
+            String string = allLengths.getText();
+
+            if (string.length() > Distance.MAX_LENGTH) {
+                allLengths.setText(string.substring(0, Distance.MAX_LENGTH));
+                allLengths.positionCaret(string.length());
+            }
+        });
+
     }
 
     @FXML
@@ -230,6 +273,7 @@ public class Controller {
 
         new Distance();
         PopupMessage.setPopup(tip);
+
 
     }
 
@@ -275,21 +319,40 @@ public class Controller {
     @FXML
     void showDist() {
 
+        if(graph.areDistancesShown()) {
+            showDistances.setSelected(true);
+            return;
+        }
         graph.setLengths();
         calculate.setDisable(false);
+        setAll.setDisable(false);
+        allLengths.setDisable(false);
+
     }
 
     @FXML
     void hideDist() {
 
+        if(!graph.areDistancesShown()) {
+            hideDistances.setSelected(true);
+            return;
+        }
+
         graph.hideLengths();
         calculate.setDisable(true);
+        setAll.setDisable(true);
+        allLengths.setDisable(true);
     }
 
     @FXML
     void resetDist() {
 
         graph.resetDistances();
+    }
+
+    @FXML
+    private void changeDist(){
+        graph.changeDistances(allLengths.getText());
     }
 
     /**

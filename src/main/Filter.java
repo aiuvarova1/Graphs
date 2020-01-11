@@ -45,19 +45,16 @@ public class Filter {
     /**
      * Distinguishes dragging from pane click
      */
-    public static final EventHandler<MouseEvent> dragFilter = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(final MouseEvent event) {
+    public static final EventHandler<MouseEvent> dragFilter = event -> {
 
-            if(editing || Visualizer.isRunning())
-                return;
-            if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
-                    event.getButton() == MouseButton.PRIMARY) {
-                dragging = true;
-            } else if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                if (dragging) event.consume();
-                dragging = false;
-            }
+        if(editing || Visualizer.isRunning())
+            return;
+        if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
+                event.getButton() == MouseButton.PRIMARY) {
+            dragging = true;
+        } else if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
+            if (dragging) event.consume();
+            dragging = false;
         }
     };
 
@@ -65,18 +62,18 @@ public class Filter {
      * Distinguishes pane clicks from node clicks
      */
 
-    public static final EventHandler<MouseEvent> clickFilter = new EventHandler<MouseEvent>() {
+    public static final EventHandler<MouseEvent> clickFilter = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 //            System.out.println(event.getSource().getClass());
 //            System.out.println(event.getTarget());
 
-            if(Visualizer.isRunning()){
+            if (Visualizer.isRunning()) {
                 event.consume();
                 return;
             }
 
-            if(editing && (event.getTarget().getClass() != Text.class ||
+            if (editing && (event.getTarget().getClass() != Text.class ||
                     event.getSource().getClass() == Node.class)) {
                 event.consume();
                 Drawer.getInstance().setFocus();
@@ -88,7 +85,7 @@ public class Filter {
 
                 if (event.getButton() == MouseButton.PRIMARY) {
                     if (!edgeStarted) {
-                        if(MenuManager.getEdgeMenu().isShowing()) return;
+                        if (MenuManager.getEdgeMenu().isShowing()) return;
 
                         edgeStarted = true;
                         pretender = (Node) event.getSource();
@@ -102,13 +99,12 @@ public class Filter {
                         event.consume();
                         edgeStarted = false;
                         Node node = (Node) event.getSource();
-                        if(node == pretender)
-                        {
+                        if (node == pretender) {
                             Drawer.getInstance().removeMoveHandler();
                             return;
                         }
 
-                        edgePretender.setNodes(node,pretender);
+                        edgePretender.setNodes(node, pretender);
                         edgePretender.connectNodes(node, pretender);
                         //Graph.getInstance().connectNodes(node, pretender, edgePretender);
 
@@ -119,21 +115,21 @@ public class Filter {
                 }
             } else if (edgeStarted && event.getTarget().getClass() == AnchorPane.class) {
 
-               // System.out.println(event.getTarget().getClass() + " target");
+                // System.out.println(event.getTarget().getClass() + " target");
                 event.consume();
                 removeStartedEdge();
 
             } else if (event.getSource().getClass() == Edge.class) {
                 event.consume();
 
-            }else if(event.getSource().getClass() == Distance.class){
+            } else if (event.getSource().getClass() == Distance.class) {
                 event.consume();
                 System.out.println("and here");
 
-                Distance curDist = (Distance)event.getSource();
+                Distance curDist = (Distance) event.getSource();
                 curDist.showInput();
                 editing = true;
-                if(edgeStarted)
+                if (edgeStarted)
                     removeStartedEdge();
             }
         }
@@ -152,7 +148,7 @@ public class Filter {
     /**
      * Controls potential edge's movements
      */
-    private static final EventHandler<MouseEvent> edgeMoveHandler = new EventHandler<MouseEvent>() {
+    private static final EventHandler<MouseEvent> edgeMoveHandler = new EventHandler<>() {
         @Override
         public void handle(MouseEvent event) {
 
@@ -190,27 +186,21 @@ public class Filter {
     /**
      * Controls button style on mouse enter
      */
-    public static final EventHandler<MouseEvent> buttonEnterHandler = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
+    static final EventHandler<MouseEvent> buttonEnterHandler = event -> {
 
-            Button b = (Button) event.getSource();
-            b.setStyle(SELECTED_BUTTON);
-            ((Button) event.getSource()).getScene().setCursor(Cursor.HAND);
-        }
+        Button b = (Button) event.getSource();
+        b.setStyle(SELECTED_BUTTON);
+        ((Button) event.getSource()).getScene().setCursor(Cursor.HAND);
     };
 
     /**
      * Controls button style on mouse exit
      */
-    public static final EventHandler<MouseEvent> buttonExitHandler = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
+    static final EventHandler<MouseEvent> buttonExitHandler = event -> {
 
-            Button b = (Button) event.getSource();
-            b.setStyle(UNSELECTED_BUTTON);
-            ((Button) event.getSource()).getScene().setCursor(Cursor.DEFAULT);
-        }
+        Button b = (Button) event.getSource();
+        b.setStyle(UNSELECTED_BUTTON);
+        ((Button) event.getSource()).getScene().setCursor(Cursor.DEFAULT);
     };
 
 

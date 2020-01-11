@@ -83,6 +83,11 @@
     -fx-opacity: 0.95;
 }
 
+.confirm-button{
+    -fx-background-color: linear-gradient(#d1d1d1 0%, #d4d4d4 49%, #d4d4d4 50%, #e8e8e8 100%);
+    -fx-pref-height: 7;
+}
+
 
 .text-field {
     -fx-background-color:  #686060, white, white ;
@@ -90,13 +95,31 @@
     -fx-background-radius: 0 ;
     -fx-pref-width: 110;
     -fx-pref-height: 11;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
 }
 .text-field:focused {
     -fx-background-color:  #686060, white, white,white ;
     -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
     -fx-border-color: white;
     -fx-font-family: Constantia;
+    -fx-font-size: 16px;
+    -fx-text-fill: #686060;
+}
+
+.text-field-panel {
+    -fx-background-color:  #686060, white, white,white;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
+    -fx-font-family: "Times New Roman";
+    -fx-background-radius: 0 ;
+    -fx-pref-width: 70;
+    -fx-pref-height: 7;
+    -fx-font-size: 14px;
+}
+.text-field-panel:focused {
+    -fx-background-color:  #686060, white, white,white ;
+    -fx-background-insets: 0 -1 -1 -1, 0 0 0 0, 0 -1 3 -1;
+    -fx-border-color: white;
+    -fx-font-family: "Times New Roman";
     -fx-font-size: 14px;
     -fx-text-fill: #686060;
 }

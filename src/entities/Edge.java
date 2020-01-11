@@ -295,12 +295,20 @@ public class Edge extends Line implements Undoable, Visitable {
     /**
      * Resets the label to default value
      */
-    public void changeLength() {
+    public void resetLength() {
         length.reset();
     }
 
+    public void changeLength(String text, double val)
+    {
+       length.setDistance(text,val);
+    }
     public double getLength(){
         return length.getValue();
+    }
+
+    public String getTextLength(){
+        return length.getText();
     }
 
 

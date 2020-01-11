@@ -1,17 +1,14 @@
 package entities;
 
-import javafx.animation.PathTransition;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
+
+import javafx.util.Pair;
 import main.Drawer;
+import main.Invoker;
 import main.PopupMessage;
 import main.Visualizer;
 
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -107,6 +104,18 @@ public class Graph {
             nodes.get(i).renewNum(i + 1);
     }
 
+    public HashMap<Edge, Pair<String,Double>> getEdgesAndDistances(){
+        HashMap<Edge, Pair<String,Double>> res = new HashMap<>();
+        for (Node n : nodes)
+        {
+            for (Edge e: n.getEdges()) {
+                if(!res.keySet().contains(e))
+                    res.put(e, new Pair<>(e.getTextLength(),e.getLength()));
+            }
+        }
+        return res;
+    }
+
 
     /**
      * Removes all nodes from the list
@@ -163,7 +172,12 @@ public class Graph {
      * Sets all distances to \\infty
      */
     public void resetDistances() {
-        runDFS(Node::resetLengths);
+        //runDFS(Node::resetLengths);
+        changeDistances("\\infty");
+    }
+
+    public void changeDistances(String input){
+        Invoker.getInstance().changeAllDistances(input);
     }
 
     /**
