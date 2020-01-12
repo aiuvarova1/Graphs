@@ -23,7 +23,8 @@ public class Visualizer {
 
     private static final int MAX_POINTS = 500;
 
-    /** Min length of the edge on the pane,
+    /**
+     * Min length of the edge on the pane,
      * needed to compute animation's velocity.
      */
     private static double curMinEdge = 1000;
@@ -37,64 +38,73 @@ public class Visualizer {
     private static boolean colour = false;
     private static boolean arrows = false;
 
-    /**Current lowest possible value of the amplitude**/
+    /**
+     * Current lowest possible value of the amplitude
+     **/
     private static LongProperty lowerBound = new SimpleLongProperty(0);
 
-    /**Current biggest possible value of the amplitude**/
+    /**
+     * Current biggest possible value of the amplitude
+     **/
     private static LongProperty upperBound = new SimpleLongProperty(1);
 
 
     /**
      * Submits new task to the common pool
+     *
      * @param t task to submit
      */
-    public static void runTask(Task t){
+    public static void runTask(Task t) {
         threadPool.submit(t);
     }
 
-    static void setNumeric(boolean val){
+    static void setNumeric(boolean val) {
         numeric = val;
     }
-    public static boolean isNumeric(){
+
+    public static boolean isNumeric() {
         return numeric;
     }
 
-    static void setColour(boolean val){
+    static void setColour(boolean val) {
         colour = val;
     }
-    public static boolean isColoured(){
+
+    public static boolean isColoured() {
         return colour;
     }
 
-    static void setArrows(boolean val){
+    static void setArrows(boolean val) {
         arrows = val;
     }
-    public static boolean isArrows(){
+
+    public static boolean isArrows() {
         return arrows;
     }
 
-    public static void setMin(double pretender){
+    public static void setMin(double pretender) {
         curMinEdge = Math.min(pretender, curMinEdge);
     }
 
-    public static double getCurMinEdge(){
+    public static double getCurMinEdge() {
         return curMinEdge;
     }
 
     /**
      * Controls the number of points in order not to fail with
      * OutOfMemoryException.
+     *
      * @return whether the limit of points is exceeded
      */
-    public static boolean checkOOM(){
+    public static boolean checkOOM() {
         return ++numOfPoints < MAX_POINTS;
     }
 
-    public static LongProperty getLowerBound(){
+    public static LongProperty getLowerBound() {
         return lowerBound;
     }
 
-    public static LongProperty getUpperBound(){
+    public static LongProperty getUpperBound() {
         return upperBound;
     }
 
@@ -102,25 +112,27 @@ public class Visualizer {
     /**
      * Checks whether an upper/lower bound changes after a new amplitude
      * appearance.
+     *
      * @param val new amplitude to check
      */
-    public static void checkMinMaxAmplitudes(double val){
+    public static void checkMinMaxAmplitudes(double val) {
 
-        val = Math.round(val);
+        //val = Math.round(val);
 
-        if((long)val > upperBound.get())
-            upperBound.set((long)val);
+        if (val > upperBound.get())
+            upperBound.set((long) (val + 1));
 
-        if((long) val < lowerBound.get())
-            lowerBound.set((long)val);
+        if (val < lowerBound.get())
+            lowerBound.set((long) (val - 1));
     }
 
     /**
      * Binds corresponding colour labels to properties
+     *
      * @param lower lower bound of amplitudes
      * @param upper upper bound of amplitudes
      */
-    static void bindBounds(Label lower, Label upper){
+    static void bindBounds(Label lower, Label upper) {
         lowerBound.addListener((observable, oldValue, newValue) ->
                 lower.setText(Long.toString((newValue.intValue()))));
         upperBound.addListener((observable, oldValue, newValue) ->
@@ -130,10 +142,13 @@ public class Visualizer {
 
     /**
      * Prepares and starts the distribution
+     *
      * @param startEdge edge from which the first point goes
      * @param startNode node from which the first point goes
      */
-    public static void startVisualization(Edge startEdge, Node startNode){
+    public static void startVisualization(Edge startEdge, Node startNode) {
+
+        System.out.println("start v");
 
         lowerBound.set(0);
         upperBound.set(1);
@@ -149,7 +164,7 @@ public class Visualizer {
         Point point = new Point(startEdge.getNeighbour(startNode), startEdge);
         Drawer.getInstance().addElem(point);
 
-        PathTransition par = point.startPath(start, end,startEdge.getLength());
+        PathTransition par = point.startPath(start, end, startEdge.getLength());
         animations.add(par);
         par.play();
 
@@ -157,9 +172,10 @@ public class Visualizer {
 
     /**
      * Adds animation of the new point to the list
+     *
      * @param p animation to add
      */
-    public static void addPath(PathTransition p){
+    public static void addPath(PathTransition p) {
         animations.add(p);
     }
 
@@ -167,7 +183,7 @@ public class Visualizer {
     /**
      * Stops the visualization and refreshes the needed data
      */
-    static void stopVisualization(){
+    static void stopVisualization() {
         isRunning = false;
         for (PathTransition p : animations)
             p.stop();
@@ -182,10 +198,11 @@ public class Visualizer {
 
     /**
      * Whether the visualization is running now
+     *
      * @return isRunning
      */
-    public static boolean isRunning(){
-        return  isRunning;
+    public static boolean isRunning() {
+        return isRunning;
     }
 
 }

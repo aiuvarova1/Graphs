@@ -1,9 +1,7 @@
 package main;
 
-import entities.Graph;
-import entities.Node;
+import entities.*;
 
-import entities.Point;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.AnchorPane;
@@ -42,7 +40,8 @@ public class Drawer {
     }
 
     public void clear(){
-        pane.getChildren().clear();
+        pane.getChildren().removeIf( x-> x instanceof Edge ||
+                x instanceof Distance || x instanceof Node);
     }
 
 

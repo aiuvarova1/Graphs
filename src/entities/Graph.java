@@ -66,6 +66,7 @@ public class Graph implements Serializable {
     }
 
     public static boolean areDistancesShown() {
+        System.out.println("are shown");
         return showDistances;
     }
 
@@ -106,6 +107,10 @@ public class Graph implements Serializable {
             nodes.get(i).renewNum(i + 1);
     }
 
+    /**
+     * Fills hash map edge - distance for invoker's set_all operation
+     * @return filled hash map
+     */
     public HashMap<Edge, Pair<String,Double>> getEdgesAndDistances(){
         HashMap<Edge, Pair<String,Double>> res = new HashMap<>();
         for (Node n : nodes)
@@ -118,6 +123,10 @@ public class Graph implements Serializable {
         return res;
     }
 
+    /**
+     * Sets new instance of a graph from an opened file
+     * @param g new graph
+     */
     public static void setNew(Graph g){
         Drawer.getInstance().clear();
         instance = Objects.requireNonNull(g);
@@ -127,10 +136,10 @@ public class Graph implements Serializable {
             for (Edge e: n.getEdges())
                 e.connectNodes(e.getNodes()[0], e.getNodes()[1]);
         }
-//        if(instance.getStartEdge() != null)
-//            instance.getStartEdge().select();
-//        if(instance.getStartNode() != null)
-//            instance.getStartNode().select();
+        if(instance.getStartEdge() != null)
+            instance.getStartEdge().select();
+        if(instance.getStartNode() != null)
+            instance.getStartNode().select();
     }
 
 
@@ -201,6 +210,8 @@ public class Graph implements Serializable {
      * Checks data correctness and starts the distribution
      */
     public void visualizeAmplitudes() {
+
+        System.out.println("visualize in graph");
         if (runDFS(null) > 1) {
             PopupMessage.showMessage("The graph is not connected");
             return;

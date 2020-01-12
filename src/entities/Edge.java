@@ -140,13 +140,14 @@ public class Edge extends Line implements Undoable, Visitable,
         this.setStrokeWidth(1.7);
         setStroke(color);
 
+        pointsToProceed = new ConcurrentHashMap<>();
+
+        Distance d = new Distance();
+        d.setDistance(length.getText(),length.getValue());
+        length = d;
+
         Drawer.getInstance().addElem(this);
-        if(Graph.areDistancesShown())
-        {
-            Distance d = new Distance();
-            d.setDistance(length.getText(),length.getValue());
-            length = d;
-        }
+
     }
 
 

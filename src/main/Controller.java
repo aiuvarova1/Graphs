@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 
 public class Controller {
 
-    private Graph graph;
     private Drawer drawer;
 
     @FXML
@@ -160,7 +159,6 @@ public class Controller {
     private ImageView cancelIcon;
 
     public Controller() {
-        graph = Graph.getInstance();
         drawer = Drawer.getInstance();
     }
 
@@ -267,14 +265,14 @@ public class Controller {
 
             if (Visualizer.isRunning()) return;
             drawingArea.setPrefWidth(newVal.doubleValue());
-            graph.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
+            Graph.getInstance().rescale('x', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
 
             if (Visualizer.isRunning()) return;
             // drawingArea.setPrefHeight(newVal.doubleValue());
-            graph.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
+            Graph.getInstance().rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -421,7 +419,7 @@ public class Controller {
 
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class
                 || x.getClass() == Distance.class);
-        graph.clearGraph();
+        Graph.getInstance().clearGraph();
     }
 
 
@@ -442,11 +440,11 @@ public class Controller {
     @FXML
     void showDist() {
 
-        if(graph.areDistancesShown()) {
+        if(Graph.areDistancesShown()) {
             showDistances.setSelected(true);
             return;
         }
-        graph.setLengths();
+        Graph.getInstance().setLengths();
         calculate.setDisable(false);
         setAll.setDisable(false);
         allLengths.setDisable(false);
@@ -459,12 +457,12 @@ public class Controller {
     @FXML
     void hideDist() {
 
-        if(!graph.areDistancesShown()) {
+        if(!Graph.areDistancesShown()) {
             hideDistances.setSelected(true);
             return;
         }
 
-        graph.hideLengths();
+        Graph.getInstance().hideLengths();
         calculate.setDisable(true);
         setAll.setDisable(true);
         allLengths.setDisable(true);
@@ -473,12 +471,12 @@ public class Controller {
     @FXML
     void resetDist() {
 
-        graph.resetDistances();
+        Graph.getInstance().resetDistances();
     }
 
     @FXML
     private void changeDist(){
-        graph.changeDistances(allLengths.getText());
+        Graph.getInstance().changeDistances(allLengths.getText());
     }
 
     /**
@@ -521,10 +519,11 @@ public class Controller {
     void visualizeAmplitudes() {
 
 
-        if (!graph.areDistancesShown()) {
+        if (!Graph.areDistancesShown()) {
             PopupMessage.showMessage("The distances are disabled");
             return;
         }
+        
         for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
             if (((Distance) dist).isInfty()) {
                 PopupMessage.showMessage("There must be no infinities in distances");
@@ -532,7 +531,7 @@ public class Controller {
             }
         }
 
-        graph.visualizeAmplitudes();
+        Graph.getInstance().visualizeAmplitudes();
         if (Visualizer.isRunning()) {
             drawTitledPane.setDisable(true);
             distancesTitledPane.setDisable(true);

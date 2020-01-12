@@ -169,7 +169,7 @@ public class Node extends StackPane implements
     }
 
     /**
-     * Rescales the node bt x-axis
+     * Rescales the node by x-axis
      *
      * @param scale scale param
      */
