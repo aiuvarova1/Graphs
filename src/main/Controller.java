@@ -523,7 +523,7 @@ public class Controller {
             PopupMessage.showMessage("The distances are disabled");
             return;
         }
-        
+
         for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
             if (((Distance) dist).isInfty()) {
                 PopupMessage.showMessage("There must be no infinities in distances");

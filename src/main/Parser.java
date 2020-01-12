@@ -219,7 +219,8 @@ public class Parser {
                 number.delete(0,number.length());
 
                 if(input.charAt(cur) == '\\'){
-                    if(input.substring(cur,cur+5).equals("\\sqrt")){
+                    if(cur + 5 < input.length() &&
+                            input.substring(cur,cur+5).equals("\\sqrt")){
                         cur = cur+5;
                         if(input.charAt(cur) == '['){
                             while(cur + 1 < input.length() && Character.isDigit(input.charAt(++cur)))
@@ -233,7 +234,8 @@ public class Parser {
                                 number.length() == 0 ? 2 : Integer.parseInt(number.toString())));
                         number.delete(0, number.length());
                         prevFunc = true;
-                    }else if (input.substring(cur,cur+5).equals("\\frac")){
+                    }else if (cur + 5 < input.length() &&
+                            input.substring(cur,cur+5).equals("\\frac")){
                         cur = cur + 4;
                         prevFunc = true;
                         stack.addLast(new Function('f',1));
