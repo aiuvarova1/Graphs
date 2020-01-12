@@ -28,7 +28,7 @@ import java.util.function.Consumer;
  * Represents one node of the graph
  */
 public class Node extends StackPane implements
-        Undoable, Visitable, Serializable {
+        Undoable, Visitable, Serializable, Restorable {
 
     public static final double RADIUS = 22;
 
@@ -37,9 +37,10 @@ public class Node extends StackPane implements
 
     private ArrayList<Edge> edges;
     private double[] initialPosition;
+    private double[] curPosition = new double[2];
 
-    private transient static final Color color = Color.WHITE;
-    private transient static final Color selectedColor = Color.LIGHTBLUE;
+    private static final Color color = Color.WHITE;
+    private static final Color selectedColor = Color.LIGHTBLUE;
 
     private transient Color curColor = color;
 
@@ -51,7 +52,7 @@ public class Node extends StackPane implements
         return edges.size();
     }
 
-    volatile transient BooleanProperty processed = new SimpleBooleanProperty(false);
+    volatile transient BooleanProperty processed;
     volatile transient AtomicInteger guests = new AtomicInteger(0);
     private volatile double amplitudesSum = 0;
 
@@ -66,69 +67,14 @@ public class Node extends StackPane implements
     }
 
     public Node(int num) {
+
         edges = new ArrayList<>(5);
         this.num = num;
         initialPosition = new double[]{getLayoutX(), getLayoutY()};
 
         setId("" + num);
         setHandlers();
-        processed.addListener((observable, oldValue, newValue) -> {
-            if (oldValue) return;
-            // processed.setValue(false);
 
-            try {
-
-                Visualizer.runTask(new Task() {
-                    @Override
-                    protected Object call() throws Exception {
-
-                        synchronized (Node.this) {
-                            try {
-                                Node.this.wait(110);
-                            } catch (InterruptedException ex) {
-                                System.out.println("Interrupted in waiting points");
-                                return null;
-                            }
-                            Platform.runLater(() -> {
-                                handlePoints();
-                                //guests.set(0);
-                                processed.setValue(false);
-                                amplitudesSum = 0;
-                            });
-
-
-                        }
-                        return null;
-                    }
-                });
-
-
-//                task = new TimerTask() {
-//                    @Override
-//                    public void run() {
-//
-//                        while (guests.get() != guestsExpected.get()) {
-//                            if(!Visualizer.isRunning())
-//                                return;
-//                        }
-//
-//                        Platform.runLater(() -> {
-//
-//                            if(!Visualizer.isRunning())
-//                                return;
-//                            handlePoints(guests.get());
-//                        });
-//                        guests.set(0);
-//                        guestsExpected.set(0);
-//                        processed.setValue(false);
-//                    }
-//
-//                };
-//                wait.schedule(task, 120);
-            } catch (IllegalStateException e) {
-                System.out.println("illegal state");
-            }
-        });
     }
 
 
@@ -163,7 +109,7 @@ public class Node extends StackPane implements
      * Proceeds all points which came to the node and restarts their animations
      *
      */
-    void handlePoints() {
+    private void handlePoints() {
 
         if (!Visualizer.isRunning())
             return;
@@ -350,6 +296,9 @@ public class Node extends StackPane implements
         setLayoutY(yPos);
         setTranslateY(0);
 
+        curPosition[0] = xPos;
+        curPosition[1] = yPos;
+
         relocateCircleCenter(getLayoutX(), getLayoutY());
     }
 
@@ -420,6 +369,28 @@ public class Node extends StackPane implements
      */
     void resetLengths() {
         handleEdges(Edge::resetLength);
+    }
+
+    @Override
+    public void restore(){
+
+        Circle circle = new Circle(RADIUS, Color.WHITE);
+        circle.setStroke(Color.BLACK);
+        circle.addEventFilter(MouseEvent.MOUSE_DRAGGED, Filter.dragFilter);
+
+        this.getChildren().add(circle);
+
+        Text numText =new Text("" + num);
+        numText.setStyle(Drawer.NODE_TEXT);
+
+        this.getChildren().add(numText);
+        curColor = color;
+
+        setHandlers();
+        fixPosition(curPosition[0], curPosition[1]);
+
+        Drawer.getInstance().addElem(this);
+        handleEdges(Edge::restore);
     }
 
     /**
@@ -566,6 +537,44 @@ public class Node extends StackPane implements
                 getScene().setCursor(Cursor.DEFAULT);
             }
             getCircle().setFill(curColor);
+        });
+
+        processed = new SimpleBooleanProperty(false);
+        guests = new AtomicInteger(0);
+
+        processed.addListener((observable, oldValue, newValue) -> {
+            if (oldValue) return;
+            // processed.setValue(false);
+
+            try {
+
+                Visualizer.runTask(new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+
+                        synchronized (Node.this) {
+                            try {
+                                Node.this.wait(110);
+                            } catch (InterruptedException ex) {
+                                System.out.println("Interrupted in waiting points");
+                                return null;
+                            }
+                            Platform.runLater(() -> {
+                                handlePoints();
+                                //guests.set(0);
+                                processed.setValue(false);
+                                amplitudesSum = 0;
+                            });
+
+
+                        }
+                        return null;
+                    }
+                });
+
+            } catch (IllegalStateException e) {
+                System.out.println("illegal state");
+            }
         });
 
     }

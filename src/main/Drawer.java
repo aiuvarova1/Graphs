@@ -23,7 +23,7 @@ public class Drawer {
 
     public static final int BOUNDS_GAP = 25;
 
-    private static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
+    public static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
             "-fx-font-size: 26px;";
 
     private static Drawer instance;
@@ -40,6 +40,12 @@ public class Drawer {
         }
         return instance;
     }
+
+    public void clear(){
+        pane.getChildren().clear();
+    }
+
+
 
     /**
      * Removes element from the drawing pane
@@ -138,8 +144,9 @@ public class Drawer {
         numText.setStyle(NODE_TEXT);
 
         layout.getChildren().addAll(node,numText);
-        layout.setLayoutX(xPos - Node.RADIUS);
-        layout.setLayoutY(yPos - Node.RADIUS);
+        layout.fixPosition(xPos - Node.RADIUS, yPos - Node.RADIUS);
+       // layout.setLayoutX(xPos - Node.RADIUS);
+       // layout.setLayoutY(yPos - Node.RADIUS);
 
         return layout;
     }

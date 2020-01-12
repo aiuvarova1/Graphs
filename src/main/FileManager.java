@@ -104,7 +104,30 @@ class FileManager {
      */
     static void open(){
 
+        File file = fileChooser.showOpenDialog(mainStage);
+
+        if(file == null)
+            return;
+
+        try(ObjectInputStream inputStream = new ObjectInputStream(
+                new FileInputStream(file)
+        )){
+            Graph g = (Graph)inputStream.readObject();
+            Graph.setNew(g);
+        }catch (FileNotFoundException ex){
+            PopupMessage.showMessage("File not found");
+            return;
+        }catch(IOException ex)
+        {
+            PopupMessage.showMessage("Unable to read the data");
+            return;
+        }catch(Exception ex){
+            PopupMessage.showMessage("Failed to open the file");
+            ex.printStackTrace();
+            return;
+        }
         Invoker.reset();
+        noSave.set(false);
 
     }
 

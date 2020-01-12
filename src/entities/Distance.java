@@ -57,11 +57,13 @@ public class Distance extends Pane implements Serializable {
         this.getChildren().add(label);
         input.setDisable(true);
 
-        if (Graph.getInstance().areDistancesShown())
+        if (Graph.areDistancesShown())
             show();
 
         this.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
     }
+
+
 
     /**
      * Hides label and shows input field
@@ -101,7 +103,7 @@ public class Distance extends Pane implements Serializable {
         }
     }
 
-    public void show() {
+    void show() {
         if (!isCalculated || value == Double.MAX_VALUE
                 || value == Double.MIN_VALUE)
             curText = label.setText(curText);

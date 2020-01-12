@@ -492,6 +492,8 @@ public class Controller {
                 new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination saveAsComb =
                 new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_ANY, KeyCombination.CONTROL_DOWN);
+        final KeyCodeCombination openComb =
+                new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN);
 
 
         @Override
@@ -506,6 +508,9 @@ public class Controller {
                 FileManager.save();
             else if(saveAsComb.match(event))
                 FileManager.saveAs();
+//            else if(openComb.match(event))
+//                Controller.openFile();
+
         }
     };
 

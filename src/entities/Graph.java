@@ -10,6 +10,7 @@ import main.Visualizer;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -23,7 +24,7 @@ public class Graph implements Serializable {
     private static Graph instance;
     private Stack<Node> dfsStack = new Stack<Node>();
 
-    private boolean showDistances = false;
+    private static boolean showDistances = false;
 
     private Edge startEdge;
     private Node startNode;
@@ -64,7 +65,7 @@ public class Graph implements Serializable {
         return nodes.size();
     }
 
-    public boolean areDistancesShown() {
+    public static boolean areDistancesShown() {
         return showDistances;
     }
 
@@ -72,7 +73,7 @@ public class Graph implements Serializable {
      * Adds the given node to the graph
      * @param node node to add
      */
-    public void addNode(Node node) {
+    void addNode(Node node) {
 
         int num = Integer.parseInt(node.getId()) - 1;
         instance.nodes.add(num, node);
@@ -84,7 +85,7 @@ public class Graph implements Serializable {
      *
      * @param circle node to remove
      */
-    public void removeNode(Node circle) {
+    void removeNode(Node circle) {
 
         ArrayList<Edge> edges = circle.getEdges();
         while (edges.size() != 0)
@@ -98,7 +99,7 @@ public class Graph implements Serializable {
         Drawer.getInstance().removeElement(circle);
     }
 
-    public void refreshLabels(Node circle) {
+    void refreshLabels(Node circle) {
         int num = Integer.parseInt(circle.getId()) - 1;
         // nodes.
         for (int i = num; i < nodes.size(); i++)
@@ -115,6 +116,21 @@ public class Graph implements Serializable {
             }
         }
         return res;
+    }
+
+    public static void setNew(Graph g){
+        Drawer.getInstance().clear();
+        instance = Objects.requireNonNull(g);
+        instance.runDFS(Node::restore);
+        for (Node n : instance.nodes)
+        {
+            for (Edge e: n.getEdges())
+                e.connectNodes(e.getNodes()[0], e.getNodes()[1]);
+        }
+//        if(instance.getStartEdge() != null)
+//            instance.getStartEdge().select();
+//        if(instance.getStartNode() != null)
+//            instance.getStartNode().select();
     }
 
 

@@ -9,7 +9,7 @@ import entities.*;
 
 public class Invoker {
     private Cache commands = new Cache();
-    private static Invoker instance;
+    private static Invoker instance = new Invoker();
     private Command toUndo;
     private Command toRedo;
     private static Command lastSaveCommand;

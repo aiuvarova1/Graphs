@@ -1,9 +1,8 @@
 package entities;
 
 import javafx.animation.PathTransition;
-import javafx.event.EventHandler;
 import javafx.scene.Cursor;
-import javafx.scene.input.ContextMenuEvent;
+
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -20,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Represents an edge between 2 nodes
  */
-public class Edge extends Line implements Undoable, Visitable, Serializable {
+public class Edge extends Line implements Undoable, Visitable,
+        Serializable, Restorable {
 
     private Node n1;
     private Node n2;
@@ -41,7 +41,7 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
     /**
      * Clears pointsToProceed before the new visualization
      */
-    public void resetProceed(){
+     void resetProceed(){
         pointsToProceed.clear();
     }
 
@@ -86,7 +86,7 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
      * @param degree degree of the node n
      * @return instance of animation to proceed
      */
-    public PathTransition handlePoint(Node n,  int degree){
+    PathTransition handlePoint(Node n,  int degree){
 
         if(pointsToProceed.containsKey(n)) {
 
@@ -115,7 +115,7 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
      * @param n node which will accept the point
      * @param p point to accept
      */
-    public synchronized void addToProceed(Node n, Point p){
+    synchronized void addToProceed(Node n, Point p){
         pointsToProceed.put(n,p);
     }
 
@@ -132,6 +132,21 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
 
         length = new Distance();
         relocateLabel();
+    }
+
+    @Override
+    public void restore(){
+
+        this.setStrokeWidth(1.7);
+        setStroke(color);
+
+        Drawer.getInstance().addElem(this);
+        if(Graph.areDistancesShown())
+        {
+            Distance d = new Distance();
+            d.setDistance(length.getText(),length.getValue());
+            length = d;
+        }
     }
 
 
@@ -281,7 +296,7 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
     /**
      * Shows the lengths label
      */
-    public void showLength() {
+    void showLength() {
         relocateLabel();
         length.show();
     }
@@ -289,14 +304,14 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
     /**
      * Hides the lengths label
      */
-    public void hideLength() {
+    void hideLength() {
         length.hide();
     }
 
     /**
      * Resets the label to default value
      */
-    public void resetLength() {
+    void resetLength() {
         length.reset();
     }
 
@@ -308,7 +323,7 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
         return length.getValue();
     }
 
-    public String getTextLength(){
+    String getTextLength(){
         return length.getText();
     }
 
@@ -368,15 +383,12 @@ public class Edge extends Line implements Undoable, Visitable, Serializable {
         });
 
 
-        this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-            @Override
-            public void handle(ContextMenuEvent contextMenuEvent) {
-                if (Filter.isEdgeStarted() || Visualizer.isRunning()) return;
-                // System.out.println(contextMenuEvent.getSource());
-                MenuManager.getEdgeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
-                MenuManager.getEdgeMenu().show((javafx.scene.Node) n1,
-                        contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
-            }
+        this.setOnContextMenuRequested(contextMenuEvent -> {
+            if (Filter.isEdgeStarted() || Visualizer.isRunning()) return;
+            // System.out.println(contextMenuEvent.getSource());
+            MenuManager.getEdgeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
+            MenuManager.getEdgeMenu().show(n1,
+                    contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
         });
 
         addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
