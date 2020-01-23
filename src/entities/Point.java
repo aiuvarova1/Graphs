@@ -20,7 +20,7 @@ import main.Visualizer;
  */
 public class Point extends Circle {
 
-    static final int RADIUS = 6;
+    static final int RADIUS = 8;
     private static final int SHIFT = 10;
     private static final Color BASE_COLOR = Color.GRAY;
 
@@ -76,6 +76,10 @@ public class Point extends Circle {
         this();
         destination = n;
         this.edge = e;
+    }
+
+    public String getAmplitude(){
+        return numAmplitude.getText();
     }
 
 
@@ -194,7 +198,7 @@ public class Point extends Circle {
         path.getElements().add(line);
 
         pathTransition.setPath(path);
-        pathTransition.setDuration(new Duration(startEdge / Visualizer.getCurMinEdge() * 2000));
+        pathTransition.setDuration(new Duration(startEdge / Graph.getInstance().getCurMinEdge() * 2000));
 
         pathTransition.setNode(this);
         return pathTransition;

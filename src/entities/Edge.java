@@ -91,6 +91,12 @@ public class Edge extends Line implements Undoable, Visitable,
         if(pointsToProceed.containsKey(n)) {
 
             pointsToProceed.get(n).changeAmplitude(degree);
+            if(pointsToProceed.get(n).getAmplitude().equals("0")) {
+                pointsToProceed.get(n).hideEnabled();
+                Drawer.getInstance().removeElement(pointsToProceed.get(n));
+                pointsToProceed.remove(n);
+                return null;
+            }
             pointsToProceed.get(n).setDestination(getNeighbour(n));
             PathTransition p = pointsToProceed.get(n).startPath(nearestCoords.get(n),
                     nearestCoords.get(getNeighbour(n)),length.getValue());
@@ -105,6 +111,12 @@ public class Edge extends Line implements Undoable, Visitable,
 
             Drawer.getInstance().addElem(p);
             p.setAmplitude(degree);
+
+            if(p.getAmplitude().equals("0")) {
+                p.hideEnabled();
+                Drawer.getInstance().removeElement(p);
+                return null;
+            }
 
             return p.startPath(nearestCoords.get(n),nearestCoords.get(getNeighbour(n)),length.getValue());
         }
@@ -138,7 +150,10 @@ public class Edge extends Line implements Undoable, Visitable,
     public void restore(){
 
         this.setStrokeWidth(1.7);
+        setHandlers();
         setStroke(color);
+
+        curColor = color;
 
         pointsToProceed = new ConcurrentHashMap<>();
 

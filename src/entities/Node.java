@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 public class Node extends StackPane implements
         Undoable, Visitable, Serializable, Restorable {
 
-    public static final double RADIUS = 22;
+    public static final double RADIUS = 18;
 
     private int num;
     private boolean visited;
@@ -87,6 +87,11 @@ public class Node extends StackPane implements
         for (Edge e : edges)
             e.resetProceed();
 
+    }
+
+    void checkMinEdge(){
+        for (Edge e : edges)
+            Graph.getInstance().setMin(e.getLength());
     }
 
     /**
@@ -307,6 +312,10 @@ public class Node extends StackPane implements
      */
     @Override
     public void remove() {
+
+        if(Graph.getInstance().getStartNode() == this)
+            Graph.getInstance().setStartNode(null);
+
         Graph.getInstance().removeNode(this);
     }
 

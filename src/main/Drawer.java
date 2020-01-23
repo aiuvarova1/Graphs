@@ -22,7 +22,7 @@ public class Drawer {
     public static final int BOUNDS_GAP = 25;
 
     public static final String NODE_TEXT = "-fx-font-family: \"Pristina\";" +
-            "-fx-font-size: 26px;";
+            "-fx-font-size: 24px;";
 
     private static Drawer instance;
     private AnchorPane pane;

@@ -120,6 +120,7 @@ class FileManager {
         }catch(IOException ex)
         {
             PopupMessage.showMessage("Unable to read the data");
+            ex.printStackTrace();
             return;
         }catch(Exception ex){
             PopupMessage.showMessage("Failed to open the file");

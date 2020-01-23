@@ -123,7 +123,6 @@ public class Distance extends Pane implements Serializable {
         else
             label.setText(Formatter.format(val));
         value = val;
-        Visualizer.setMin(value);
     }
 
     public String getText() {

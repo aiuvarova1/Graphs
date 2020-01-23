@@ -29,6 +29,8 @@ public class Graph implements Serializable {
     private Edge startEdge;
     private Node startNode;
 
+    private double curMinEdge = 100000;
+
     public Edge getStartEdge(){
         return startEdge;
     }
@@ -49,6 +51,13 @@ public class Graph implements Serializable {
         startNode = start;
     }
 
+    public void setMin(double pretender) {
+        curMinEdge = Math.min(pretender, curMinEdge);
+    }
+
+    public  double getCurMinEdge() {
+        return curMinEdge;
+    }
 
     /**
      * Singleton
@@ -66,7 +75,6 @@ public class Graph implements Serializable {
     }
 
     public static boolean areDistancesShown() {
-        System.out.println("are shown");
         return showDistances;
     }
 
@@ -147,6 +155,8 @@ public class Graph implements Serializable {
      * Removes all nodes from the list
      */
     public void clearGraph() {
+        startEdge = null;
+        startNode = null;
         nodes.clear();
     }
 
@@ -210,9 +220,8 @@ public class Graph implements Serializable {
      * Checks data correctness and starts the distribution
      */
     public void visualizeAmplitudes() {
-
-        System.out.println("visualize in graph");
-        if (runDFS(null) > 1) {
+        curMinEdge = 100000;
+        if (runDFS(Node::checkMinEdge) > 1) {
             PopupMessage.showMessage("The graph is not connected");
             return;
         }

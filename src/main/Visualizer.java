@@ -23,11 +23,7 @@ public class Visualizer {
 
     private static final int MAX_POINTS = 500;
 
-    /**
-     * Min length of the edge on the pane,
-     * needed to compute animation's velocity.
-     */
-    private static double curMinEdge = 1000;
+
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
     private static HashSet<PathTransition> animations = new HashSet<>();
 
@@ -82,13 +78,8 @@ public class Visualizer {
         return arrows;
     }
 
-    public static void setMin(double pretender) {
-        curMinEdge = Math.min(pretender, curMinEdge);
-    }
 
-    public static double getCurMinEdge() {
-        return curMinEdge;
-    }
+
 
     /**
      * Controls the number of points in order not to fail with
@@ -148,7 +139,7 @@ public class Visualizer {
      */
     public static void startVisualization(Edge startEdge, Node startNode) {
 
-        System.out.println("start v");
+       // System.out.println("start v");
 
         lowerBound.set(0);
         upperBound.set(1);
