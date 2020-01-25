@@ -483,7 +483,7 @@ public class Controller {
      * Shortcuts event handlers for undo, redo, save
      */
     @FXML
-    static final EventHandler<KeyEvent> shortCuts = new EventHandler<>() {
+    static final EventHandler<KeyEvent> shortCuts = new EventHandler<KeyEvent>() {
         final KeyCodeCombination undoComb = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination redoComb = new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN);
         final KeyCodeCombination saveComb =

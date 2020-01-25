@@ -62,7 +62,7 @@ public class Filter {
      * Distinguishes pane clicks from node clicks
      */
 
-    public static final EventHandler<MouseEvent> clickFilter = new EventHandler<>() {
+    public static final EventHandler<MouseEvent> clickFilter = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
 //            System.out.println(event.getSource().getClass());
@@ -148,7 +148,7 @@ public class Filter {
     /**
      * Controls potential edge's movements
      */
-    private static final EventHandler<MouseEvent> edgeMoveHandler = new EventHandler<>() {
+    private static final EventHandler<MouseEvent> edgeMoveHandler = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
 
