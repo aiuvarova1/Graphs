@@ -27,7 +27,8 @@ public class Visualizer {
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
     private static HashSet<PathTransition> animations = new HashSet<>();
 
-    private static boolean isRunning = false;
+    private static volatile boolean isRunning = false;
+    private static boolean enabledGIF = false;
     private static int numOfPoints = 0;
 
     private static boolean numeric = true;
@@ -44,6 +45,9 @@ public class Visualizer {
      **/
     private static LongProperty upperBound = new SimpleLongProperty(1);
 
+    public static void enableGif(boolean enable){
+        enabledGIF = true;
+    }
 
     /**
      * Submits new task to the common pool
@@ -159,6 +163,9 @@ public class Visualizer {
         animations.add(par);
         par.play();
 
+        if(enabledGIF)
+            GIFMaker.takeSnapshots(GIFMaker.DEFAULT_TIME);
+
     }
 
     /**
@@ -176,6 +183,7 @@ public class Visualizer {
      */
     static void stopVisualization() {
         isRunning = false;
+
         for (PathTransition p : animations)
             p.stop();
         animations.clear();
@@ -183,8 +191,17 @@ public class Visualizer {
         threadPool.shutdownNow();
         threadPool = Executors.newCachedThreadPool();
 
+
         Drawer.getInstance().removePoints();
         Graph.getInstance().resetNodes();
+
+        if(enabledGIF) {
+            GIFMaker.createGif();
+            Drawer.getInstance().enableDialog(false);
+            PopupMessage.unfixMessage();
+        }
+
+        enabledGIF = false;
     }
 
     /**

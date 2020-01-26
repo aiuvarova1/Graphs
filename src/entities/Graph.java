@@ -223,17 +223,20 @@ public class Graph implements Serializable {
         curMinEdge = 100000;
         if (runDFS(Node::checkMinEdge) > 1) {
             PopupMessage.showMessage("The graph is not connected");
+            Visualizer.enableGif(false);
             return;
         }
 
         if(startNode == null)
         {
             PopupMessage.showMessage("The beginning node is not selected");
+            Visualizer.enableGif(false);
             return;
         }
 
         if(startEdge == null)
         {
+            Visualizer.enableGif(false);
             PopupMessage.showMessage("The beginning edge is not selected");
             return;
         }

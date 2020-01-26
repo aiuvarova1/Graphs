@@ -7,14 +7,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3aa67ae0-54ba-4086-884d-3b050cac4cee" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/GraphsTool_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/GraphsTool.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Graph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/Point.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Point.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Filter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Filter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Drawer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Drawer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/FileManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/GIFMaker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/GIFMaker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/MainScene.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainScene.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/PopupMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/PopupMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Visualizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Visualizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +59,7 @@
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/out/artifacts" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -83,7 +85,7 @@
       <recent name="D:\CourseWork\GraphsTool\resources\assets" />
     </key>
   </component>
-  <component name="RunManager" selected="JAR Application.GraphsTool.jar (1)">
+  <component name="RunManager" selected="Application.Manager">
     <configuration name="Manager" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <envs>
         <env name="D:\CourseWork\GraphsTool\libs\" value="in = PATH" />
@@ -148,8 +150,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JAR Application.GraphsTool.jar (1)" />
         <item itemvalue="Application.Manager" />
+        <item itemvalue="JAR Application.GraphsTool.jar (1)" />
         <item itemvalue="JAR Application.GraphsTool.jar" />
         <item itemvalue="JUnit.ParserTest" />
         <item itemvalue="JUnit.ParserTest.testFrac3" />
@@ -269,6 +271,10 @@
       <workItem from="1579856787882" duration="79000" />
       <workItem from="1579856883246" duration="170000" />
       <workItem from="1579892420490" duration="9213000" />
+      <workItem from="1579944058841" duration="2291000" />
+      <workItem from="1579970369987" duration="54000" />
+      <workItem from="1579970437478" duration="172000" />
+      <workItem from="1580048273716" duration="8913000" />
     </task>
     <servers />
   </component>
@@ -284,27 +290,27 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="744" y="399" width="525" height="428" key="#com.intellij.ide.util.TreeClassChooserDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1579901802388" />
-    <state x="776" y="296" width="424" height="513" key="FileChooserDialogImpl" timestamp="1579900158410">
+    <state x="776" y="296" width="424" height="513" key="FileChooserDialogImpl" timestamp="1579970606841">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="776" y="276" key="FileChooserDialogImpl/0.2160.1920.1080/67.0.1853.1080/0.1080.1920.1080@67.0.1853.1080" timestamp="1579857052479" />
-    <state x="776" y="296" width="424" height="513" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1579900158410" />
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom" timestamp="1579903271741">
+    <state x="776" y="296" width="424" height="513" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1579970606841" />
+    <state width="1807" height="92" key="GridCell.Tab.0.bottom" timestamp="1580057327119">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1579903271741" />
-    <state width="1807" height="278" key="GridCell.Tab.0.center" timestamp="1579903271739">
+    <state width="1807" height="92" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1580057327119" />
+    <state width="1807" height="92" key="GridCell.Tab.0.center" timestamp="1580057327118">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1579903271739" />
-    <state width="1807" height="278" key="GridCell.Tab.0.left" timestamp="1579903271737">
+    <state width="1807" height="92" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1580057327118" />
+    <state width="1807" height="92" key="GridCell.Tab.0.left" timestamp="1580057327118">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1579903271737" />
-    <state width="1807" height="278" key="GridCell.Tab.0.right" timestamp="1579903271740">
+    <state width="1807" height="92" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1580057327118" />
+    <state width="1807" height="92" key="GridCell.Tab.0.right" timestamp="1580057327119">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1807" height="278" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1579903271740" />
+    <state width="1807" height="92" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1580057327119" />
     <state x="504" y="191" width="1024" height="845" key="SettingsEditor" timestamp="1579901835474">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -313,11 +319,11 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="773" y="480" width="476" height="266" key="classpath-attribute-editor/67.27.1853.1053@67.27.1853.1053" timestamp="1579901820802" />
-    <state x="649" y="380" key="com.intellij.ide.util.TipDialog" timestamp="1579944071751">
+    <state x="649" y="380" key="com.intellij.ide.util.TipDialog" timestamp="1579970469396">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="649" y="1442" key="com.intellij.ide.util.TipDialog/0.2160.1920.1080/67.0.1853.1080/0.1080.1920.1080@0.1080.1920.1080" timestamp="1579857026555" />
-    <state x="649" y="380" key="com.intellij.ide.util.TipDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1579944071751" />
+    <state x="649" y="380" key="com.intellij.ide.util.TipDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1579970469396" />
     <state x="665" y="448" width="646" height="208" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1579210122529">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -326,6 +332,10 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="302" y="154" width="1372" height="796" key="new project wizard/67.27.1853.1053@67.27.1853.1053" timestamp="1579525916444" />
+    <state x="193" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1580051484934">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="193" y="257" width="672" height="678" key="search.everywhere.popup/67.27.1853.1053@67.27.1853.1053" timestamp="1580051484934" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

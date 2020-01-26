@@ -4,7 +4,9 @@ import entities.*;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +28,7 @@ public class Drawer {
 
     private static Drawer instance;
     private AnchorPane pane;
+    private StackPane dialog;
 
 
     /**
@@ -44,6 +47,10 @@ public class Drawer {
                 x instanceof Distance || x instanceof Node);
     }
 
+    public WritableImage takeSnap(){
+        return pane.snapshot(null,null);
+    }
+
 
 
     /**
@@ -58,8 +65,14 @@ public class Drawer {
         pane.requestFocus();
     }
 
-    void setPane(AnchorPane pane){
+    void setPane(AnchorPane pane, StackPane dialog){
         this.pane = pane;
+        this.dialog = dialog;
+    }
+
+    public void enableDialog(boolean enable)
+    {
+        dialog.setDisable(!enable);
     }
 
     /**

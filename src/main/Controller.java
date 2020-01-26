@@ -23,6 +23,12 @@ public class Controller {
 //    private ToggleGroup showHide;
 
     @FXML
+    private Button makeGif;
+
+    @FXML
+    private ImageView gifIcon;
+
+    @FXML
     private ToggleButton hideDistances;
 
     @FXML
@@ -190,6 +196,7 @@ public class Controller {
         saveIcon2.setImage(new Image(Manager.class.getResource("/assets/save.png").toExternalForm()));
         discardIcon.setImage(new Image(Manager.class.getResource("/assets/discard.png").toExternalForm()));
         cancelIcon.setImage(new Image(Manager.class.getResource("/assets/close.png").toExternalForm()));
+        gifIcon.setImage(new Image(Manager.class.getResource("/assets/gif.png").toExternalForm()));
     }
 
     @FXML
@@ -232,6 +239,9 @@ public class Controller {
 
         openButton.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
         openButton.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        makeGif.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        makeGif.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
         String unselected = "-fx-background-color: #e1e1e1;" + "-fx-font-size: 16px;"
                 + "-fx-font-family: \"Constantia\";";
@@ -377,7 +387,7 @@ public class Controller {
 
         setOldIcon();
 
-        drawer.setPane(drawingArea);
+        drawer.setPane(drawingArea, dialog);
 
         setButtons();
 
@@ -521,12 +531,14 @@ public class Controller {
 
         if (!Graph.areDistancesShown()) {
             PopupMessage.showMessage("The distances are disabled");
+            Visualizer.enableGif(false);
             return;
         }
 
         for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
             if (((Distance) dist).isInfty()) {
                 PopupMessage.showMessage("There must be no infinities in distances");
+                Visualizer.enableGif(false);
                 return;
             }
         }
@@ -536,8 +548,15 @@ public class Controller {
             drawTitledPane.setDisable(true);
             distancesTitledPane.setDisable(true);
             visualizeAmplitudes.setDisable(true);
+            makeGif.setDisable(true);
             stopVisualize.setDisable(false);
         }
+    }
+
+    @FXML
+    void createGIF(){
+        Visualizer.enableGif(true);
+        visualizeAmplitudes();
     }
 
     /**
@@ -552,6 +571,8 @@ public class Controller {
 
         drawTitledPane.setDisable(false);
         distancesTitledPane.setDisable(false);
+
+        makeGif.setDisable(false);
     }
 
 

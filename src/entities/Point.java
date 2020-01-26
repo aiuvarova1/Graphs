@@ -185,6 +185,7 @@ public class Point extends Circle {
         // pathTransition.setDuration(Duration.millis(2000));
         path.getElements().clear();
 
+
         line.setX(end[0]);
         line.setY(end[1]);
 

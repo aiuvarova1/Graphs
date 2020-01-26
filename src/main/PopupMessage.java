@@ -26,11 +26,28 @@ public class PopupMessage {
     public static void showMessage(String mes){
         ft.stop();
 
+        ft.setDelay(Duration.millis(3000));
         popup.setVisible(true);
         popup.setText(mes);
         popup.setOpacity(0.9);
         popup.toFront();
         //Drawer.getInstance().addElem(popup);
+        ft.play();
+    }
+
+    public static void fixMessage(String mes)
+    {
+        ft.stop();
+
+        ft.setDelay(Duration.millis(0));
+        popup.setVisible(true);
+        popup.setText(mes);
+        popup.setOpacity(0.9);
+        popup.toFront();
+    }
+
+    public static void unfixMessage()
+    {
         ft.play();
     }
 }

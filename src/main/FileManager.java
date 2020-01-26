@@ -15,6 +15,7 @@ class FileManager {
 
     private static File curFile = null;
     private static FileChooser fileChooser = new FileChooser();
+    private static FileChooser gifChooser = new FileChooser();
     private static Stage mainStage = null;
 
     private static BooleanProperty noSave = new SimpleBooleanProperty(false);
@@ -22,8 +23,14 @@ class FileManager {
     static{
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter
                 ("Graph object (*.graph)","*.graph"));
+        gifChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter
+                ("GIF (*.gif)","*.gif"));
     }
 
+
+    public static File getGifFile(){
+        return gifChooser.showSaveDialog(mainStage);
+    }
     /**
      * Stage setter (is set only once)
      * @param stage main stage

@@ -29,7 +29,7 @@
                      <children>
                         <Label fx:id="label" alignment="CENTER" contentDisplay="CENTER" layoutY="-7.0" prefHeight="79.0" prefWidth="290.0" text="Graph tool" textAlignment="CENTER" textFill="WHITE" wrapText="true" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="-7.0">
                            <font>
-                              <Font name="Times New Roman" size="48.0" />
+                              <Font name="Times New Roman" size="42.0" />
                            </font>
                         </Label>
                      </children>
@@ -250,9 +250,24 @@
                                                 <Font name="Constantia" size="17.0" />
                                              </font>
                                              <graphic>
-                                                <ImageView fx:id="startIcon" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fx:id="startIcon" fitHeight="15.0" fitWidth="15.0" onMouseClicked="#visualizeAmplitudes" pickOnBounds="true" preserveRatio="true">
                                                    <image>
                                                       <Image url="@../../resources/assets/play.png" />
+                                                   </image>
+                                                   <effect>
+                                                      <ColorAdjust brightness="0.48" />
+                                                   </effect>
+                                                </ImageView>
+                                             </graphic>
+                                          </Button>
+                                          <Button fx:id="makeGif" alignment="CENTER" minWidth="208.0" mnemonicParsing="false" onMouseClicked="#createGIF" prefHeight="37.0" prefWidth="278.0" style="-fx-background-color: #f5f5f5;" text="GIF" textAlignment="CENTER" textFill="#686060">
+                                             <font>
+                                                <Font name="Constantia" size="17.0" />
+                                             </font>
+                                             <graphic>
+                                                <ImageView fx:id="gifIcon" fitHeight="25.0" fitWidth="25.0" onMouseClicked="#createGIF" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../resources/assets/gif.png" />
                                                    </image>
                                                    <effect>
                                                       <ColorAdjust brightness="0.48" />
@@ -265,7 +280,7 @@
                                                 <Font name="Constantia" size="17.0" />
                                              </font>
                                              <graphic>
-                                                <ImageView fx:id="stopIcon" fitHeight="21.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fx:id="stopIcon" fitHeight="21.0" fitWidth="18.0" onMouseClicked="#stopVisualizing" pickOnBounds="true" preserveRatio="true">
                                                    <image>
                                                       <Image url="@../../resources/assets/stop.png" />
                                                    </image>
