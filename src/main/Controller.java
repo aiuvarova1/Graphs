@@ -164,6 +164,9 @@ public class Controller {
     @FXML
     private ImageView cancelIcon;
 
+    @FXML
+    private TextField time;
+
     public Controller() {
         drawer = Drawer.getInstance();
     }
@@ -401,6 +404,12 @@ public class Controller {
 
         new Distance();
         PopupMessage.setPopup(tip);
+
+        time.focusedProperty().addListener((observableValue, old, newVal) -> {
+            if (!newVal) {
+                setTime();
+            }
+        });
     }
 
     /**
@@ -545,6 +554,7 @@ public class Controller {
 
         Graph.getInstance().visualizeAmplitudes();
         if (Visualizer.isRunning()) {
+            time.setDisable(true);
             drawTitledPane.setDisable(true);
             distancesTitledPane.setDisable(true);
             visualizeAmplitudes.setDisable(true);
@@ -573,6 +583,13 @@ public class Controller {
         distancesTitledPane.setDisable(false);
 
         makeGif.setDisable(false);
+        time.setDisable(false);
+    }
+
+    @FXML
+    void setTime(){
+        time.setText(GIFMaker.setTime(time.getText()));
+        visualizeAmplitudes.requestFocus();
     }
 
 

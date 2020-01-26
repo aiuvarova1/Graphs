@@ -93,8 +93,10 @@ public class Edge extends Line implements Undoable, Visitable,
             pointsToProceed.get(n).changeAmplitude(degree);
             if(pointsToProceed.get(n).getAmplitude().equals("0")) {
                 pointsToProceed.get(n).hideEnabled();
+                pointsToProceed.get(n).removePath();
                 Drawer.getInstance().removeElement(pointsToProceed.get(n));
                 pointsToProceed.remove(n);
+                Visualizer.decreasePoints();
                 return null;
             }
             pointsToProceed.get(n).setDestination(getNeighbour(n));
@@ -109,14 +111,15 @@ public class Edge extends Line implements Undoable, Visitable,
                 return null;
             Point p = new Point(getNeighbour(n), this);
 
-            Drawer.getInstance().addElem(p);
             p.setAmplitude(degree);
 
             if(p.getAmplitude().equals("0")) {
                 p.hideEnabled();
-                Drawer.getInstance().removeElement(p);
                 return null;
             }
+
+            Visualizer.increasePoints();
+            Drawer.getInstance().addElem(p);
 
             return p.startPath(nearestCoords.get(n),nearestCoords.get(getNeighbour(n)),length.getValue());
         }

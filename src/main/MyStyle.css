@@ -125,11 +125,43 @@
 }
 
 
+
+
 .titled-pane:focused > .title > .arrow-button {
     -fx-background-color: null;
     -fx-focus-color: #babbf5;
 
 }
+
+.scroll-pane {
+    -fx-background-color: #f5f5f5;
+}
+
+.scroll-bar:vertical{
+    -fx-background-color:transparent;
+    -fx-pref-width: 15;
+}
+
+.increment-button, .decrement-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-arrows-visible: false;
+    -fx-color-label-visible: false;
+
+}
+
+.scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #686060;
+    -fx-opacity: 0.3;
+    -fx-background-radius: 3em;
+}
+
 
 .titled-pane {
     -fx-animated: true;

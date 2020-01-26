@@ -1,42 +1,46 @@
 package main;
 
 import javafx.animation.FadeTransition;
-import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.stage.Popup;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+/**
+ * A popup which notifies the user about incorrect input or other events
+ */
 public class PopupMessage {
     private static Label popup;
     private static FadeTransition ft;
 
-    public static  void setPopup(Label label){
+    /**
+     * Sets the parameters of the popup window
+     *
+     * @param label popup label
+     */
+    public static void setPopup(Label label) {
         popup = label;
-       // Drawer.getInstance().removeElement(popup);
-
-        ft = new FadeTransition(Duration.millis(3000),popup);
+        ft = new FadeTransition(Duration.millis(3000), popup);
         ft.setFromValue(0.9);
         ft.setToValue(0);
         ft.setDelay(Duration.millis(3000));
-        ft.setOnFinished((x)->popup.setVisible(false));
+        ft.setOnFinished((x) -> popup.setVisible(false));
     }
 
-    public static void showMessage(String mes){
+    public static void showMessage(String mes) {
         ft.stop();
-
         ft.setDelay(Duration.millis(3000));
         popup.setVisible(true);
         popup.setText(mes);
         popup.setOpacity(0.9);
         popup.toFront();
-        //Drawer.getInstance().addElem(popup);
         ft.play();
     }
 
-    public static void fixMessage(String mes)
-    {
+    /**
+     * Fixes the message until it is not unfixed
+     *
+     * @param mes message to fix
+     */
+    public static void fixMessage(String mes) {
         ft.stop();
 
         ft.setDelay(Duration.millis(0));
@@ -46,8 +50,10 @@ public class PopupMessage {
         popup.toFront();
     }
 
-    public static void unfixMessage()
-    {
+    /**
+     * Unfixes the message
+     */
+    public static void unfixMessage() {
         ft.play();
     }
 }

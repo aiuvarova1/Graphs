@@ -1,13 +1,8 @@
 package main;
 
-import entities.Graph;
+
 import entities.Undoable;
-import entities.Edge;
-import entities.Node;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
 public class MyContextMenu extends ContextMenu {
@@ -18,12 +13,7 @@ public class MyContextMenu extends ContextMenu {
 
         deletion = new MenuItem("Delete");
 
-        deletion.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                Invoker.getInstance().deleteElement(elem);
-            }
-        });
+        deletion.setOnAction(actionEvent -> Invoker.getInstance().deleteElement(elem));
 
         this.getItems().addAll(deletion);
 

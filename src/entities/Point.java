@@ -172,6 +172,10 @@ public class Point extends Circle {
         updateInfo();
     }
 
+    public void removePath(){
+        Visualizer.removePath(pathTransition);
+    }
+
 
     /**
      * Creates the animation instance for the point
@@ -202,6 +206,10 @@ public class Point extends Circle {
         pathTransition.setDuration(new Duration(startEdge / Graph.getInstance().getCurMinEdge() * 2000));
 
         pathTransition.setNode(this);
+
+        translateXProperty().setValue(start[0]);
+        translateYProperty().setValue(start[1]);
+
         return pathTransition;
     }
 
@@ -266,7 +274,8 @@ public class Point extends Circle {
      */
     private void updateInfo(){
         numAmplitude.setText(Formatter.format(amplitude));
-        Visualizer.checkMinMaxAmplitudes(amplitude);
+
+        Visualizer.checkMinMaxAmplitudes(amplitude, numAmplitude.getText().equals("1"));
 
     }
 }

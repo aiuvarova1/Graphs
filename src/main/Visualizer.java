@@ -5,8 +5,12 @@ import entities.Graph;
 import entities.Node;
 import entities.Point;
 import javafx.animation.PathTransition;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 
@@ -29,11 +33,21 @@ public class Visualizer {
 
     private static volatile boolean isRunning = false;
     private static boolean enabledGIF = false;
-    private static int numOfPoints = 0;
 
     private static boolean numeric = true;
     private static boolean colour = false;
     private static boolean arrows = false;
+
+    private static IntegerProperty curNumOfPoints = new SimpleIntegerProperty(1);
+    private static boolean needStartPeriod = false;
+
+    private static ChangeListener<Number> observer =
+            (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
+    {
+           if((int)newValue == 1) {
+               needStartPeriod = true;
+           }
+    };
 
     /**
      * Current lowest possible value of the amplitude
@@ -46,8 +60,9 @@ public class Visualizer {
     private static LongProperty upperBound = new SimpleLongProperty(1);
 
     public static void enableGif(boolean enable){
-        enabledGIF = true;
+        enabledGIF = enable;
     }
+
 
     /**
      * Submits new task to the common pool
@@ -83,7 +98,13 @@ public class Visualizer {
     }
 
 
+    public static void increasePoints(){
+        curNumOfPoints.set(curNumOfPoints.get() + 1);
+    }
 
+    public static void decreasePoints(){
+        curNumOfPoints.set(curNumOfPoints.get() - 1);
+    }
 
     /**
      * Controls the number of points in order not to fail with
@@ -92,7 +113,7 @@ public class Visualizer {
      * @return whether the limit of points is exceeded
      */
     public static boolean checkOOM() {
-        return ++numOfPoints < MAX_POINTS;
+        return curNumOfPoints.get() < MAX_POINTS;
     }
 
     public static LongProperty getLowerBound() {
@@ -109,8 +130,9 @@ public class Visualizer {
      * appearance.
      *
      * @param val new amplitude to check
+     * @param pretender whether the point has amplitude 1
      */
-    public static void checkMinMaxAmplitudes(double val) {
+    public static void checkMinMaxAmplitudes(double val, boolean pretender) {
 
         //val = Math.round(val);
 
@@ -119,6 +141,14 @@ public class Visualizer {
 
         if (val < lowerBound.get())
             lowerBound.set((long) (val - 1));
+
+        if(needStartPeriod && pretender)
+        {
+            PopupMessage.showMessage("A new period begins!");
+            if(enabledGIF && GIFMaker.isTimeDefault())
+                GIFMaker.stopTimer();
+            needStartPeriod = false;
+        }
     }
 
     /**
@@ -144,11 +174,13 @@ public class Visualizer {
     public static void startVisualization(Edge startEdge, Node startNode) {
 
        // System.out.println("start v");
+        needStartPeriod = false;
+
+        curNumOfPoints.set(1);
 
         lowerBound.set(0);
         upperBound.set(1);
 
-        numOfPoints = 1;
         isRunning = true;
         double[] start;
         double[] end;
@@ -163,8 +195,10 @@ public class Visualizer {
         animations.add(par);
         par.play();
 
+        curNumOfPoints.addListener(observer);
+
         if(enabledGIF)
-            GIFMaker.takeSnapshots(GIFMaker.DEFAULT_TIME);
+            GIFMaker.takeSnapshots();
 
     }
 
@@ -177,12 +211,18 @@ public class Visualizer {
         animations.add(p);
     }
 
+    public static void removePath(PathTransition p)
+    {
+        animations.remove(p);
+    }
+
 
     /**
      * Stops the visualization and refreshes the needed data
      */
     static void stopVisualization() {
         isRunning = false;
+        curNumOfPoints.removeListener(observer);
 
         for (PathTransition p : animations)
             p.stop();
