@@ -20,6 +20,7 @@ import main.Visualizer;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -30,7 +31,7 @@ import java.util.function.Consumer;
 public class Node extends StackPane implements
         Undoable, Visitable, Serializable, Restorable {
 
-    public static final double RADIUS = 18;
+    public static final double RADIUS = 16;
 
     private int num;
     private boolean visited;
@@ -94,6 +95,10 @@ public class Node extends StackPane implements
             Graph.getInstance().setMin(e.getLength());
     }
 
+    public int getNum(){
+        return num;
+    }
+
     /**
      * Selects the node as the start one
      */
@@ -110,37 +115,7 @@ public class Node extends StackPane implements
         curColor = color;
     }
 
-    /**
-     * Proceeds all points which came to the node and restarts their animations
-     *
-     */
-    private void handlePoints() {
 
-        if (!Visualizer.isRunning())
-            return;
-        //ParallelTransition tr = new ParallelTransition();
-        ArrayList<PathTransition> toPlay = new ArrayList<>();
-        PathTransition p;
-        for (Edge e : edges) {
-            p = e.handlePoint(this, edges.size());
-            if(p!=null) {
-                Visualizer.addPath(p);
-                toPlay.add(p);
-            }
-            // tr.getChildren().add(p);
-            // Visualizer.addAnimation(p);
-        }
-        if (!Visualizer.isRunning())
-            return;
-
-        for (PathTransition path : toPlay) {
-            path.play();
-        }
-        //Visualizer.addParallel(tr);
-        // tr.play();
-        //tr.setOnFinished(event -> Visualizer.removeParallel((ParallelTransition)event.getSource()));
-
-    }
 
     /**
      * Gets list of neighbours through passing the list of edges
@@ -240,7 +215,7 @@ public class Node extends StackPane implements
     Boolean addEdge(Node neighbour, Edge edge) {
         //NO MULTIPLE EDGES
         for (Edge e : edges) {
-            System.out.println(e.getNeighbour(this) + " edge neigh " + this);
+
             if (e.getNeighbour(this).equals(neighbour)) {
                 return false;
             }
@@ -553,8 +528,6 @@ public class Node extends StackPane implements
 
         processed.addListener((observable, oldValue, newValue) -> {
             if (oldValue) return;
-            // processed.setValue(false);
-
             try {
 
                 Visualizer.runTask(new Task() {
@@ -563,14 +536,14 @@ public class Node extends StackPane implements
 
                         synchronized (Node.this) {
                             try {
-                                Node.this.wait(110);
+                                System.err.println(java.time.LocalDateTime.now());
+                                Node.this.wait(95);
                             } catch (InterruptedException ex) {
                                 System.out.println("Interrupted in waiting points");
                                 return null;
                             }
                             Platform.runLater(() -> {
                                 handlePoints();
-                                //guests.set(0);
                                 processed.setValue(false);
                                 amplitudesSum = 0;
                             });
@@ -585,6 +558,34 @@ public class Node extends StackPane implements
                 System.out.println("illegal state");
             }
         });
+
+    }
+
+    /**
+     * Proceeds all points which came to the node and restarts their animations
+     *
+     */
+    private void handlePoints() {
+
+        if (!Visualizer.isRunning())
+            return;
+
+        ArrayList<PathTransition> toPlay = new ArrayList<>();
+        PathTransition p;
+        for (Edge e : edges) {
+            p = e.handlePoint(this, edges.size());
+            if(p!=null) {
+                Visualizer.addPath(p);
+                toPlay.add(p);
+            }
+        }
+        if (!Visualizer.isRunning())
+            return;
+
+        for (PathTransition path : toPlay) {
+            path.play();
+        }
+        System.out.println(LocalDateTime.now() + " all points started");
 
     }
 }

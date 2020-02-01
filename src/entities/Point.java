@@ -20,7 +20,7 @@ import main.Visualizer;
  */
 public class Point extends Circle {
 
-    static final int RADIUS = 8;
+    static final int RADIUS = 9;
     private static final int SHIFT = 10;
     private static final Color BASE_COLOR = Color.GRAY;
 
@@ -203,7 +203,7 @@ public class Point extends Circle {
         path.getElements().add(line);
 
         pathTransition.setPath(path);
-        pathTransition.setDuration(new Duration(startEdge / Graph.getInstance().getCurMinEdge() * 2000));
+        pathTransition.setDuration(new Duration((int)startEdge / Graph.getInstance().getCurMinEdge() * 2000 - 100));
 
         pathTransition.setNode(this);
 
@@ -237,17 +237,22 @@ public class Point extends Circle {
      */
     private void setBindings(){
 
-        pathTransition.setOnFinished(event -> Visualizer.runTask(new Task() {
-            @Override
-            protected Object call() {
-                if (!destination.processed.get())
-                    destination.processed.setValue(true);
-                setPointToEdge();
-                destination.increaseAmplitudesSum(amplitude);
-                destination.guests.incrementAndGet();
-                return null;
-            }
-        }));
+        pathTransition.setOnFinished(event -> {
+
+            Visualizer.runTask(new Task() {
+                @Override
+                protected Object call() {
+
+                    System.out.println("arrival to " + destination.getNum() + " at " + java.time.LocalDateTime.now());
+                    if (!destination.processed.get())
+                        destination.processed.setValue(true);
+                    setPointToEdge();
+                    destination.increaseAmplitudesSum(amplitude);
+                    destination.guests.incrementAndGet();
+                    return null;
+                }
+            });
+        });
 
         translateXProperty().addListener(((observable, oldValue, newValue) ->
         {

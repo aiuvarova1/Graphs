@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 /**
  * Class that starts and stops amplitudes' distribution
  */
@@ -40,6 +41,10 @@ public class Visualizer {
 
     private static IntegerProperty curNumOfPoints = new SimpleIntegerProperty(1);
     private static boolean needStartPeriod = false;
+    private static long startTime;
+    private static long periodTime = -1;
+
+    private static int timeout;
 
     private static ChangeListener<Number> observer =
             (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
@@ -71,6 +76,10 @@ public class Visualizer {
      */
     public static void runTask(Task t) {
         threadPool.submit(t);
+    }
+
+    public static int getTimeout(){
+        return timeout;
     }
 
     static void setNumeric(boolean val) {
@@ -144,7 +153,11 @@ public class Visualizer {
 
         if(needStartPeriod && pretender)
         {
-            PopupMessage.showMessage("A new period begins!");
+
+            if(periodTime < 0)
+                periodTime = (System.currentTimeMillis() - startTime)/1000;
+            System.out.println("period " + periodTime);
+            PopupMessage.showMessage("The period lasted " + periodTime +  " sec");
             if(enabledGIF && GIFMaker.isTimeDefault())
                 GIFMaker.stopTimer();
             needStartPeriod = false;
@@ -175,6 +188,7 @@ public class Visualizer {
 
        // System.out.println("start v");
         needStartPeriod = false;
+        periodTime = -1;
 
         curNumOfPoints.set(1);
 
@@ -193,8 +207,27 @@ public class Visualizer {
 
         PathTransition par = point.startPath(start, end, startEdge.getLength());
         animations.add(par);
-        par.play();
 
+
+        long now = System.currentTimeMillis();
+//        System.out.println(now);
+//        long nextSecond = now%1000 > 950 ? now - now%1000 + 2000 : now - now%1000 + 1000;
+
+//        timer.submit(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.println(LocalDateTime.now() + " start time, time we needed: " + nextSecond);
+//                par.play();
+//
+//            }
+//        }, new Date(nextSecond));
+
+        //PopupMessage.showMessage("Starting...");
+
+        timeout =(int) now%1000;
+        par.play();
+        startTime = System.currentTimeMillis();
+        System.out.println("Start " + now + " timeout " + timeout);
         curNumOfPoints.addListener(observer);
 
         if(enabledGIF)
