@@ -8,21 +8,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3aa67ae0-54ba-4086-884d-3b050cac4cee" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GraphsTool.iml" beforeDir="false" afterPath="$PROJECT_DIR$/GraphsTool.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Distance.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Distance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Edge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Edge.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/SimpleGraph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Node.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Node.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Point.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Point.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Command.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Command.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Drawer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Drawer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/EdgeContextMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/EdgeContextMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/FileManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/FileManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Filter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Filter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/MainScene.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/MainScene.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/NodeContextMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/NodeContextMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Visualizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Visualizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +47,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="GO_FMT" value="true" />
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
@@ -310,12 +296,25 @@
       <workItem from="1580896552199" duration="68000" />
       <workItem from="1586466213781" duration="69000" />
       <workItem from="1586466628193" duration="64000" />
-      <workItem from="1588328890127" duration="16009000" />
+      <workItem from="1588328890127" duration="16648000" />
     </task>
+    <task id="LOCAL-00001" summary="Several hot fixes, basis for infinite graphs (completely built in gui, working visualization but still no &quot;infinity&quot; for line)">
+      <created>1588347857172</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1588347857172</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Several hot fixes, basis for infinite graphs (completely built in gui, working visualization but still no &quot;infinity&quot; for line)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Several hot fixes, basis for infinite graphs (completely built in gui, working visualization but still no &quot;infinity&quot; for line)" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1588329843330">
@@ -334,44 +333,44 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="750" y="201" width="476" height="702" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1588332599189" />
-    <state x="558" y="129" width="860" height="847" key="CommitChangelistDialog2" timestamp="1588331078921">
+    <state x="558" y="129" width="860" height="847" key="CommitChangelistDialog2" timestamp="1588347856826">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="558" y="129" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1053@67.27.1853.1053" timestamp="1588331078921" />
-    <state x="242" y="117" width="1482" height="872" key="DiffContextDialog" timestamp="1588331076674">
+    <state x="558" y="129" width="860" height="847" key="CommitChangelistDialog2/67.27.1853.1053@67.27.1853.1053" timestamp="1588347856826" />
+    <state x="242" y="117" width="1482" height="872" key="DiffContextDialog" timestamp="1588347774813">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="242" y="117" width="1482" height="872" key="DiffContextDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1588331076674" />
+    <state x="242" y="117" width="1482" height="872" key="DiffContextDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1588347774813" />
     <state x="776" y="276" width="424" height="484" key="FileChooserDialogImpl" timestamp="1580896616752">
       <screen x="67" y="0" width="1853" height="1080" />
     </state>
     <state x="776" y="276" width="424" height="484" key="FileChooserDialogImpl/0.1080.1920.1080/67.0.1853.1080@67.0.1853.1080" timestamp="1580896616752" />
     <state x="776" y="276" key="FileChooserDialogImpl/0.2160.1920.1080/67.0.1853.1080/0.1080.1920.1080@67.0.1853.1080" timestamp="1579857052479" />
     <state x="776" y="296" width="424" height="513" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1580806763844" />
-    <state width="1807" height="295" key="GridCell.Tab.0.bottom" timestamp="1588347647273">
+    <state width="1807" height="295" key="GridCell.Tab.0.bottom" timestamp="1588347860294">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1874" height="339" key="GridCell.Tab.0.bottom/0.1080.1920.1080/67.0.1853.1080@67.0.1853.1080" timestamp="1580316043125" />
     <state width="1807" height="329" key="GridCell.Tab.0.bottom/0.1080.1920.1080/67.27.1853.1053@67.27.1853.1053" timestamp="1580314087297" />
-    <state width="1807" height="295" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1588347647273" />
-    <state width="1807" height="295" key="GridCell.Tab.0.center" timestamp="1588347647273">
+    <state width="1807" height="295" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1588347860294" />
+    <state width="1807" height="295" key="GridCell.Tab.0.center" timestamp="1588347860291">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1874" height="339" key="GridCell.Tab.0.center/0.1080.1920.1080/67.0.1853.1080@67.0.1853.1080" timestamp="1580316043125" />
     <state width="1807" height="329" key="GridCell.Tab.0.center/0.1080.1920.1080/67.27.1853.1053@67.27.1853.1053" timestamp="1580314087297" />
-    <state width="1807" height="295" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1588347647273" />
-    <state width="1807" height="295" key="GridCell.Tab.0.left" timestamp="1588347647272">
+    <state width="1807" height="295" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1588347860291" />
+    <state width="1807" height="295" key="GridCell.Tab.0.left" timestamp="1588347860291">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1874" height="339" key="GridCell.Tab.0.left/0.1080.1920.1080/67.0.1853.1080@67.0.1853.1080" timestamp="1580316043125" />
     <state width="1807" height="329" key="GridCell.Tab.0.left/0.1080.1920.1080/67.27.1853.1053@67.27.1853.1053" timestamp="1580314087297" />
-    <state width="1807" height="295" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1588347647272" />
-    <state width="1807" height="295" key="GridCell.Tab.0.right" timestamp="1588347647273">
+    <state width="1807" height="295" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1588347860291" />
+    <state width="1807" height="295" key="GridCell.Tab.0.right" timestamp="1588347860293">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1874" height="339" key="GridCell.Tab.0.right/0.1080.1920.1080/67.0.1853.1080@67.0.1853.1080" timestamp="1580316043125" />
     <state width="1807" height="329" key="GridCell.Tab.0.right/0.1080.1920.1080/67.27.1853.1053@67.27.1853.1053" timestamp="1580314087297" />
-    <state width="1807" height="295" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1588347647273" />
+    <state width="1807" height="295" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1588347860293" />
     <state width="1807" height="344" key="GridCell.Tab.1.bottom" timestamp="1588346551331">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -425,12 +424,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/Visualizer.java</url>
-          <line>204</line>
+          <line>207</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/Visualizer.java</url>
-          <line>210</line>
+          <line>213</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
