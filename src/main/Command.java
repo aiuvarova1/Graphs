@@ -79,7 +79,7 @@ class ChangeAllDistancesCommand implements Command {
                 return false;
             }
 
-            oldVals = Graph.getInstance().getEdgesAndDistances();
+            oldVals = SimpleGraph.getInstance().getEdgesAndDistances();
         }
 
         for (Edge e : oldVals.keySet())

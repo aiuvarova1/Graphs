@@ -53,7 +53,7 @@ public class Point extends Circle {
         amplitude = 1;
 
         pathTransition = new PathTransition();
-        line = new LineTo();
+        line = new LineTo(0, 0);
         path = new Path();
         move = new MoveTo();
 
@@ -203,7 +203,11 @@ public class Point extends Circle {
         path.getElements().add(line);
 
         pathTransition.setPath(path);
-        pathTransition.setDuration(new Duration((int)startEdge / Graph.getInstance().getCurMinEdge() * 2000 - 100));
+
+        final Duration duration = InfiniteManager.canEdit() ?
+                new Duration((int) startEdge / SimpleGraph.getInstance().getCurMinEdge() * 2000 - 100) :
+                new Duration(2000 - 100);
+        pathTransition.setDuration(duration);
 
         pathTransition.setNode(this);
 
@@ -280,7 +284,7 @@ public class Point extends Circle {
     private void updateInfo(){
         numAmplitude.setText(Formatter.format(amplitude));
 
-        Visualizer.checkMinMaxAmplitudes(amplitude, numAmplitude.getText().equals("1"));
+        Visualizer.checkMinMaxAmplitudes(amplitude, numAmplitude.getText().equals("1"), destination);
 
     }
 }

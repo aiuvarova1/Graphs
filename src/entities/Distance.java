@@ -28,6 +28,11 @@ public class Distance extends Pane implements Serializable {
 
 
     public Distance() {
+
+        if (!InfiniteManager.canEdit()) {
+            value = 1;
+            return;
+        }
         label = new TexLabel();
         input = new TextField();
 
@@ -57,8 +62,9 @@ public class Distance extends Pane implements Serializable {
         this.getChildren().add(label);
         input.setDisable(true);
 
-        if (Graph.areDistancesShown())
+        if (SimpleGraph.areDistancesShown()) {
             show();
+        }
 
         this.addEventFilter(MouseEvent.MOUSE_CLICKED, Filter.clickFilter);
     }

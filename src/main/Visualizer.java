@@ -1,7 +1,8 @@
 package main;
 
 import entities.Edge;
-import entities.Graph;
+import entities.InfiniteManager;
+import entities.SimpleGraph;
 import entities.Node;
 import entities.Point;
 import javafx.animation.PathTransition;
@@ -45,6 +46,7 @@ public class Visualizer {
     private static long periodTime = -1;
 
     private static int timeout;
+    private static Node globalStart;
 
     private static ChangeListener<Number> observer =
             (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
@@ -138,28 +140,31 @@ public class Visualizer {
      * Checks whether an upper/lower bound changes after a new amplitude
      * appearance.
      *
-     * @param val new amplitude to check
+     * @param val       new amplitude to check
      * @param pretender whether the point has amplitude 1
      */
-    public static void checkMinMaxAmplitudes(double val, boolean pretender) {
+    public static void checkMinMaxAmplitudes(double val, boolean pretender, Node destination) {
 
         //val = Math.round(val);
 
-        if (val > upperBound.get())
+        if (val > upperBound.get()) {
             upperBound.set((long) (val + 1));
+        }
 
-        if (val < lowerBound.get())
+        if (val < lowerBound.get()) {
             lowerBound.set((long) (val - 1));
+        }
 
-        if(needStartPeriod && pretender)
-        {
+        if (needStartPeriod && pretender && destination.equals(globalStart)) {
 
-            if(periodTime < 0)
-                periodTime = (System.currentTimeMillis() - startTime)/1000;
+            if (periodTime < 0) {
+                periodTime = (System.currentTimeMillis() - startTime) / 1000;
+            }
             System.out.println("period " + periodTime);
-            PopupMessage.showMessage("The period lasted " + periodTime +  " sec");
-            if(enabledGIF && GIFMaker.isTimeDefault())
+            PopupMessage.showMessage("The period lasted " + periodTime + " sec");
+            if (enabledGIF && GIFMaker.isTimeDefault()) {
                 GIFMaker.stopTimer();
+            }
             needStartPeriod = false;
         }
     }
@@ -187,6 +192,7 @@ public class Visualizer {
     public static void startVisualization(Edge startEdge, Node startNode) {
 
        // System.out.println("start v");
+        globalStart = startNode;
         needStartPeriod = false;
         periodTime = -1;
 
@@ -208,21 +214,7 @@ public class Visualizer {
         PathTransition par = point.startPath(start, end, startEdge.getLength());
         animations.add(par);
 
-
         long now = System.currentTimeMillis();
-//        System.out.println(now);
-//        long nextSecond = now%1000 > 950 ? now - now%1000 + 2000 : now - now%1000 + 1000;
-
-//        timer.submit(new TimerTask() {
-//            @Override
-//            public void run() {
-//                System.out.println(LocalDateTime.now() + " start time, time we needed: " + nextSecond);
-//                par.play();
-//
-//            }
-//        }, new Date(nextSecond));
-
-        //PopupMessage.showMessage("Starting...");
 
         timeout =(int) now%1000;
         par.play();
@@ -266,7 +258,7 @@ public class Visualizer {
 
 
         Drawer.getInstance().removePoints();
-        Graph.getInstance().resetNodes();
+        InfiniteManager.resetNodes();
 
         if(enabledGIF) {
             GIFMaker.createGif();

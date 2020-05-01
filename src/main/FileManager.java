@@ -1,6 +1,6 @@
 package main;
 
-import entities.Graph;
+import entities.SimpleGraph;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.stage.FileChooser;
@@ -64,7 +64,7 @@ class FileManager {
      * @return save or not
      */
     static boolean isSaveNeeded(){
-        return Graph.getInstance().getSize() != 0 &&
+        return SimpleGraph.getInstance().getSize() != 0 &&
                 !noSave.get();
     }
 
@@ -79,8 +79,7 @@ class FileManager {
             return;
         }
 
-        if(Graph.getInstance().getSize() == 0)
-        {
+        if (SimpleGraph.getInstance().getSize() == 0) {
             PopupMessage.showMessage("Nothing to save");
             return;
         }
@@ -93,8 +92,7 @@ class FileManager {
      */
     static  void saveAs(){
 
-        if(Graph.getInstance().getSize() == 0)
-        {
+        if (SimpleGraph.getInstance().getSize() == 0) {
             PopupMessage.showMessage("Nothing to save");
             return;
         }
@@ -118,9 +116,9 @@ class FileManager {
 
         try(ObjectInputStream inputStream = new ObjectInputStream(
                 new FileInputStream(file)
-        )){
-            Graph g = (Graph)inputStream.readObject();
-            Graph.setNew(g);
+        )) {
+            SimpleGraph g = (SimpleGraph) inputStream.readObject();
+            SimpleGraph.setNew(g);
         }catch (FileNotFoundException ex){
             PopupMessage.showMessage("File not found");
             return;
@@ -147,7 +145,7 @@ class FileManager {
 
         try(ObjectOutputStream outputStream = new ObjectOutputStream(
                 new FileOutputStream(file))){
-            outputStream.writeObject(Graph.getInstance());
+            outputStream.writeObject(SimpleGraph.getInstance());
 
         }catch(FileNotFoundException ex)
         {

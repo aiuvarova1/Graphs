@@ -55,6 +55,16 @@ public class Edge extends Line implements Undoable, Visitable,
         nearestCoords = new HashMap<>();
     }
 
+    void hide() {
+        Drawer.getInstance().removeElement(this);
+        Drawer.getInstance().removeElement(length);
+    }
+
+    void show() {
+        Drawer.getInstance().addElem(this);
+        Drawer.getInstance().addElem(length);
+    }
+
     /**
      * Selects the edge as the beginning one
      */
@@ -280,8 +290,9 @@ public class Edge extends Line implements Undoable, Visitable,
 
         try {
             Drawer.getInstance().addElem(this);
-            if (Graph.getInstance().areDistancesShown())
+            if (SimpleGraph.getInstance().areDistancesShown()) {
                 length.show();
+            }
             setStroke(color);
             curColor = color;
             connectNodes(n1, n2);
@@ -300,8 +311,9 @@ public class Edge extends Line implements Undoable, Visitable,
         n2.removeNeighbour(n1);
         Drawer.getInstance().removeElement(this);
         Drawer.getInstance().removeElement(length);
-        if (Graph.getInstance().getStartEdge() == this)
-            Graph.getInstance().setStartEdge(null);
+        if (SimpleGraph.getInstance().getStartEdge() == this) {
+            SimpleGraph.getInstance().setStartEdge(null);
+        }
     }
 
 
@@ -373,7 +385,9 @@ public class Edge extends Line implements Undoable, Visitable,
      * Moves length field after the edge
      */
     private void relocateLabel() {
-        if (length == null) return;
+        if (length == null || !InfiniteManager.canEdit()) {
+            return;
+        }
 
 
         double coef = (getEndX() - getStartX()) /
@@ -403,7 +417,9 @@ public class Edge extends Line implements Undoable, Visitable,
 
 
         this.setOnContextMenuRequested(contextMenuEvent -> {
-            if (Filter.isEdgeStarted() || Visualizer.isRunning()) return;
+            if (Filter.isEdgeStarted() || Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+                return;
+            }
             // System.out.println(contextMenuEvent.getSource());
             MenuManager.getEdgeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
             MenuManager.getEdgeMenu().show(n1,

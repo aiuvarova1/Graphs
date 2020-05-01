@@ -1,6 +1,7 @@
 package main;
 
 import entities.*;
+import entities.InfiniteManager.Type;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -167,6 +168,24 @@ public class Controller {
     @FXML
     private TextField time;
 
+    @FXML
+    private Button simpleGraph;
+
+    @FXML
+    private Button lineGraph;
+
+    @FXML
+    private Button latticeGraph;
+
+    @FXML
+    private ImageView graphIcon;
+
+    @FXML
+    private ImageView lineIcon;
+
+    @FXML
+    private ImageView latticeIcon;
+
     public Controller() {
         drawer = Drawer.getInstance();
     }
@@ -200,6 +219,10 @@ public class Controller {
         discardIcon.setImage(new Image(Manager.class.getResource("/assets/discard.png").toExternalForm()));
         cancelIcon.setImage(new Image(Manager.class.getResource("/assets/close.png").toExternalForm()));
         gifIcon.setImage(new Image(Manager.class.getResource("/assets/gif.png").toExternalForm()));
+        graphIcon.setImage(new Image(Manager.class.getResource("/assets/graph.png").toExternalForm()));
+        latticeIcon.setImage(new Image(Manager.class.getResource("/assets/lattice.png").toExternalForm()));
+        lineIcon.setImage(new Image(Manager.class.getResource("/assets/line.png").toExternalForm()));
+
     }
 
     @FXML
@@ -260,17 +283,24 @@ public class Controller {
         saveButton2.addEventFilter(MouseEvent.MOUSE_ENTERED,event ->
             ((Button)event.getSource()).setStyle(selected));
         saveButton2.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
-            ((Button)event.getSource()).setStyle(unselected)
+                ((Button) event.getSource()).setStyle(unselected)
         );
 
         discardButton.addEventHandler(MouseEvent.MOUSE_ENTERED, event ->
-            ((Button)event.getSource()).setStyle(selected));
+                ((Button) event.getSource()).setStyle(selected));
 
         discardButton.addEventHandler(MouseEvent.MOUSE_EXITED, event ->
-            ((Button)event.getSource()).setStyle(unselected)
+                ((Button) event.getSource()).setStyle(unselected)
         );
 
+        simpleGraph.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        simpleGraph.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
 
+        latticeGraph.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        latticeGraph.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
+
+        lineGraph.addEventFilter(MouseEvent.MOUSE_ENTERED, Filter.buttonEnterHandler);
+        lineGraph.addEventHandler(MouseEvent.MOUSE_EXITED, Filter.buttonExitHandler);
     }
 
     private void addListeners() {
@@ -278,14 +308,14 @@ public class Controller {
 
             if (Visualizer.isRunning()) return;
             drawingArea.setPrefWidth(newVal.doubleValue());
-            Graph.getInstance().rescale('x', oldVal.doubleValue(), newVal.doubleValue());
+            SimpleGraph.getInstance().rescale('x', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
 
             if (Visualizer.isRunning()) return;
             // drawingArea.setPrefHeight(newVal.doubleValue());
-            Graph.getInstance().rescale('y', oldVal.doubleValue(), newVal.doubleValue());
+            SimpleGraph.getInstance().rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -419,10 +449,14 @@ public class Controller {
      */
     @FXML
     void createNode(MouseEvent event) {
-        if (Visualizer.isRunning()) return;
+        if (Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+            return;
+        }
 
-        if (event.getButton() != MouseButton.PRIMARY) return;
-        if (Graph.getInstance().getSize() < Graph.MAX_SIZE) {
+        if (event.getButton() != MouseButton.PRIMARY) {
+            return;
+        }
+        if (SimpleGraph.getInstance().getSize() < SimpleGraph.MAX_SIZE) {
 
             Node node = drawer.drawNode(event);
             Invoker.getInstance().createElement(node);
@@ -438,7 +472,7 @@ public class Controller {
 
         drawingArea.getChildren().removeIf(x -> x.getClass() == Node.class || x.getClass() == Edge.class
                 || x.getClass() == Distance.class);
-        Graph.getInstance().clearGraph();
+        SimpleGraph.getInstance().clearGraph();
     }
 
 
@@ -459,11 +493,11 @@ public class Controller {
     @FXML
     void showDist() {
 
-        if(Graph.areDistancesShown()) {
+        if (SimpleGraph.areDistancesShown()) {
             showDistances.setSelected(true);
             return;
         }
-        Graph.getInstance().setLengths();
+        SimpleGraph.getInstance().setLengths();
         calculate.setDisable(false);
         setAll.setDisable(false);
         allLengths.setDisable(false);
@@ -476,12 +510,12 @@ public class Controller {
     @FXML
     void hideDist() {
 
-        if(!Graph.areDistancesShown()) {
+        if (!SimpleGraph.areDistancesShown()) {
             hideDistances.setSelected(true);
             return;
         }
 
-        Graph.getInstance().hideLengths();
+        SimpleGraph.getInstance().hideLengths();
         calculate.setDisable(true);
         setAll.setDisable(true);
         allLengths.setDisable(true);
@@ -490,12 +524,12 @@ public class Controller {
     @FXML
     void resetDist() {
 
-        Graph.getInstance().resetDistances();
+        SimpleGraph.getInstance().resetDistances();
     }
 
     @FXML
     private void changeDist(){
-        Graph.getInstance().changeDistances(allLengths.getText());
+        SimpleGraph.getInstance().changeDistances(allLengths.getText());
     }
 
     /**
@@ -515,7 +549,9 @@ public class Controller {
 
         @Override
         public void handle(KeyEvent event) {
-            if (Visualizer.isRunning()) return;
+            if (Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+                return;
+            }
 
             if (undoComb.match(event))
                 Invoker.getInstance().undoLast();
@@ -537,22 +573,26 @@ public class Controller {
     @FXML
     void visualizeAmplitudes() {
 
-
-        if (!Graph.areDistancesShown()) {
-            PopupMessage.showMessage("The distances are disabled");
-            Visualizer.enableGif(false);
-            return;
-        }
-
-        for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
-            if (((Distance) dist).isInfty()) {
-                PopupMessage.showMessage("There must be no infinities in distances");
+        if (InfiniteManager.canEdit()) {
+            if (!SimpleGraph.areDistancesShown()) {
+                PopupMessage.showMessage("The distances are disabled");
                 Visualizer.enableGif(false);
                 return;
             }
+
+            for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
+                if (((Distance) dist).isInfty()) {
+                    PopupMessage.showMessage("There must be no infinities in distances");
+                    Visualizer.enableGif(false);
+                    return;
+                }
+            }
+
+            SimpleGraph.getInstance().visualizeAmplitudes();
+        } else {
+            InfiniteManager.visualize();
         }
 
-        Graph.getInstance().visualizeAmplitudes();
         if (Visualizer.isRunning()) {
             time.setDisable(true);
             drawTitledPane.setDisable(true);
@@ -587,9 +627,30 @@ public class Controller {
     }
 
     @FXML
-    void setTime(){
+    void setTime() {
         time.setText(GIFMaker.setTime(time.getText()));
         visualizeAmplitudes.requestFocus();
+    }
+
+    @FXML
+    void drawSimple() {
+        InfiniteManager.init(Type.SIMPLE);
+        drawTitledPane.setDisable(false);
+        distancesTitledPane.setDisable(false);
+    }
+
+    @FXML
+    void drawLine() {
+        InfiniteManager.init(Type.LINE);
+        drawTitledPane.setDisable(true);
+        distancesTitledPane.setDisable(true);
+    }
+
+    @FXML
+    void drawLattice() {
+        InfiniteManager.init(Type.LATTICE);
+        drawTitledPane.setDisable(true);
+        distancesTitledPane.setDisable(true);
     }
 
 

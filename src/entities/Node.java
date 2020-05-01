@@ -58,14 +58,26 @@ public class Node extends StackPane implements
     private volatile double amplitudesSum = 0;
 
 
-    double getAmplitudesSum()
-    {
+    double getAmplitudesSum() {
         return amplitudesSum;
     }
 
-    synchronized  void increaseAmplitudesSum(double amplitude){
+    synchronized void increaseAmplitudesSum(double amplitude) {
         amplitudesSum += amplitude;
     }
+
+//    @Override
+//    public boolean equals(Object other){
+//        if(!(other instanceof Node))
+//            return false;
+//        Node otherNode = (Node) other;
+//        return num == otherNode.num && edges.equals(otherNode.edges);
+//    }
+//
+//    @Override
+//    public int hashCode(){
+//        return Objects.hash(num, edges);
+//    }
 
     public Node(int num) {
 
@@ -85,14 +97,16 @@ public class Node extends StackPane implements
     void resetNode() {
         guests.set(0);
         processed.set(false);
+        amplitudesSum = 0;
         for (Edge e : edges)
             e.resetProceed();
 
     }
 
     void checkMinEdge(){
-        for (Edge e : edges)
-            Graph.getInstance().setMin(e.getLength());
+        for (Edge e : edges) {
+            SimpleGraph.getInstance().setMin(e.getLength());
+        }
     }
 
     public int getNum(){
@@ -288,10 +302,11 @@ public class Node extends StackPane implements
     @Override
     public void remove() {
 
-        if(Graph.getInstance().getStartNode() == this)
-            Graph.getInstance().setStartNode(null);
+        if (SimpleGraph.getInstance().getStartNode() == this) {
+            SimpleGraph.getInstance().setStartNode(null);
+        }
 
-        Graph.getInstance().removeNode(this);
+        SimpleGraph.getInstance().removeNode(this);
     }
 
 
@@ -302,14 +317,14 @@ public class Node extends StackPane implements
      */
     @Override
     public boolean create() {
-        Graph.getInstance().addNode(this);
+        SimpleGraph.getInstance().addNode(this);
 
         try {
             Drawer.getInstance().addElem(this);
         } catch (IllegalArgumentException ex) {
             System.out.println("Already drawn node");
         }
-        Graph.getInstance().refreshLabels(this);
+        SimpleGraph.getInstance().refreshLabels(this);
         getCircle().setFill(color);
         curColor = color;
 
@@ -463,9 +478,13 @@ public class Node extends StackPane implements
 
         setOnMousePressed(event -> {
 
-            if (Filter.isEdgeStarted() ||
-                    Filter.isEditing() || event.isSecondaryButtonDown()
-                    || Visualizer.isRunning()) return;
+            if (Filter.isEdgeStarted()
+                    || Filter.isEditing()
+                    || event.isSecondaryButtonDown()
+                    || Visualizer.isRunning()
+                    || !InfiniteManager.canEdit()) {
+                return;
+            }
 
             initialPosition[0] = getLayoutX();
             initialPosition[1] = getLayoutY();
@@ -476,7 +495,9 @@ public class Node extends StackPane implements
         });
 
         this.setOnContextMenuRequested(contextMenuEvent -> {
-            if (Filter.isEdgeStarted() || Visualizer.isRunning()) return;
+            if (Filter.isEdgeStarted() || Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+                return;
+            }
             MenuManager.getNodeMenu().bindElem((javafx.scene.Node) contextMenuEvent.getSource());
             MenuManager.getNodeMenu().show((javafx.scene.Node) contextMenuEvent.getSource(),
                     contextMenuEvent.getScreenX(), contextMenuEvent.getScreenY());
@@ -485,7 +506,9 @@ public class Node extends StackPane implements
 
         setOnMouseReleased(mouseEvent -> {
             if (mouseEvent.getButton() != MouseButton.PRIMARY ||
-                    Visualizer.isRunning()) return;
+                    Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+                return;
+            }
 
             getScene().setCursor(Cursor.HAND);
           //  Node n = (Node) mouseEvent.getSource();
@@ -497,7 +520,9 @@ public class Node extends StackPane implements
         setOnMouseDragged(event -> {
 
             if (Filter.isEdgeStarted() || event.getButton() != MouseButton.PRIMARY
-                    || Visualizer.isRunning()) return;
+                    || Visualizer.isRunning() || !InfiniteManager.canEdit()) {
+                return;
+            }
 
             boolean[] crossedBounds = checkBoundsCrossed(event);
             if (!crossedBounds[0])

@@ -47,13 +47,16 @@ public class Filter {
      */
     public static final EventHandler<MouseEvent> dragFilter = event -> {
 
-        if(editing || Visualizer.isRunning())
+        if (editing || Visualizer.isRunning() || !InfiniteManager.canEdit()) {
             return;
+        }
         if (event.getEventType() == MouseEvent.MOUSE_DRAGGED &&
                 event.getButton() == MouseButton.PRIMARY) {
             dragging = true;
         } else if (event.getEventType() == MouseEvent.MOUSE_CLICKED) {
-            if (dragging) event.consume();
+            if (dragging) {
+                event.consume();
+            }
             dragging = false;
         }
     };
@@ -68,7 +71,7 @@ public class Filter {
 //            System.out.println(event.getSource().getClass());
 //            System.out.println(event.getTarget());
 
-            if (Visualizer.isRunning()) {
+            if (Visualizer.isRunning() || !InfiniteManager.canEdit()) {
                 event.consume();
                 return;
             }

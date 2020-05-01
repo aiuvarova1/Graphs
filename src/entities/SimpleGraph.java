@@ -18,11 +18,13 @@ import java.util.function.Consumer;
  * Represents the whole graph on the pane and stores
  * the list of all nodes
  */
-public class Graph implements Serializable {
+public class SimpleGraph
+        implements Serializable, Graph {
+
     public static final int MAX_SIZE = 50;
-    private ArrayList<Node> nodes = new ArrayList<Node>(20);
-    private static Graph instance;
-    private Stack<Node> dfsStack = new Stack<Node>();
+    private ArrayList<Node> nodes = new ArrayList<>(20);
+    private static SimpleGraph instance;
+    private Stack<Node> dfsStack = new Stack<>();
 
     private static boolean showDistances = false;
 
@@ -31,7 +33,7 @@ public class Graph implements Serializable {
 
     private double curMinEdge = 100000;
 
-    public Edge getStartEdge(){
+    public Edge getStartEdge() {
         return startEdge;
     }
 
@@ -61,11 +63,12 @@ public class Graph implements Serializable {
 
     /**
      * Singleton
+     *
      * @return graph's instance
      */
-    public static Graph getInstance() {
+    public static SimpleGraph getInstance() {
         if (instance == null) {
-            instance = new Graph();
+            instance = new SimpleGraph();
         }
         return instance;
     }
@@ -78,8 +81,33 @@ public class Graph implements Serializable {
         return showDistances;
     }
 
+    public static void hideGraph() {
+        for (Node node : instance.nodes) {
+            Drawer.getInstance().removeElement(node);
+            for (Edge edge : node.getEdges()) {
+                try {
+                    edge.hide();
+                } catch (IllegalArgumentException ex) {
+                }
+            }
+        }
+    }
+
+    public static void showGraph() {
+        for (Node node : instance.nodes) {
+            Drawer.getInstance().addElem(node);
+            for (Edge edge : node.getEdges()) {
+                try {
+                    edge.show();
+                } catch (IllegalArgumentException ex) {
+                }
+            }
+        }
+    }
+
     /**
      * Adds the given node to the graph
+     *
      * @param node node to add
      */
     void addNode(Node node) {
@@ -133,19 +161,21 @@ public class Graph implements Serializable {
 
     /**
      * Sets new instance of a graph from an opened file
+     *
      * @param g new graph
      */
-    public static void setNew(Graph g){
+    public static void setNew(SimpleGraph g) {
         Drawer.getInstance().clear();
         instance = Objects.requireNonNull(g);
         instance.runDFS(Node::restore);
-        for (Node n : instance.nodes)
-        {
-            for (Edge e: n.getEdges())
+        for (Node n : instance.nodes) {
+            for (Edge e : n.getEdges()) {
                 e.connectNodes(e.getNodes()[0], e.getNodes()[1]);
+            }
         }
-        if(instance.getStartEdge() != null)
+        if (instance.getStartEdge() != null) {
             instance.getStartEdge().select();
+        }
         if(instance.getStartNode() != null)
             instance.getStartNode().select();
     }
