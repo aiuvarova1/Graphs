@@ -164,6 +164,8 @@ public class Drawer {
      */
     private Node createLayout(double xPos, double yPos) {
 
+       // System.out.println("Node in " + xPos + " " + yPos);
+
         Circle node = new Circle(xPos, yPos, Node.RADIUS, Color.WHITE);
 
         node.addEventFilter(MouseEvent.MOUSE_DRAGGED, Filter.dragFilter);

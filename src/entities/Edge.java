@@ -290,7 +290,7 @@ public class Edge extends Line implements Undoable, Visitable,
 
         try {
             Drawer.getInstance().addElem(this);
-            if (SimpleGraph.getInstance().areDistancesShown()) {
+            if (InfiniteManager.canEdit() && SimpleGraph.getInstance().areDistancesShown()) {
                 length.show();
             }
             setStroke(color);
@@ -311,7 +311,7 @@ public class Edge extends Line implements Undoable, Visitable,
         n2.removeNeighbour(n1);
         Drawer.getInstance().removeElement(this);
         Drawer.getInstance().removeElement(length);
-        if (SimpleGraph.getInstance().getStartEdge() == this) {
+        if ( InfiniteManager.canEdit() && SimpleGraph.getInstance().getStartEdge() == this) {
             SimpleGraph.getInstance().setStartEdge(null);
         }
     }

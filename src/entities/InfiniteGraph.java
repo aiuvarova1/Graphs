@@ -1,19 +1,16 @@
 package entities;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class InfiniteGraph implements Graph{
 
-    private List<Node> nodes;
+    protected Collection<Node> nodes;
 
     public static int EDGE_LENGTH = 100;
 
-    InfiniteGraph(){
-        nodes = new ArrayList<>();
-    }
-
-    protected List<Node> getNodes(){
+    protected Collection<Node> getNodes(){
         return nodes;
     }
 
@@ -26,4 +23,7 @@ public abstract class InfiniteGraph implements Graph{
         }
     }
 
+    public abstract void visualize();
+    public abstract void stop();
+    public abstract void erase();
 }

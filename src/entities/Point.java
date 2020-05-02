@@ -1,5 +1,7 @@
 package entities;
 
+import javax.swing.BoundedRangeModel;
+
 import javafx.animation.PathTransition;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
@@ -83,6 +85,13 @@ public class Point extends Circle {
     }
 
 
+    public void showAttributes(){
+        numAmplitude.setTranslateX(this.getCenterX() + SHIFT);
+        arrow.setArrowTranslateX(this.getCenterX());
+
+        numAmplitude.setTranslateY(this.getCenterY() + SHIFT);
+        arrow.setArrowTranslateY(this.getCenterY());
+    }
     /**
      * Shows numeric value of the amplitude
      */
@@ -159,7 +168,7 @@ public class Point extends Circle {
         else
             amplitude = ( 2.0 / degree - 1) * amplitude
                     + (destination.getAmplitudesSum() - amplitude) * (2.0 / degree);
-        updateInfo();
+        updateInfo(destination);
     }
 
     /**
@@ -169,7 +178,7 @@ public class Point extends Circle {
      */
     void setAmplitude(int degree) {
         amplitude = edge.getNeighbour(destination).getAmplitudesSum() * (2.0 / degree);
-        updateInfo();
+        updateInfo(edge.getNeighbour(destination));
     }
 
     public void removePath(){
@@ -281,10 +290,10 @@ public class Point extends Circle {
     /**
      * Updates all needed information after amplitude's updating
      */
-    private void updateInfo(){
+    private void updateInfo(Node toCheck){
         numAmplitude.setText(Formatter.format(amplitude));
 
-        Visualizer.checkMinMaxAmplitudes(amplitude, numAmplitude.getText().equals("1"), destination);
+        Visualizer.checkMinMaxAmplitudes(amplitude, numAmplitude.getText().equals("1"), toCheck);
 
     }
 }

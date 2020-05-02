@@ -103,6 +103,9 @@ public class Controller {
     private TitledPane distancesTitledPane;
 
     @FXML
+    private TitledPane graphTypes;
+
+    @FXML
     private ImageView redoIcon;
 
     @FXML
@@ -600,6 +603,7 @@ public class Controller {
             visualizeAmplitudes.setDisable(true);
             makeGif.setDisable(true);
             stopVisualize.setDisable(false);
+            graphTypes.setDisable(true);
         }
     }
 
@@ -614,13 +618,17 @@ public class Controller {
      */
     @FXML
     void stopVisualizing() {
-        Visualizer.stopVisualization();
+        if(InfiniteManager.canEdit())
+            Visualizer.stopVisualization();
+        else
+            InfiniteManager.stop();
 
         visualizeAmplitudes.setDisable(false);
         stopVisualize.setDisable(true);
 
         drawTitledPane.setDisable(false);
         distancesTitledPane.setDisable(false);
+        graphTypes.setDisable(false);
 
         makeGif.setDisable(false);
         time.setDisable(false);

@@ -14,11 +14,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 
 
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 
 /**
@@ -227,6 +230,34 @@ public class Visualizer {
 
     }
 
+    public static void runLineVisualization(Point p, Runnable supplier)
+    {
+        isRunning = true;
+
+//        PathTransition transition = new PathTransition();
+//        transition.setNode(p);
+//
+//        LineTo line = new LineTo(startX, startY);
+//        MoveTo move = new MoveTo()
+
+        supplier.run();
+
+        if(enabledGIF)
+            GIFMaker.takeSnapshots();
+    }
+
+    public static void stopLineVisualization(){
+        isRunning = false;
+
+        if(enabledGIF) {
+            GIFMaker.createGif();
+            Drawer.getInstance().enableDialog(false);
+            PopupMessage.unfixMessage();
+        }
+
+        enabledGIF = false;
+    }
+
     /**
      * Adds animation of the new point to the list
      *
@@ -255,7 +286,6 @@ public class Visualizer {
 
         threadPool.shutdownNow();
         threadPool = Executors.newCachedThreadPool();
-
 
         Drawer.getInstance().removePoints();
         InfiniteManager.resetNodes();

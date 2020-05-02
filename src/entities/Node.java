@@ -113,6 +113,7 @@ public class Node extends StackPane implements
         return num;
     }
 
+
     /**
      * Selects the node as the start one
      */

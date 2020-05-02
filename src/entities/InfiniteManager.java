@@ -18,6 +18,8 @@ public class InfiniteManager {
 
         if(currentType == Type.SIMPLE)
             SimpleGraph.hideGraph();
+        else
+            graph.erase();
 
         currentType = type;
         switch (type){
@@ -28,7 +30,7 @@ public class InfiniteManager {
                 graph = new LineGraph();
                 break;
             case SIMPLE:
-                erase();
+                SimpleGraph.showGraph();
                 graph = null;
                 break;
             default:
@@ -37,31 +39,29 @@ public class InfiniteManager {
     }
 
 
-    public static void erase(){
-
-        for (Node node: graph.getNodes())
-        {
-            Drawer.getInstance().removeElement(node);
-
-            for (Edge edge: node.getEdges())
-            {
-                try{
-                    Drawer.getInstance().removeElement(edge);
-                }catch(IllegalArgumentException ex){}
-            }
-        }
-
-
-        SimpleGraph.showGraph();
-    }
-
     public static boolean canEdit(){
         return currentType == Type.SIMPLE;
     }
 
     public static void visualize(){
-        final Node startNode = graph.getNodes().get(0);
-        Visualizer.startVisualization(startNode.getEdges().get(0), startNode);
+        graph.visualize();
+    }
+
+    public static void stop(){
+        graph.stop();
+
+        graph.erase();
+        switch (currentType) {
+            case LATTICE:
+                graph = new LatticeGraph();
+                break;
+            case LINE:
+                graph = new LineGraph();
+                break;
+            default:
+                break;
+        }
+
     }
 
     public static void resetNodes(){
