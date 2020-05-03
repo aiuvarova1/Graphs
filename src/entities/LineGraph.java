@@ -1,8 +1,6 @@
 package entities;
 
 import java.util.ArrayDeque;
-import java.util.Date;
-
 import javafx.animation.FadeTransition;
 import javafx.animation.PathTransition;
 import javafx.scene.Group;
@@ -138,12 +136,6 @@ public class LineGraph extends InfiniteGraph {
         edgeFt = new FadeTransition(Duration.millis(2000), firstEdge);
         edgeFt.setFromValue(1.0);
         edgeFt.setToValue(0);
-
-//        if(first.getNum() == 0) {
-//            ft.setDelay(Duration.millis(2000));
-//            transition.setDelay(Duration.millis(2000));
-//            edgeFt.setDelay(Duration.millis(2000));
-//        }
 
         transition.play();
         ft.play();

@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 public class Visualizer {
 
     private static final int MAX_POINTS = 500;
+    public static final int GAP = 200;
 
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool();

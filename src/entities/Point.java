@@ -213,9 +213,10 @@ public class Point extends Circle {
 
         pathTransition.setPath(path);
 
+        Duration forSimple = Duration.millis(startEdge / SimpleGraph.getInstance().getCurMinEdge() * 2000 - Visualizer.GAP);
         final Duration duration = InfiniteManager.canEdit() ?
-                new Duration((int) startEdge / SimpleGraph.getInstance().getCurMinEdge() * 2000 - 100) :
-                new Duration(2000 - 100);
+                forSimple :
+                new Duration(2000 - Visualizer.GAP);
         pathTransition.setDuration(duration);
 
         pathTransition.setNode(this);
@@ -259,9 +260,15 @@ public class Point extends Circle {
                     System.out.println("arrival to " + destination.getNum() + " at " + java.time.LocalDateTime.now());
                     if (!destination.processed.get())
                         destination.processed.setValue(true);
-                    setPointToEdge();
+                    try {
+                        setPointToEdge();
+                    }catch(IllegalArgumentException ex)
+                    {
+                        System.err.println("Duplicate point");
+                        return null;
+                    }
                     destination.increaseAmplitudesSum(amplitude);
-                    destination.guests.incrementAndGet();
+                    //destination.guests.incrementAndGet();
                     return null;
                 }
             });

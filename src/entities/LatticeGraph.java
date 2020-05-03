@@ -1,8 +1,15 @@
 package entities;
 
+
+import javafx.scene.control.ScrollPane;
+import main.Drawer;
+
 public class LatticeGraph extends InfiniteGraph {
 
+    private ScrollPane pane = new ScrollPane();
+
     public LatticeGraph(){
+        Drawer.getInstance().addElem(pane);
 
     }
 

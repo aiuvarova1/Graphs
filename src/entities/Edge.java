@@ -1,6 +1,7 @@
 package entities;
 
 import javafx.animation.PathTransition;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.Cursor;
 
 import javafx.scene.input.MouseEvent;
@@ -36,13 +37,18 @@ public class Edge extends Line implements Undoable, Visitable,
     private transient Color curColor = color;
 
     private HashMap<Node, double[]> nearestCoords;
-    private transient ConcurrentHashMap<Node, Point> pointsToProceed = new ConcurrentHashMap<>();
+    private transient ConcurrentHashMap<Integer, Point> pointsToProceed = new ConcurrentHashMap<>();
+    private transient ConcurrentHashMap<Integer, Boolean> canVisualize = new ConcurrentHashMap<>();
 
     /**
      * Clears pointsToProceed before the new visualization
      */
      void resetProceed(){
         pointsToProceed.clear();
+        canVisualize.clear();
+
+        canVisualize.put(n1.getNum(), true);
+        canVisualize.put(n2.getNum(), true);
     }
 
     public Edge(double v1, double v2, double v3, double v4) {
@@ -90,6 +96,13 @@ public class Edge extends Line implements Undoable, Visitable,
         return nearestCoords.get(n);
     }
 
+    private void removePoint(Point p){
+        p.hideEnabled();
+        p.removePath();
+        Drawer.getInstance().removeElement(p);
+        Visualizer.decreasePoints();
+    }
+
     /**
      * Renews the amplitude of the point and builds a new way (or creates the new point)
      * @param n node to which the point came
@@ -98,21 +111,42 @@ public class Edge extends Line implements Undoable, Visitable,
      */
     PathTransition handlePoint(Node n,  int degree){
 
-        if(pointsToProceed.containsKey(n)) {
+        if(!canVisualize.get(n.getNum())) {
+            System.out.println(n.getNum());
+            if(pointsToProceed.containsKey(n.getNum())) {
+                System.out.println("deleted");
+                removePoint(pointsToProceed.get(n.getNum()));
+            }
+            return null;
+        }
 
-            pointsToProceed.get(n).changeAmplitude(degree);
-            if(pointsToProceed.get(n).getAmplitude().equals("0")) {
-                pointsToProceed.get(n).hideEnabled();
-                pointsToProceed.get(n).removePath();
-                Drawer.getInstance().removeElement(pointsToProceed.get(n));
-                pointsToProceed.remove(n);
+        canVisualize.put(n.getNum(), false);
+
+        new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        canVisualize.put(n.getNum(), true);
+                    }
+                },
+                Visualizer.GAP + 25
+        );
+
+        if(pointsToProceed.containsKey(n.getNum())) {
+
+            pointsToProceed.get(n.getNum()).changeAmplitude(degree);
+            if(pointsToProceed.get(n.getNum()).getAmplitude().equals("0")) {
+                pointsToProceed.get(n.getNum()).hideEnabled();
+                pointsToProceed.get(n.getNum()).removePath();
+                Drawer.getInstance().removeElement(pointsToProceed.get(n.getNum()));
+                pointsToProceed.remove(n.getNum());
                 Visualizer.decreasePoints();
                 return null;
             }
-            pointsToProceed.get(n).setDestination(getNeighbour(n));
-            PathTransition p = pointsToProceed.get(n).startPath(nearestCoords.get(n),
+            pointsToProceed.get(n.getNum()).setDestination(getNeighbour(n));
+            PathTransition p = pointsToProceed.get(n.getNum()).startPath(nearestCoords.get(n),
                     nearestCoords.get(getNeighbour(n)),length.getValue());
-            pointsToProceed.remove(n);
+            pointsToProceed.remove(n.getNum());
             return p;
 
         }else{
@@ -141,7 +175,13 @@ public class Edge extends Line implements Undoable, Visitable,
      * @param p point to accept
      */
     synchronized void addToProceed(Node n, Point p){
-        pointsToProceed.put(n,p);
+        if(pointsToProceed.containsKey(n.getNum())) {
+            System.out.println("DUPLICATE");
+            removePoint(p);
+            throw new IllegalArgumentException("Duplicate point");
+        }
+
+        pointsToProceed.put(n.getNum(),p);
     }
 
     /**
@@ -153,6 +193,10 @@ public class Edge extends Line implements Undoable, Visitable,
     public void setNodes(Node n1, Node n2) {
         this.n1 = n1;
         this.n2 = n2;
+
+        canVisualize.clear();
+        canVisualize.put(n1.getNum(), true);
+        canVisualize.put(n2.getNum(), true);
         setHandlers();
 
         length = new Distance();
@@ -169,6 +213,10 @@ public class Edge extends Line implements Undoable, Visitable,
         curColor = color;
 
         pointsToProceed = new ConcurrentHashMap<>();
+        canVisualize = new ConcurrentHashMap<>();
+
+        canVisualize.put(n1.getNum(), true);
+        canVisualize.put(n2.getNum(), true);
 
         Distance d = new Distance();
         d.setDistance(length.getText(),length.getValue());

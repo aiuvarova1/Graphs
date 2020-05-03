@@ -563,7 +563,7 @@ public class Node extends StackPane implements
                         synchronized (Node.this) {
                             try {
                                 System.err.println(java.time.LocalDateTime.now());
-                                Node.this.wait(95);
+                                Node.this.wait(Visualizer.GAP - 5);
                             } catch (InterruptedException ex) {
                                 System.out.println("Interrupted in waiting points");
                                 return null;
