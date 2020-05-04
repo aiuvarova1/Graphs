@@ -23,6 +23,7 @@ import main.Visualizer;
 public class Point extends Circle {
 
     static final int RADIUS = 9;
+    static int LATTICE_RADIUS = 4;
     private static final int SHIFT = 10;
     private static final Color BASE_COLOR = Color.GRAY;
 
@@ -47,6 +48,10 @@ public class Point extends Circle {
     public Point() {
 
         super(RADIUS, BASE_COLOR);
+
+        if(InfiniteManager.getCurrentType() == InfiniteManager.Type.LATTICE)
+            setRadius(LATTICE_RADIUS);
+
 
         numAmplitude = new Text();
         arrow = new Arrow(getCenterX(), getCenterY() - RADIUS);

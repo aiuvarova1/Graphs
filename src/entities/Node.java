@@ -49,10 +49,6 @@ public class Node extends StackPane implements
         return (Circle) getChildren().get(0);
     }
 
-    public int getNumOfEdges() {
-        return edges.size();
-    }
-
     volatile transient BooleanProperty processed;
     volatile transient AtomicInteger guests = new AtomicInteger(0);
     private volatile double amplitudesSum = 0;
@@ -66,18 +62,6 @@ public class Node extends StackPane implements
         amplitudesSum += amplitude;
     }
 
-//    @Override
-//    public boolean equals(Object other){
-//        if(!(other instanceof Node))
-//            return false;
-//        Node otherNode = (Node) other;
-//        return num == otherNode.num && edges.equals(otherNode.edges);
-//    }
-//
-//    @Override
-//    public int hashCode(){
-//        return Objects.hash(num, edges);
-//    }
 
     public Node(int num) {
 
@@ -273,8 +257,8 @@ public class Node extends StackPane implements
      * @param y center's y
      */
     private void relocateCircleCenter(double x, double y) {
-        getCircle().setCenterX(x + Node.RADIUS);
-        getCircle().setCenterY(y + Node.RADIUS);
+        getCircle().setCenterX(x + getCircle().getRadius());
+        getCircle().setCenterY(y + getCircle().getRadius());
     }
 
 

@@ -1,7 +1,5 @@
 package entities;
 
-import main.Drawer;
-import main.Visualizer;
 
 public class InfiniteManager {
     private static InfiniteGraph graph;
@@ -38,6 +36,9 @@ public class InfiniteManager {
         }
     }
 
+    public static Type getCurrentType(){
+        return currentType;
+    }
 
     public static boolean canEdit(){
         return currentType == Type.SIMPLE;
@@ -70,5 +71,14 @@ public class InfiniteManager {
         else
             graph.resetNodes();
 
+    }
+
+    public static void rescale(char axis, double oldVal, double newVal)
+    {
+        if (currentType.equals(Type.SIMPLE))
+            SimpleGraph.getInstance().rescale(axis, oldVal, newVal);
+        else {
+            graph.redraw();
+        }
     }
 }

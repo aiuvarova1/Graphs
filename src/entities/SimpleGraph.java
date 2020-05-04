@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public class SimpleGraph
         implements Serializable, Graph {
 
-    public static final int MAX_SIZE = 50;
+    public static final int MAX_SIZE = 70;
     private ArrayList<Node> nodes = new ArrayList<>(20);
     private static SimpleGraph instance;
     private Stack<Node> dfsStack = new Stack<>();

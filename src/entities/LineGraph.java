@@ -24,11 +24,11 @@ public class LineGraph extends InfiniteGraph {
     private FadeTransition ft;
     private FadeTransition edgeFt;
 
-    final LineTo line = new LineTo();
-    final MoveTo move = new MoveTo();
-    final Path path = new Path();
+    private final LineTo line = new LineTo();
+    private final MoveTo move = new MoveTo();
+    private final Path path = new Path();
 
-    Point hero = new Point();
+    private Point hero = new Point();
 
 
     @Override
@@ -47,7 +47,7 @@ public class LineGraph extends InfiniteGraph {
 
         transition = new PathTransition();
         nodes = new ArrayDeque<>();
-        Node prevNode = Drawer.getInstance().drawInfiniteNode(0, START_Y,0);
+        Node prevNode = Drawer.getInstance().drawInfiniteNode(0, START_Y,0, RADIUS, true);
         nodes.add(prevNode);
         graph.getChildren().add(prevNode);
 
@@ -61,7 +61,7 @@ public class LineGraph extends InfiniteGraph {
 
     private Node addNode(Node prevNode){
 
-        Node node = Drawer.getInstance().drawInfiniteNode(prevNode.getLayoutX() + EDGE_LENGTH, START_Y,prevNode.getNum() + 1);
+        Node node = Drawer.getInstance().drawInfiniteNode(prevNode.getLayoutX() + EDGE_LENGTH, START_Y,prevNode.getNum() + 1, RADIUS, true);
         nodes.add(node);
 
         Edge edge = new Edge(0,0,0,0);
@@ -78,6 +78,11 @@ public class LineGraph extends InfiniteGraph {
         edge.hideLength();
 
         return node;
+    }
+
+    @Override
+    public void redraw() {
+
     }
 
     @Override

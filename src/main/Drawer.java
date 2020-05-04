@@ -140,18 +140,19 @@ public class Drawer {
         return createLayout(cors[0], cors[1]);
     }
 
-    public Node drawInfiniteNode(double xPos, double yPos, int num) {
+    public Node drawInfiniteNode(double xPos, double yPos, int num, double radius, boolean needText) {
 
-        Circle node = new Circle(xPos, yPos, Node.RADIUS, Color.WHITE);
+        Circle node = new Circle(xPos, yPos, radius, Color.WHITE);
         node.setStroke(Color.BLACK);
 
         Node layout = new Node(num);
-        Text numText = new Text("" + (num + 1));
-
-        numText.setStyle(NODE_TEXT);
-
-        layout.getChildren().addAll(node, numText);
-        layout.fixPosition(xPos - Node.RADIUS, yPos - Node.RADIUS);
+        layout.getChildren().add(node);
+        if(needText) {
+            Text numText = new Text("" + (num + 1));
+            numText.setStyle(NODE_TEXT);
+            layout.getChildren().add(numText);
+        }
+        layout.fixPosition(xPos - radius, yPos - radius);
         return layout;
     }
 

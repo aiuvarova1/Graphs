@@ -165,7 +165,7 @@ public class Filter {
 
             if (dist > Node.RADIUS + CURSOR_GAP && isInBounds(event.getX(), event.getY(), b)) {
                 double[] cords = Edge.getStartCoordinates(xPos, yPos, pretender.getCircle().getCenterX(),
-                        pretender.getCircle().getCenterY(), dist);
+                        pretender.getCircle().getCenterY(), dist, pretender.getCircle().getRadius());
 
                 int signX = cords[0] <= event.getX() ? -1 : 1;
                 int signY = cords[1] <= event.getY() ? -1 : 1;

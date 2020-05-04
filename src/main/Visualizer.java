@@ -14,8 +14,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 
 
 import java.util.HashSet;
@@ -30,8 +28,8 @@ import java.util.function.Supplier;
 
 public class Visualizer {
 
-    private static final int MAX_POINTS = 500;
-    public static final int GAP = 200;
+    private static final int MAX_POINTS = 2000;
+    public static final int GAP = 300;
 
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -277,7 +275,7 @@ public class Visualizer {
     /**
      * Stops the visualization and refreshes the needed data
      */
-    static void stopVisualization() {
+    public static void stopVisualization() {
         isRunning = false;
         curNumOfPoints.removeListener(observer);
 

@@ -311,14 +311,13 @@ public class Controller {
 
             if (Visualizer.isRunning()) return;
             drawingArea.setPrefWidth(newVal.doubleValue());
-            SimpleGraph.getInstance().rescale('x', oldVal.doubleValue(), newVal.doubleValue());
+            InfiniteManager.rescale('x',oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
 
             if (Visualizer.isRunning()) return;
-            // drawingArea.setPrefHeight(newVal.doubleValue());
-            SimpleGraph.getInstance().rescale('y', oldVal.doubleValue(), newVal.doubleValue());
+            InfiniteManager.rescale('y',oldVal.doubleValue(), newVal.doubleValue());
         });
 
         calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
