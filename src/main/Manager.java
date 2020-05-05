@@ -46,7 +46,7 @@ public class Manager extends Application {
         stage.setScene(new Scene(root));
 
         stage.setMinWidth(900);
-        stage.setMinHeight(600);
+        stage.setMinHeight(640);
 
         stage.getScene().setOnKeyReleased(Controller.shortCuts);
 

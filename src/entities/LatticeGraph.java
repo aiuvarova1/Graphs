@@ -12,7 +12,7 @@ public class LatticeGraph extends InfiniteGraph {
 
     private static final int ITERATIONS = 10;
     private static final int NEIGHBOURS = 3;
-    private static int startRadius = 7;
+    public static final int startRadius = 7;
 
     private int counter = 0;
 
@@ -23,6 +23,7 @@ public class LatticeGraph extends InfiniteGraph {
     public LatticeGraph() {
         redraw();
     }
+
 
     private void drawLevel(int curLevel, int curNodesNum, double curStart, double curLength) {
         if (curLevel == ITERATIONS) {
@@ -57,6 +58,7 @@ public class LatticeGraph extends InfiniteGraph {
 
         if(nodes != null)
             erase();
+        counter = 0;
         final Bounds bounds = Drawer.getInstance().getBounds();
         startLength = Math.min(bounds.getWidth(), bounds.getHeight()) / ITERATIONS;
         double START_X = bounds.getWidth() / 2;

@@ -23,11 +23,11 @@ import main.Visualizer;
 public class Point extends Circle {
 
     static final int RADIUS = 9;
-    static int LATTICE_RADIUS = 4;
+    static int LATTICE_RADIUS = 5;
     private static final int SHIFT = 10;
     private static final Color BASE_COLOR = Color.GRAY;
 
-    private double amplitude;
+    private float amplitude;
     private Node destination;
 
     /**Animation object**/
@@ -48,10 +48,6 @@ public class Point extends Circle {
     public Point() {
 
         super(RADIUS, BASE_COLOR);
-
-        if(InfiniteManager.getCurrentType() == InfiniteManager.Type.LATTICE)
-            setRadius(LATTICE_RADIUS);
-
 
         numAmplitude = new Text();
         arrow = new Arrow(getCenterX(), getCenterY() - RADIUS);
@@ -83,6 +79,9 @@ public class Point extends Circle {
         this();
         destination = n;
         this.edge = e;
+
+        if(InfiniteManager.getCurrentType() == InfiniteManager.Type.LATTICE)
+            setRadius(LATTICE_RADIUS*n.getCircle().getRadius()/LatticeGraph.startRadius);
     }
 
     public String getAmplitude(){
@@ -171,8 +170,8 @@ public class Point extends Circle {
         if (degree == 1)
             amplitude = amplitude != 0 ? -amplitude : 0;
         else
-            amplitude = ( 2.0 / degree - 1) * amplitude
-                    + (destination.getAmplitudesSum() - amplitude) * (2.0 / degree);
+            amplitude = ( 2.0f / degree - 1) * amplitude
+                    + (float)(destination.getAmplitudesSum() - amplitude) * (2.0f / degree);
         updateInfo(destination);
     }
 
@@ -182,7 +181,7 @@ public class Point extends Circle {
      * @param degree degree of the node
      */
     void setAmplitude(int degree) {
-        amplitude = edge.getNeighbour(destination).getAmplitudesSum() * (2.0 / degree);
+        amplitude = (float)edge.getNeighbour(destination).getAmplitudesSum() * (2.0f / degree);
         updateInfo(edge.getNeighbour(destination));
     }
 

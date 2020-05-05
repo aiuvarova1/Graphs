@@ -39,7 +39,7 @@ public class Edge extends Line implements Undoable, Visitable,
 
     private HashMap<Node, double[]> nearestCoords;
     private transient ConcurrentHashMap<Integer, Point> pointsToProceed = new ConcurrentHashMap<>();
-    private transient ConcurrentHashMap<Integer, Boolean> canVisualize = new ConcurrentHashMap<>();
+    private transient ConcurrentHashMap<Integer, Long> canVisualize = new ConcurrentHashMap<>();
 
     /**
      * Clears pointsToProceed before the new visualization
@@ -47,9 +47,6 @@ public class Edge extends Line implements Undoable, Visitable,
     void resetProceed() {
         pointsToProceed.clear();
         canVisualize.clear();
-
-        canVisualize.put(n1.getNum(), true);
-        canVisualize.put(n2.getNum(), true);
     }
 
     public Edge(double v1, double v2, double v3, double v4) {
@@ -115,9 +112,9 @@ public class Edge extends Line implements Undoable, Visitable,
     PathTransition handlePoint(Node n, int degree) {
 
         try {
-            if (InfiniteManager.canEdit()) {
+            if (InfiniteManager.canEdit() && canVisualize.containsKey(n.getNum())) {
 
-                if (!canVisualize.get(n.getNum())) {
+                if (canVisualize.get(n.getNum()) + Visualizer.GAP + 20 > System.currentTimeMillis()) {
                     System.out.println(n.getNum());
                     if (pointsToProceed.containsKey(n.getNum())) {
                         System.out.println("deleted");
@@ -125,20 +122,7 @@ public class Edge extends Line implements Undoable, Visitable,
                     }
                     return null;
                 }
-
-                canVisualize.put(n.getNum(), false);
-
-                new java.util.Timer().schedule(
-                        new java.util.TimerTask() {
-                            @Override
-                            public void run() {
-                                canVisualize.put(n.getNum(), true);
-                            }
-                        },
-                        Visualizer.GAP + 25
-                );
             }
-
             if (pointsToProceed.containsKey(n.getNum())) {
 
                 pointsToProceed.get(n.getNum()).changeAmplitude(degree);
@@ -154,6 +138,7 @@ public class Edge extends Line implements Undoable, Visitable,
                 PathTransition p = pointsToProceed.get(n.getNum()).startPath(nearestCoords.get(n),
                         nearestCoords.get(getNeighbour(n)), length.getValue());
                 pointsToProceed.remove(n.getNum());
+                canVisualize.put(n.getNum(), System.currentTimeMillis());
                 return p;
 
             } else {
@@ -172,6 +157,7 @@ public class Edge extends Line implements Undoable, Visitable,
 
                 Visualizer.increasePoints();
                 Drawer.getInstance().addElem(p);
+                canVisualize.put(n.getNum(), System.currentTimeMillis());
 
                 return p.startPath(nearestCoords.get(n), nearestCoords.get(getNeighbour(n)), length.getValue());
             }
@@ -209,8 +195,6 @@ public class Edge extends Line implements Undoable, Visitable,
         this.n2 = n2;
 
         canVisualize.clear();
-        canVisualize.put(n1.getNum(), true);
-        canVisualize.put(n2.getNum(), true);
         setHandlers();
 
         length = new Distance();
@@ -229,8 +213,6 @@ public class Edge extends Line implements Undoable, Visitable,
         pointsToProceed = new ConcurrentHashMap<>();
         canVisualize = new ConcurrentHashMap<>();
 
-        canVisualize.put(n1.getNum(), true);
-        canVisualize.put(n2.getNum(), true);
 
         Distance d = new Distance();
         d.setDistance(length.getText(), length.getValue());

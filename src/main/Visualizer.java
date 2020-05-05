@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 public class Visualizer {
 
     private static final int MAX_POINTS = 2000;
-    public static final int GAP = 300;
+    public static int GAP = 300;
 
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -192,6 +192,11 @@ public class Visualizer {
      * @param startNode node from which the first point goes
      */
     public static void startVisualization(Edge startEdge, Node startNode) {
+
+        if(InfiniteManager.getCurrentType() == InfiniteManager.Type.SIMPLE)
+            GAP = 250;
+        else
+            GAP = 350;
 
        // System.out.println("start v");
         globalStart = startNode;

@@ -20,11 +20,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="menu" minHeight="500.0" minWidth="700.0" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+<AnchorPane fx:id="menu" minHeight="600.0" minWidth="900.0" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
    <children>
       <HBox maxWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox maxWidth="283.0" minHeight="400.0" minWidth="220.0" prefHeight="600.0" prefWidth="328.0" HBox.hgrow="ALWAYS">
+            <VBox maxWidth="283.0" minHeight="400.0" minWidth="283.0" prefHeight="600.0" prefWidth="328.0" HBox.hgrow="ALWAYS">
                <children>
                   <AnchorPane maxHeight="121.0" maxWidth="283.0" minHeight="80.0" minWidth="220.0" prefHeight="107.0" prefWidth="283.0" style="-fx-background-color: #2E3348; -fx-background-radius: 1;">
                      <children>
