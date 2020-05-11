@@ -31,7 +31,6 @@ public class Visualizer {
     private static final int MAX_POINTS = 2000;
     public static int GAP = 300;
 
-
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
     private static HashSet<PathTransition> animations = new HashSet<>();
 
@@ -52,11 +51,17 @@ public class Visualizer {
 
     private static ChangeListener<Number> observer =
             (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-    {
-           if((int)newValue == 1) {
-               needStartPeriod = true;
-           }
-    };
+            {
+                if ((int) newValue == 1) {
+                    needStartPeriod = true;
+                }
+            };
+
+    public static void bindPointsLabel(Label label) {
+        curNumOfPoints.addListener((observable, oldValue, newValue) -> {
+            label.setText("Points: " + curNumOfPoints.get());
+        });
+    }
 
     /**
      * Current lowest possible value of the amplitude

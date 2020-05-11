@@ -189,6 +189,9 @@ public class Controller {
     @FXML
     private ImageView latticeIcon;
 
+    @FXML
+    private Label points;
+
     public Controller() {
         drawer = Drawer.getInstance();
     }
@@ -307,17 +310,23 @@ public class Controller {
     }
 
     private void addListeners() {
+
+        Visualizer.bindPointsLabel(points);
         drawingArea.widthProperty().addListener((axis, oldVal, newVal) -> {
 
-            if (Visualizer.isRunning()) return;
+            if (Visualizer.isRunning()) {
+                return;
+            }
             drawingArea.setPrefWidth(newVal.doubleValue());
-            InfiniteManager.rescale('x',oldVal.doubleValue(), newVal.doubleValue());
+            InfiniteManager.rescale('x', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         drawingArea.heightProperty().addListener((axis, oldVal, newVal) -> {
 
-            if (Visualizer.isRunning()) return;
-            InfiniteManager.rescale('y',oldVal.doubleValue(), newVal.doubleValue());
+            if (Visualizer.isRunning()) {
+                return;
+            }
+            InfiniteManager.rescale('y', oldVal.doubleValue(), newVal.doubleValue());
         });
 
         calculate.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -576,11 +585,11 @@ public class Controller {
     void visualizeAmplitudes() {
 
         if (InfiniteManager.canEdit()) {
-            if (!SimpleGraph.areDistancesShown()) {
-                PopupMessage.showMessage("The distances are disabled");
-                Visualizer.enableGif(false);
-                return;
-            }
+//            if (!SimpleGraph.areDistancesShown()) {
+//                PopupMessage.showMessage("The distances are disabled");
+//                Visualizer.enableGif(false);
+//                return;
+//            }
 
             for (javafx.scene.Node dist : drawingArea.getChildren().filtered(x -> x instanceof Distance)) {
                 if (((Distance) dist).isInfty()) {
@@ -596,6 +605,7 @@ public class Controller {
         }
 
         if (Visualizer.isRunning()) {
+            points.setVisible(true);
             time.setDisable(true);
             drawTitledPane.setDisable(true);
             distancesTitledPane.setDisable(true);
@@ -617,20 +627,24 @@ public class Controller {
      */
     @FXML
     void stopVisualizing() {
-        if(InfiniteManager.canEdit())
+        if (InfiniteManager.canEdit()) {
             Visualizer.stopVisualization();
-        else
+        } else {
             InfiniteManager.stop();
+        }
 
         visualizeAmplitudes.setDisable(false);
         stopVisualize.setDisable(true);
 
-        drawTitledPane.setDisable(false);
-        distancesTitledPane.setDisable(false);
+        if (InfiniteManager.canEdit()) {
+            drawTitledPane.setDisable(false);
+            distancesTitledPane.setDisable(false);
+        }
         graphTypes.setDisable(false);
 
         makeGif.setDisable(false);
         time.setDisable(false);
+        points.setVisible(false);
     }
 
     @FXML

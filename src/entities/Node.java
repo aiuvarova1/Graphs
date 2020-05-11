@@ -90,6 +90,9 @@ public class Node extends StackPane implements
     void checkMinEdge(){
         for (Edge e : edges) {
             SimpleGraph.getInstance().setMin(e.getLength());
+            if (e.getLength() == Double.MAX_VALUE) {
+                throw new IllegalArgumentException("Not all distances are set");
+            }
         }
     }
 

@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public class SimpleGraph
         implements Serializable, Graph {
 
-    public static final int MAX_SIZE = 70;
+    public static final int MAX_SIZE = 100;
     private ArrayList<Node> nodes = new ArrayList<>(20);
     private static SimpleGraph instance;
     private Stack<Node> dfsStack = new Stack<>();
@@ -251,14 +251,19 @@ public class SimpleGraph
      */
     public void visualizeAmplitudes() {
         curMinEdge = 100000;
-        if (runDFS(Node::checkMinEdge) > 1) {
-            PopupMessage.showMessage("The graph is not connected");
+        try {
+            if (runDFS(Node::checkMinEdge) > 1) {
+                PopupMessage.showMessage("The graph is not connected");
+                Visualizer.enableGif(false);
+                return;
+            }
+        } catch (IllegalArgumentException ex) {
+            PopupMessage.showMessage(ex.getMessage());
             Visualizer.enableGif(false);
             return;
         }
 
-        if(startNode == null)
-        {
+        if (startNode == null) {
             PopupMessage.showMessage("The beginning node is not selected");
             Visualizer.enableGif(false);
             return;
